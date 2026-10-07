@@ -13,10 +13,11 @@ export function ContactForm() {
   };
 
   return (
-    <section className="py-20 bg-space-black relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-space-card/80 backdrop-blur-md border border-space-border rounded-2xl p-8 shadow-xl">
-          <div className="text-center mb-8">
+        <div className="max-w-2xl mx-auto bg-space-card/70 border border-space-border backdrop-blur-md rounded-2xl p-8 shadow-xl relative overflow-hidden transition-all duration-300 hover:border-gold-primary/60 hover:shadow-gold-glow">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gold-glow/20 blur-3xl rounded-full pointer-events-none -z-10"></div>
+          <div className="text-center mb-8 relative z-10">
             <h2 className="text-2xl font-bold text-white uppercase tracking-wider mb-2">
               Envíanos un mensaje
             </h2>
@@ -35,7 +36,7 @@ export function ContactForm() {
                   type="text"
                   id="name"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
               </div>
               <div className="space-y-2">
@@ -46,7 +47,7 @@ export function ContactForm() {
                   type="tel"
                   id="phone"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
               </div>
             </div>
@@ -60,7 +61,7 @@ export function ContactForm() {
                   type="email"
                   id="email"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
               </div>
               <div className="space-y-2">
@@ -71,7 +72,7 @@ export function ContactForm() {
                   type="text"
                   id="subject"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
               </div>
             </div>
@@ -84,7 +85,7 @@ export function ContactForm() {
                 id="message"
                 rows={5}
                 required
-                className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors resize-none"
+                className="w-full bg-space-black/60 border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors resize-none"
               ></textarea>
             </div>
 
