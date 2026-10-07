@@ -12,7 +12,7 @@ export function ValuesSection() {
   ];
 
   return (
-    <section className="py-24 bg-space-black relative z-10 border-t border-space-border/50">
+    <section className="py-24 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-white uppercase tracking-wider mb-4">

@@ -25,7 +25,7 @@ export function CourseGrid() {
     : COURSES_DATA.filter((c) => c.category === selectedCategory);
 
   return (
-    <section className="py-20 bg-space-dark relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <CourseCategoryFilter
           categories={CATEGORIES}

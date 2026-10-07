@@ -11,7 +11,7 @@ export function PhBenefits() {
   ];
 
   return (
-    <section className="py-20 bg-space-black relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white uppercase tracking-wider mb-4">
@@ -22,11 +22,11 @@ export function PhBenefits() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {benefits.map((benefit, i) => (
-            <div key={i} className="flex items-start gap-4 bg-space-card/50 p-6 rounded-xl border border-space-border hover:border-gold-primary/50 transition-colors">
-              <div className="text-gold-primary shrink-0 p-2 bg-space-black rounded-lg border border-space-border">
+            <div key={i} className="flex flex-col items-center text-center bg-space-card/60 border border-space-border/80 backdrop-blur-md hover:border-gold-primary/60 hover:shadow-gold-glow hover:-translate-y-1 transition-all duration-300 p-6 rounded-2xl">
+              <div className="bg-gold-primary/10 text-gold-primary p-3 rounded-full mb-3 inline-block">
                 {benefit.icon}
               </div>
-              <p className="text-gray-300 font-medium pt-2">{benefit.text}</p>
+              <p className="text-gray-300 font-medium">{benefit.text}</p>
             </div>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { FOUNDATION } from "@/constants/foundation";
 
 export function HorizontalPropertySection() {
   return (
-    <section className="py-24 bg-space-dark relative z-10">
+    <section className="py-24 relative z-10">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-gradient-to-r from-space-card to-space-black border border-gold-primary/30 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
           {/* Background decoration */}

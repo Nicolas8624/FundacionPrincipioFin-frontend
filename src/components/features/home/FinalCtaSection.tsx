@@ -3,7 +3,7 @@ import { FOUNDATION } from "@/constants/foundation";
 
 export function FinalCtaSection() {
   return (
-    <section className="py-32 bg-space-black relative z-10 border-t border-space-border text-center px-4">
+    <section className="py-32 relative z-10 border-t border-space-border text-center px-4">
       <div className="container mx-auto max-w-3xl">
         <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-8">
           Tu apoyo hace posible <br />

@@ -1,9 +1,10 @@
 export function PhLetter() {
   return (
-    <section className="py-20 bg-space-dark relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto bg-space-card border border-space-border p-8 md:p-12 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-bold text-white mb-6 uppercase">Estimados Administradores y Miembros del Consejo:</h2>
+        <div className="max-w-5xl mx-auto bg-space-card/40 border border-space-border/60 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="bg-gold-primary/10 blur-3xl w-72 h-72 absolute -top-10 -right-10 rounded-full pointer-events-none"></div>
+          <h2 className="text-2xl font-bold text-white mb-6 uppercase relative z-10">Estimados Administradores y Miembros del Consejo:</h2>
           <div className="space-y-4 text-gray-300 leading-relaxed text-justify">
             <p>
               La <strong>Fundación Principio & Fin</strong> tiene el honor de extenderles una propuesta formal de 

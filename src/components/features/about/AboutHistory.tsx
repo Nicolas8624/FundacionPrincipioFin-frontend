@@ -1,6 +1,6 @@
 export function AboutHistory() {
   return (
-    <section className="py-20 bg-space-dark relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-space-card/80 backdrop-blur-md border border-space-border rounded-2xl p-8 md:p-12 shadow-xl text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-white mb-6 uppercase">Nuestra Historia y Enfoque</h2>

@@ -1,6 +1,6 @@
 export function CoursesBanner() {
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden bg-space-black/50">
+    <section className="relative pt-32 pb-20 overflow-hidden /50">
       <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
         <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-wider mb-6">
           Programas y Cursos
