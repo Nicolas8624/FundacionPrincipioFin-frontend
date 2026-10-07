@@ -1,6 +1,16 @@
+"use client";
+
 import Link from "next/link";
-import { Facebook, Instagram, Mail, MapPin, Phone, Infinity as InfinityIcon } from "lucide-react";
+import { Mail, MapPin, Phone, Infinity as InfinityIcon } from "lucide-react";
 import { FOUNDATION } from "@/constants/foundation";
+
+const FacebookIcon = ({ className }: { className?: string }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+);
+
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+);
 
 export function Footer() {
   return (
@@ -16,7 +26,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed mt-2">
-              {FOUNDATION.slogans[1]}
+              {FOUNDATION.slogans[0]}
             </p>
             <div className="flex items-center gap-4 mt-4">
               <a
@@ -26,7 +36,7 @@ export function Footer() {
                 className="h-10 w-10 flex items-center justify-center rounded-full bg-space-border text-gray-300 hover:text-gold-primary hover:bg-space-black transition-colors"
                 aria-label="Facebook"
               >
-                <Facebook className="h-5 w-5" />
+                <FacebookIcon className="h-5 w-5" />
               </a>
               <a
                 href="https://instagram.com"
@@ -35,7 +45,7 @@ export function Footer() {
                 className="h-10 w-10 flex items-center justify-center rounded-full bg-space-border text-gray-300 hover:text-gold-primary hover:bg-space-black transition-colors"
                 aria-label="Instagram"
               >
-                <Instagram className="h-5 w-5" />
+                <InstagramIcon className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -110,7 +120,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-space-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} {FOUNDATION.name}. Todos los derechos reservados.</p>
+          <p>© 2026 {FOUNDATION.name}. Todos los derechos reservados.</p>
           <p className="tracking-widest uppercase text-gold-primary/70">{FOUNDATION.slogans[2]}</p>
         </div>
       </div>

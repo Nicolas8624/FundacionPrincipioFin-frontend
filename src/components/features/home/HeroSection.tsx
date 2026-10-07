@@ -7,7 +7,7 @@ export function HeroSection() {
       <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight uppercase max-w-4xl leading-tight mb-6">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold-primary to-gold-light animate-pulse">
-            Podemos sanar
+            Perdonar, sanar
           </span>{" "}
           y volver a comenzar
         </h1>

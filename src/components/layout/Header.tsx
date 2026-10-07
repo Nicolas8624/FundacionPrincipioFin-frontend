@@ -26,8 +26,8 @@ export function Header() {
             <span className="text-xl font-bold tracking-tight text-white uppercase leading-none">
               Principio <span className="text-gold-primary">&</span> Fin
             </span>
-            <span className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">
-              Fundación
+            <span className="text-[10px] sm:text-xs text-gold-primary font-medium tracking-wide mt-1">
+              {FOUNDATION.slogans[0]}
             </span>
           </div>
         </Link>

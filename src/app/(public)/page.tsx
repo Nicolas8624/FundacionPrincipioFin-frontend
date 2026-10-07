@@ -7,7 +7,7 @@ import { FinalCtaSection } from "@/components/features/home/FinalCtaSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Fundación Principio & Fin | Podemos sanar y volver a comenzar",
+  title: "Fundación Principio & Fin | Perdonar, sanar y volver a comenzar",
   description: "Conectamos talentos y transformamos futuros a través del arte, la educación, la cultura y el emprendimiento en Bogotá.",
 };
 

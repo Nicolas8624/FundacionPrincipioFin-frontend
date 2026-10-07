@@ -1,3 +1,5 @@
+import { FOUNDATION } from "@/constants/foundation";
+
 export function AboutBanner() {
   return (
     <section className="relative pt-32 pb-20 overflow-hidden bg-space-black/50">
@@ -6,8 +8,8 @@ export function AboutBanner() {
           Quiénes Somos
         </h1>
         <div className="w-24 h-1 bg-gold-primary mx-auto rounded-full mb-8"></div>
-        <p className="text-xl md:text-2xl text-gold-light italic max-w-3xl leading-relaxed">
-          "Tejiendo esperanza y nuevas oportunidades"
+        <p className="text-xl md:text-2xl text-gold-light italic max-w-3xl leading-relaxed font-medium">
+          "{FOUNDATION.slogans[0]}"
         </p>
       </div>
     </section>
