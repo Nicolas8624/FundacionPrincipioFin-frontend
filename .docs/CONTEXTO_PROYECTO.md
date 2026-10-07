@@ -285,6 +285,18 @@ El desarrollo se divide entre dos desarrolladores (Dev 1 y Dev 2) para avanzar e
   - Maquetación y desarrollo de vistas públicas: `Home`, `Quiénes Somos`, `Programas`, `Donaciones`, `Contacto`, `Inscripción`.
   - Integración de formularios públicos con el backend (Supabase) configurado por Dev 1.
 
+### 7.4 Arquitectura de Carpetas (src/)
+
+El proyecto utiliza una **Feature-Driven Architecture** para escalar de forma ordenada:
+- `src/app/`: App Router de Next.js, dividido en grupos de rutas: `(public)`, `(auth)`, `(admin)` y `api/`.
+- `src/components/`: Componentes React organizados por nivel de responsabilidad:
+  - `ui/`: Componentes base (Shadcn/UI, botones, inputs).
+  - `layout/`: Estructuras generales (navbars, footers, sidebars).
+  - `shared/`: Componentes comunes del negocio (cards, modales genéricos).
+  - `features/`: Componentes complejos agrupados por dominio de la aplicación (`courses`, `donations`, `ph-requests`, `admin`).
+- `src/lib/`: Configuraciones (`supabase/`, `utils.ts`).
+- `src/hooks/`, `src/services/`, `src/types/`, `src/constants/`: Lógica compartida, consumo de datos y constantes.
+
 ---
 
 ## 8. Presupuesto
