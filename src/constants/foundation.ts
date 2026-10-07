@@ -1,7 +1,7 @@
 export const FOUNDATION = {
   name: "Fundación Principio & Fin",
   slogans: [
-    "Podemos sanar y volver a comenzar",
+    "Perdonar, sanar y volver a comenzar",
     "Conectamos talentos, transformamos futuros",
     "Amor · Fe · Esperanza"
   ],

@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { StarfieldBackground } from "@/components/ui/StarfieldBackground";
+import { EarthBackground } from "@/components/ui/EarthBackground";
 
 export default function PublicLayout({
   children,
@@ -11,6 +12,7 @@ export default function PublicLayout({
   return (
     <div className="relative min-h-screen flex flex-col">
       <StarfieldBackground />
+      <EarthBackground />
       <Header />
       <main className="flex-1">
         {children}
