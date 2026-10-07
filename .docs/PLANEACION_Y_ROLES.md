@@ -46,12 +46,76 @@ Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maq
 El backend BaaS se alojará en Supabase. A continuación se mapean las tablas principales requeridas y las reglas de seguridad a nivel de fila (Row Level Security - RLS).
 
 ### Mapa de Tablas (PostgreSQL)
-1. `profiles`: Datos extendidos de los usuarios autenticados (Administradores).
-2. `courses`: Oferta formativa (Título, descripción, cupos, estado, horario, imagen).
-3. `enrollments`: Inscripciones de los beneficiarios a los cursos (Datos personales, edad, curso_id).
-4. `ph_requests`: Solicitudes de propiedad horizontal (Conjunto, administrador, teléfono, estado).
-5. `contact_messages`: Mensajes recibidos a través de la página de contacto (Nombre, correo, asunto, mensaje).
-6. `donations`: Registro de intenciones de aportes y patrocinios.
+
+Basado en los diseños de las interfaces (carpeta `designs/`), este es el esquema detallado que requerimos:
+
+1. **`profiles` (Perfiles y Administradores)**
+   - `id` (uuid, PK, referencia a auth.users)
+   - `role` (enum: 'admin', 'superadmin', 'user')
+   - `full_name` (text)
+   - `created_at` (timestamp)
+
+2. **`courses` (Oferta Formativa - *Ref: AdminCursos.png*)**
+   - `id` (uuid, PK)
+   - `title` (text, ej: "Pintura en cerámica")
+   - `short_description` (text)
+   - `category` (enum: 'Arte y oficios', 'Belleza y estética', etc.)
+   - `schedule` (text, ej: "Sábados 9:00 a.m. - 12:00 m.")
+   - `capacity` (int, ej: 15)
+   - `enrolled_count` (int, default: 0)
+   - `status` (enum: 'publicado', 'borrador')
+   - `image_url` (text, nullable)
+   - `created_at` (timestamp)
+
+3. **`enrollments` (Inscripciones - *Ref: Inscripcion.png*)**
+   - `id` (uuid, PK)
+   - `course_id` (uuid, FK a courses)
+   - `full_name` (text)
+   - `document_type` (text, ej: "Cédula de Ciudadanía")
+   - `document_number` (text)
+   - `birth_date` (date)
+   - `phone` (text)
+   - `email` (text)
+   - `locality` (text, ej: "Bosa")
+   - `guardian_name` (text, nullable, para menores)
+   - `accepted_data_policy` (boolean)
+   - `created_at` (timestamp)
+
+4. **`ph_requests` (Alianza Residencial - *Ref: Propiedad.png*)**
+   - `id` (uuid, PK)
+   - `admin_name` (text)
+   - `role` (text, ej: "Administrador")
+   - `residential_name` (text)
+   - `address_locality` (text)
+   - `phone` (text)
+   - `email` (text)
+   - `residents_approx` (text)
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'pendiente', 'en revision', 'aprobada')
+   - `created_at` (timestamp)
+
+5. **`contact_messages` (Contacto - *Ref: Cotacto.png*)**
+   - `id` (uuid, PK)
+   - `full_name` (text)
+   - `email` (text)
+   - `phone` (text)
+   - `subject` (text, ej: "Inscripción a cursos")
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'nuevo', 'leido', 'respondido')
+   - `created_at` (timestamp)
+
+6. **`donations` (Donaciones y Alianzas - *Ref: Donaciones.png*)**
+   - `id` (uuid, PK)
+   - `name_or_company` (text)
+   - `donation_type` (text, ej: "Donación económica", "Insumos educativos", "Equipos y materiales", "Alianza empresarial")
+   - `phone` (text)
+   - `email` (text)
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'pendiente', 'gestionado')
+   - `created_at` (timestamp)
 
 ### Políticas de Seguridad RLS
 - **Cursos (`courses`)**: 
