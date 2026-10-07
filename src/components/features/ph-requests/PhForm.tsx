@@ -14,9 +14,9 @@ export function PhForm() {
   };
 
   return (
-    <section className="py-20 bg-space-dark relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-space-card/80 backdrop-blur-md border border-space-border rounded-2xl p-8 shadow-xl">
+        <div className="max-w-4xl mx-auto bg-space-card/50 border border-space-border/60 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-2xl">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-white uppercase tracking-wider mb-2">
               Solicitud de Alianza
@@ -36,7 +36,7 @@ export function PhForm() {
                   type="text"
                   id="ph_name"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="Ej. Conjunto Residencial Los Pinos"
                 />
               </div>
@@ -48,7 +48,7 @@ export function PhForm() {
                   type="text"
                   id="admin_name"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="Ej. Juan Pérez"
                 />
               </div>
@@ -63,7 +63,7 @@ export function PhForm() {
                   type="email"
                   id="email"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="administracion@conjunto.com"
                 />
               </div>
@@ -75,7 +75,7 @@ export function PhForm() {
                   type="tel"
                   id="phone"
                   required
-                  className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="300 000 0000"
                 />
               </div>
@@ -102,7 +102,7 @@ export function PhForm() {
                 id="message"
                 rows={4}
                 required
-                className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors resize-none"
+                className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all resize-none"
                 placeholder="Cuéntanos un poco sobre tu comunidad..."
               ></textarea>
             </div>
@@ -123,7 +123,7 @@ export function PhForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-gold-primary text-space-dark font-bold px-6 py-3 rounded-lg shadow-gold-glow hover:bg-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold-primary to-gold-light text-space-dark font-bold py-4 px-8 rounded-xl hover:shadow-gold-glow transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 "Enviando..."

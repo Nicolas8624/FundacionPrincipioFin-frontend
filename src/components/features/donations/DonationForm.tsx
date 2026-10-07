@@ -13,7 +13,7 @@ export function DonationForm() {
   };
 
   return (
-    <section className="py-20 bg-space-black relative z-10 border-t border-space-border/50">
+    <section className="py-20 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto bg-space-card/80 backdrop-blur-md border border-space-border rounded-2xl p-8 shadow-xl">
           <div className="text-center mb-8">
