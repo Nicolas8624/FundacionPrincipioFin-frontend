@@ -20,6 +20,7 @@ Responsable de la infraestructura de backend (Supabase), lógica de autenticaci�
 - `(admin)/solicitudes-ph`: Tablero para revisión y cambio de estado de solicitudes de conjuntos residenciales (Propiedad Horizontal).
 - `(admin)/donaciones`: Módulo de control de aportes, patrocinadores y alianzas.
 - `(admin)/mensajes`: Bandeja de lectura y gestión de mensajes de contacto entrantes.
+- `(admin)/cms`: Gestor de contenidos del sitio (edición de imágenes, tarjetas y textos de las vistas previas al login).
 
 ### Dev 2 (Frontend Public UI & Interactividad)
 Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maquetación de vistas públicas y componentes.
@@ -37,6 +38,8 @@ Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maq
 - `(public)/donaciones`: Módulo de información para aportes en dinero, especie o equipos.
 - `(public)/contacto`: Formulario y canales directos (WhatsApp, mapas, redes sociales).
 - `(public)/inscripcion`: Formulario general de registro a cursos.
+- `(portal)/mis-cursos`: Área privada del usuario para ver sus cursos inscritos.
+- `(portal)/curso/[id]`: Visor del curso interactivo donde el usuario consume módulos y lecciones.
 - **Integración de Formularios**: Conexión de los formularios públicos (contacto, inscripción, donaciones, solicitudes) con el backend en Supabase mediante el cliente expuesto por el Dev 1.
 
 ---
@@ -69,6 +72,7 @@ Basado en los diseños de las interfaces (carpeta `designs/`), este es el esquem
 
 3. **`enrollments` (Inscripciones - *Ref: Inscripcion.png*)**
    - `id` (uuid, PK)
+   - `user_id` (uuid, FK a profiles, para vincular el curso al portal del usuario)
    - `course_id` (uuid, FK a courses)
    - `full_name` (text)
    - `document_type` (text, ej: "Cédula de Ciudadanía")
@@ -117,14 +121,32 @@ Basado en los diseños de las interfaces (carpeta `designs/`), este es el esquem
    - `status` (enum: 'pendiente', 'gestionado')
    - `created_at` (timestamp)
 
+7. **`site_content` (CMS / Gestor de Contenido Dinámico)**
+   - `id` (uuid, PK)
+   - `section_key` (text, ej: 'home_hero', 'about_us_cards', 'programs_info')
+   - `content` (jsonb, almacena textos, urls de imágenes personalizadas)
+   - `updated_by` (uuid, FK a profiles)
+   - `updated_at` (timestamp)
+
+8. **`course_modules` & `course_lessons` (Contenido de Cursos Interactivos)**
+   - `course_modules`: `id` (uuid), `course_id` (FK), `title` (text), `order` (int)
+   - `course_lessons`: `id` (uuid), `module_id` (FK), `title` (text), `video_url` (text), `content_text` (text), `order` (int)
+
+9. **`user_progress` (Progreso del estudiante en el portal)**
+   - `id` (uuid, PK)
+   - `user_id` (uuid, FK a profiles)
+   - `lesson_id` (uuid, FK a course_lessons)
+   - `completed` (boolean)
+   - `completed_at` (timestamp)
+
 ### Políticas de Seguridad RLS
-- **Cursos (`courses`)**: 
-  - Lectura: Pública (cualquier visitante puede ver los cursos).
-  - Escritura/Modificación: Solo administradores autenticados.
+- **Contenido del CMS, Cursos, Módulos y Lecciones (`site_content`, `courses`, `course_modules`, `course_lessons`)**: 
+  - Lectura: Pública (lecciones pueden restringirse a usuarios con 'enrollments' activos).
+  - Escritura/Modificación: Solo administradores autenticados (Gestión CMS y Cursos).
 - **Formularios de ingreso (`enrollments`, `ph_requests`, `contact_messages`, `donations`)**:
   - Inserción (Insert): Pública (cualquier visitante puede enviar un formulario).
   - Lectura/Modificación: Solo administradores autenticados.
-- **Perfiles (`profiles`)**:
+- **Perfiles y Progreso (`profiles`, `user_progress`)**:
   - Lectura/Modificación: Privada (solo el propio usuario autenticado o super-admin).
 
 ---
