@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@/services/supabase/server';
-import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { signout } from './actions';
 import { SidebarNav } from './SidebarNav';
