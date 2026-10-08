@@ -1,6 +1,10 @@
-import { Button } from '@/components/ui/button';
+import { login } from './actions';
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { message: string }
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
       {/* Background Blur Elements */}
@@ -20,13 +24,15 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" action={login}>
           <div>
             <label className="block text-xs font-montserrat uppercase tracking-widest text-on-surface-variant mb-2">
               Correo Electrónico
             </label>
             <input
+              name="email"
               type="email"
+              required
               className="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
               placeholder="admin@fundacion.org"
             />
@@ -37,14 +43,22 @@ export default function LoginPage() {
               Contraseña
             </label>
             <input
+              name="password"
               type="password"
+              required
               className="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
               placeholder="••••••••"
             />
           </div>
 
+          {searchParams?.message && (
+            <div className="p-3 bg-error-container/20 border border-error-container rounded text-error text-xs font-inter text-center">
+              {searchParams.message}
+            </div>
+          )}
+
           <button
-            type="button"
+            type="submit"
             className="w-full bg-gradient-to-r from-[#D4AF37] to-[#F5D77A] text-[#0A0A0E] font-montserrat font-bold uppercase tracking-widest py-3 px-6 rounded-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.40)] transition-all"
           >
             Iniciar Sesión
