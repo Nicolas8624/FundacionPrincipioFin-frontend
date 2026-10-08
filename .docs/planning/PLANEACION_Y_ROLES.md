@@ -20,6 +20,7 @@ Responsable de la infraestructura de backend (Supabase), lógica de autenticaci�
 - `(admin)/solicitudes-ph`: Tablero para revisión y cambio de estado de solicitudes de conjuntos residenciales (Propiedad Horizontal).
 - `(admin)/donaciones`: Módulo de control de aportes, patrocinadores y alianzas.
 - `(admin)/mensajes`: Bandeja de lectura y gestión de mensajes de contacto entrantes.
+- `(admin)/cms`: Gestor de contenidos del sitio (edición de imágenes, tarjetas y textos de las vistas previas al login).
 
 ### Dev 2 (Frontend Public UI & Interactividad)
 Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maquetación de vistas públicas y componentes.
@@ -37,6 +38,8 @@ Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maq
 - `(public)/donaciones`: Módulo de información para aportes en dinero, especie o equipos.
 - `(public)/contacto`: Formulario y canales directos (WhatsApp, mapas, redes sociales).
 - `(public)/inscripcion`: Formulario general de registro a cursos.
+- `(portal)/mis-cursos`: Área privada del usuario para ver sus cursos inscritos.
+- `(portal)/curso/[id]`: Visor del curso interactivo donde el usuario consume módulos y lecciones.
 - **Integración de Formularios**: Conexión de los formularios públicos (contacto, inscripción, donaciones, solicitudes) con el backend en Supabase mediante el cliente expuesto por el Dev 1.
 
 ---
@@ -46,21 +49,104 @@ Responsable de la experiencia de usuario (UX), el sistema de diseño visual, maq
 El backend BaaS se alojará en Supabase. A continuación se mapean las tablas principales requeridas y las reglas de seguridad a nivel de fila (Row Level Security - RLS).
 
 ### Mapa de Tablas (PostgreSQL)
-1. `profiles`: Datos extendidos de los usuarios autenticados (Administradores).
-2. `courses`: Oferta formativa (Título, descripción, cupos, estado, horario, imagen).
-3. `enrollments`: Inscripciones de los beneficiarios a los cursos (Datos personales, edad, curso_id).
-4. `ph_requests`: Solicitudes de propiedad horizontal (Conjunto, administrador, teléfono, estado).
-5. `contact_messages`: Mensajes recibidos a través de la página de contacto (Nombre, correo, asunto, mensaje).
-6. `donations`: Registro de intenciones de aportes y patrocinios.
+
+Basado en los diseños de las interfaces (carpeta `designs/`), este es el esquema detallado que requerimos:
+
+1. **`profiles` (Perfiles y Administradores)**
+   - `id` (uuid, PK, referencia a auth.users)
+   - `role` (enum: 'admin', 'superadmin', 'user')
+   - `full_name` (text)
+   - `created_at` (timestamp)
+
+2. **`courses` (Oferta Formativa - *Ref: AdminCursos.png*)**
+   - `id` (uuid, PK)
+   - `title` (text, ej: "Pintura en cerámica")
+   - `short_description` (text)
+   - `category` (enum: 'Arte y oficios', 'Belleza y estética', etc.)
+   - `schedule` (text, ej: "Sábados 9:00 a.m. - 12:00 m.")
+   - `capacity` (int, ej: 15)
+   - `enrolled_count` (int, default: 0)
+   - `status` (enum: 'publicado', 'borrador')
+   - `image_url` (text, nullable)
+   - `created_at` (timestamp)
+
+3. **`enrollments` (Inscripciones - *Ref: Inscripcion.png*)**
+   - `id` (uuid, PK)
+   - `user_id` (uuid, FK a profiles, para vincular el curso al portal del usuario)
+   - `course_id` (uuid, FK a courses)
+   - `full_name` (text)
+   - `document_type` (text, ej: "Cédula de Ciudadanía")
+   - `document_number` (text)
+   - `birth_date` (date)
+   - `phone` (text)
+   - `email` (text)
+   - `locality` (text, ej: "Bosa")
+   - `guardian_name` (text, nullable, para menores)
+   - `accepted_data_policy` (boolean)
+   - `created_at` (timestamp)
+
+4. **`ph_requests` (Alianza Residencial - *Ref: Propiedad.png*)**
+   - `id` (uuid, PK)
+   - `admin_name` (text)
+   - `role` (text, ej: "Administrador")
+   - `residential_name` (text)
+   - `address_locality` (text)
+   - `phone` (text)
+   - `email` (text)
+   - `residents_approx` (text)
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'pendiente', 'en revision', 'aprobada')
+   - `created_at` (timestamp)
+
+5. **`contact_messages` (Contacto - *Ref: Cotacto.png*)**
+   - `id` (uuid, PK)
+   - `full_name` (text)
+   - `email` (text)
+   - `phone` (text)
+   - `subject` (text, ej: "Inscripción a cursos")
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'nuevo', 'leido', 'respondido')
+   - `created_at` (timestamp)
+
+6. **`donations` (Donaciones y Alianzas - *Ref: Donaciones.png*)**
+   - `id` (uuid, PK)
+   - `name_or_company` (text)
+   - `donation_type` (text, ej: "Donación económica", "Insumos educativos", "Equipos y materiales", "Alianza empresarial")
+   - `phone` (text)
+   - `email` (text)
+   - `message` (text)
+   - `accepted_data_policy` (boolean)
+   - `status` (enum: 'pendiente', 'gestionado')
+   - `created_at` (timestamp)
+
+7. **`site_content` (CMS / Gestor de Contenido Dinámico)**
+   - `id` (uuid, PK)
+   - `section_key` (text, ej: 'home_hero', 'about_us_cards', 'programs_info')
+   - `content` (jsonb, almacena textos, urls de imágenes personalizadas)
+   - `updated_by` (uuid, FK a profiles)
+   - `updated_at` (timestamp)
+
+8. **`course_modules` & `course_lessons` (Contenido de Cursos Interactivos)**
+   - `course_modules`: `id` (uuid), `course_id` (FK), `title` (text), `order` (int)
+   - `course_lessons`: `id` (uuid), `module_id` (FK), `title` (text), `video_url` (text), `content_text` (text), `order` (int)
+
+9. **`user_progress` (Progreso del estudiante en el portal)**
+   - `id` (uuid, PK)
+   - `user_id` (uuid, FK a profiles)
+   - `lesson_id` (uuid, FK a course_lessons)
+   - `completed` (boolean)
+   - `completed_at` (timestamp)
 
 ### Políticas de Seguridad RLS
-- **Cursos (`courses`)**: 
-  - Lectura: Pública (cualquier visitante puede ver los cursos).
-  - Escritura/Modificación: Solo administradores autenticados.
+- **Contenido del CMS, Cursos, Módulos y Lecciones (`site_content`, `courses`, `course_modules`, `course_lessons`)**: 
+  - Lectura: Pública (lecciones pueden restringirse a usuarios con 'enrollments' activos).
+  - Escritura/Modificación: Solo administradores autenticados (Gestión CMS y Cursos).
 - **Formularios de ingreso (`enrollments`, `ph_requests`, `contact_messages`, `donations`)**:
   - Inserción (Insert): Pública (cualquier visitante puede enviar un formulario).
   - Lectura/Modificación: Solo administradores autenticados.
-- **Perfiles (`profiles`)**:
+- **Perfiles y Progreso (`profiles`, `user_progress`)**:
   - Lectura/Modificación: Privada (solo el propio usuario autenticado o super-admin).
 
 ---

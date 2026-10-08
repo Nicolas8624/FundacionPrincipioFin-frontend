@@ -240,62 +240,13 @@ Mensaje central: *"Cada aporte representa una oportunidad de transformación par
 
 **Estado:** se está en la Fase 1. El lunes se presenta el borrador a la clienta; de ahí se arranca el trabajo formal.
 
-### 7.1 Stack tecnológico
+### 7.1 Arquitectura, Stack Tecnológico y Roles
 
-| Capa | Decisión | Estado |
-|---|---|---|
-| **Frontend** | **Next.js (App Router) + TypeScript + Tailwind CSS + Lucide React** | Definido |
-| **Fondo animado** | Canvas/CSS/JS (estrellas parpadeantes y polvo cósmico) dentro del frontend | Definido en el plan |
-| **Backend / BaaS** | **Supabase (PostgreSQL, Storage, RLS)** | Definido |
-| **Base de datos** | **PostgreSQL (Supabase)** | Definido |
-| **Autenticación y roles** | **Supabase Auth** (Admin / Usuario) | Definido |
-| **Despliegue** | Vercel (Frontend) + Supabase (Backend) | Definido |
+Para conocer los detalles técnicos, la estructura de carpetas y la distribución del trabajo entre el equipo de desarrollo, consulta los siguientes documentos especializados en la carpeta `.docs/`:
 
-**Decisión final sobre Supabase:** Aunque se había descartado inicialmente por las pausas de inactividad, se decidió retomar **Supabase como BaaS** por su velocidad de desarrollo y facilidad para integrar Autenticación, Base de Datos y Storage sin gestionar infraestructura propia. El cliente de Next.js utilizará `@supabase/supabase-js` y `@supabase/ssr`.
-
-### 7.2 Flujo de Trabajo (Git Flow) y Commits
-
-Se utilizará una estrategia de Git Flow adaptada y la convención de Commits Semánticos:
-
-- **Estrategia de Ramas:**
-  - `main`: Rama de producción. Solo recibe código estable listo para despliegue.
-  - `develop`: Rama principal de integración. Todo el desarrollo se consolida aquí.
-  - `feature/`: Ramas de características (ej. `feature/auth-supabase`, `feature/ui-dashboard`). Se crean a partir de `develop` y se fusionan en `develop`.
-
-- **Commits Semánticos (Convención):**
-  - `feat(ambito): ...` - Para nuevas características (ej. `feat(ui): añadir Hero`).
-  - `fix(ambito): ...` - Para corrección de errores (ej. `fix(auth): corregir login`).
-  - `docs(ambito): ...` - Para cambios en documentación (ej. `docs(plan): actualizar contexto`).
-  - `chore(ambito): ...` - Tareas de configuración o mantenimiento (ej. `chore(setup): inicializar nextjs`).
-  - `refactor(ambito): ...` - Refactorización de código sin añadir features.
-
-### 7.3 Planeación de Trabajo y División de Roles
-
-El desarrollo se divide entre dos desarrolladores (Dev 1 y Dev 2) para avanzar en paralelo:
-
-- **Dev 1 (Fullstack DB, Auth & Dashboard):**
-  - Configuración inicial del proyecto Supabase.
-  - Creación de esquemas de base de datos (PostgreSQL), políticas RLS y Storage.
-  - Configuración de Supabase Auth (Roles Admin / Usuario).
-  - Desarrollo de las vistas y flujos protegidos: `/login`, `/admin/dashboard`, `/admin/cursos`, `/admin/solicitudes-ph`.
-
-- **Dev 2 (Frontend Public UI & Interactividad):**
-  - Setup inicial de Next.js, Tailwind CSS y estructura de carpetas.
-  - Implementación del fondo espacial animado `<StarfieldBackground/>` y sistema de diseño (tokens, variables, componentes UI base).
-  - Maquetación y desarrollo de vistas públicas: `Home`, `Quiénes Somos`, `Programas`, `Donaciones`, `Contacto`, `Inscripción`.
-  - Integración de formularios públicos con el backend (Supabase) configurado por Dev 1.
-
-### 7.4 Arquitectura de Carpetas (src/)
-
-El proyecto utiliza una **Feature-Driven Architecture** para escalar de forma ordenada:
-- `src/app/`: App Router de Next.js, dividido en grupos de rutas: `(public)`, `(auth)`, `(admin)` y `api/`.
-- `src/components/`: Componentes React organizados por nivel de responsabilidad:
-  - `ui/`: Componentes base (Shadcn/UI, botones, inputs).
-  - `layout/`: Estructuras generales (navbars, footers, sidebars).
-  - `shared/`: Componentes comunes del negocio (cards, modales genéricos).
-  - `features/`: Componentes complejos agrupados por dominio de la aplicación (`courses`, `donations`, `ph-requests`, `admin`).
-- `src/lib/`: Configuraciones (`supabase/`, `utils.ts`).
-- `src/hooks/`, `src/services/`, `src/types/`, `src/constants/`: Lógica compartida, consumo de datos y constantes.
+- [ARQUITECTURA_Y_STACK.md](../architecture/ARQUITECTURA_Y_STACK.md): Detalle del stack técnico, incluyendo Next.js, Supabase, Tailwind, y la convención de Git Flow.
+- [ESTRUCTURA_DE_CARPETAS.md](../architecture/ESTRUCTURA_DE_CARPETAS.md): Arquitectura Feature-Driven para el directorio `src/`.
+- [PLANEACION_Y_ROLES.md](./PLANEACION_Y_ROLES.md): Asignación exhaustiva de tareas, rutas y esquema de base de datos para Dev 1 y Dev 2.
 
 ---
 
@@ -312,35 +263,7 @@ Valores en **pesos colombianos (COP)**.
 
 Los $500.000 cubren todo el diseño y desarrollo. Los $25.000 y $8.000 corresponden a los proveedores de infraestructura (base de datos/hosting y dominio) para mantener la página en línea.
 
-> El compañero aclaró que el presupuesto es una primera versión que **toca mejorar**; se guarda como referencia para futuros proyectos. Está sujeto a revisión.
-
-### 8.1 Presupuesto alternativo: backend propio y despliegue barato
-
-> La tabla anterior (hecha por el compañero) se mantiene tal cual y ya está pensada para un **backend propio**. Esta sección compara opciones baratas para desplegar ese backend y el **frontend con dominio propio**, para decidir dónde alojarlo y cuánto costaría mensualmente. Los precios son referenciales (fuentes de septiembre y octubre de 2026), están en **USD** y deben confirmarse en la página de cada proveedor antes de cotizar. Convertir a COP con la TRM del día.
-
-**Cómo funciona el dominio propio:** todas estas plataformas permiten conectar un dominio personalizado (con certificado SSL gratis). El **registro del dominio** (.org / .com / .co) se paga aparte con un registrador; se mantiene el ítem de $8.000 COP/mes de la tabla original.
-
-| Opción | Frontend (Next.js) | Backend + BD | Costo mensual aprox. | Ventajas | Desventajas |
-|---|---|---|---|---|---|
-| **A. Vercel + Render** | Vercel: plan Hobby gratis o Pro $20/mes | Render: servicio web desde $7/mes + Postgres administrado (~$6/mes el más pequeño) | **~$13/mes** con Vercel Hobby; ~$33/mes con Vercel Pro | Muy fácil de desplegar, Vercel es lo más natural para Next.js, backend sin pausas en plan pago | El plan Hobby de Vercel es para uso no comercial: una fundación que recibe donaciones podría necesitar Pro (revisar términos). Render gratis se duerme tras 15 min sin uso |
-| **B. Railway todo en uno** | Next.js en Railway | API + Postgres en el mismo proyecto | **~$5 a $15/mes** (Hobby desde $5 con crédito incluido; tráfico moderado ~$8 a $15) | Un solo lugar para todo, despliegue desde Git, base de datos con un clic | Cobro por uso: el costo crece con el tráfico. La capa gratis es solo de prueba |
-| **C. VPS Hetzner + Coolify o Docker** | Next.js (modo `standalone`) en el mismo servidor | API + Postgres en el mismo servidor | **~€4,5 a €5,5/mes** sin IVA (CX22/CX23: 2 vCPU, 4 GB RAM) | **El más barato**, sin pausas ni límites, dominio propio directo, cabe todo en una máquina | Hay que administrar el servidor: copias de seguridad, seguridad, actualizaciones y SSL. Servidores en Alemania/Finlandia (algo más de latencia desde Colombia) |
-| **D. Fly.io** | Next.js con Dockerfile | API con Dockerfile + Postgres que se administra a mano | **~$2 a $10/mes** (máquina compartida pequeña desde ~$2; dos CPU compartidas con 512 MB ~$5 a $10) | Barato, regiones cercanas y sin pausas | Requiere Docker y línea de comandos. El Postgres no es administrado, hay que cuidarlo |
-| **E. Cloudflare Pages (solo frontend)** | Gratis, pero para Next.js estático o con soporte limitado de SSR | Backend aparte (Render, Fly o VPS) | **$0 + costo del backend** | Gratis, rápido y dominio propio sencillo | No cubre todo Next.js con servidor; hay que revisar la compatibilidad |
-
-**Resumen del costo mensual con backend propio (referencial):**
-
-| Concepto | Presupuesto original del compañero | Con backend propio, opción económica (C) | Con backend propio, opción simple (A o B) |
-|---|---|---|---|
-| Desarrollo del sitio (pago único) | $500.000 COP | $500.000 COP | $500.000 COP |
-| Backend + base de datos + hosting del frontend | $25.000 COP/mes | ~€4,5 a €5,5 (USD ~5 a 6) por mes | ~USD 5 a 15 por mes según la opción |
-| Dominio | $8.000 COP/mes | $8.000 COP/mes | $8.000 COP/mes |
-
-**Cosas a tener en cuenta:**
-- **Evitar los planes gratuitos que se "duermen" o se pausan** en producción (Render gratis tarda 30 a 60 s en despertar): repetirían el problema de la pausa que llevó a descartar Supabase.
-- Con un VPS se asume también el **mantenimiento** (copias de seguridad automáticas, actualizaciones de seguridad). Conviene incluirlo en el presupuesto o en un acuerdo de soporte.
-- La **cuenta del hosting y del dominio** debería quedar a nombre de la fundación (o transferirse al final) para que no dependa de los desarrolladores.
-- Como el frontend es Next.js, las opciones más cómodas son A y B; la más barata y flexible es C.
+> El compañero aclaró que el presupuesto es una primera versión que **toca mejorar**; se guarda como referencia para futuros proyectos. Está sujeto a revisión. Al haberse decidido definitivamente por **Supabase** como backend en la nube, los costos mensuales estarán sujetos a los planes de Supabase (iniciando posiblemente en el tier gratuito) y el alojamiento frontend en plataformas como Vercel.
 
 ---
 
