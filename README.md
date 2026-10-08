@@ -6,7 +6,7 @@ Plataforma oficial para la Fundación Principio & Fin, desarrollada con Next.js,
 
 - **Node.js** (v18.17 o superior recomendado)
 - **npm**, **yarn** o **pnpm**
-- Proyecto en **Supabase** configurado con el esquema SQL provisto en `.docs/schema_supabase_completo.sql`.
+- Proyecto en **Supabase** configurado con el esquema SQL provisto en `.docs/backend/schema_supabase_completo.sql`.
 
 ## 1. Configuración Local
 
@@ -54,4 +54,4 @@ El proyecto está optimizado para desplegarse en Vercel.
 
 - **Diseño Visual:** Todo el sistema de diseño (tipografía, espacios, reglas de colores y estética) está documentado en `.docs/designs/DESIGN.md`. Sigue estas guías rigurosamente para los componentes base y layouts.
 - **CMS y Contenido:** Para cambiar imágenes, tarjetas y textos del index público, debes ingresar con el rol `admin` al panel `/admin/cms`. El contenido de UI no debe estar "quemado" (hardcoded) en los archivos `.tsx` de Next.js, sino consumirse a través de `site_sections`.
-- **Estructura DB:** Revisa `.docs/PLANEACION_Y_ROLES.md` y `.docs/SERVICIOS_API.md` para entender el modelo y consumo de Supabase.
+- **Estructura DB:** Revisa `.docs/planning/PLANEACION_Y_ROLES.md` y `.docs/backend/SERVICIOS_API.md` para entender el modelo y consumo de Supabase.

@@ -244,8 +244,8 @@ Mensaje central: *"Cada aporte representa una oportunidad de transformación par
 
 Para conocer los detalles técnicos, la estructura de carpetas y la distribución del trabajo entre el equipo de desarrollo, consulta los siguientes documentos especializados en la carpeta `.docs/`:
 
-- [ARQUITECTURA_Y_STACK.md](./ARQUITECTURA_Y_STACK.md): Detalle del stack técnico, incluyendo Next.js, Supabase, Tailwind, y la convención de Git Flow.
-- [ESTRUCTURA_DE_CARPETAS.md](./ESTRUCTURA_DE_CARPETAS.md): Arquitectura Feature-Driven para el directorio `src/`.
+- [ARQUITECTURA_Y_STACK.md](../architecture/ARQUITECTURA_Y_STACK.md): Detalle del stack técnico, incluyendo Next.js, Supabase, Tailwind, y la convención de Git Flow.
+- [ESTRUCTURA_DE_CARPETAS.md](../architecture/ESTRUCTURA_DE_CARPETAS.md): Arquitectura Feature-Driven para el directorio `src/`.
 - [PLANEACION_Y_ROLES.md](./PLANEACION_Y_ROLES.md): Asignación exhaustiva de tareas, rutas y esquema de base de datos para Dev 1 y Dev 2.
 
 ---
