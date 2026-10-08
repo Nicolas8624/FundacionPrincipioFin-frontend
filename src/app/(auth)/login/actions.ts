@@ -14,7 +14,7 @@ export async function login(formData: FormData) {
     redirect('/login?message=El correo y la contraseña son obligatorios.')
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
@@ -24,7 +24,24 @@ export async function login(formData: FormData) {
     redirect('/login?message=Credenciales incorrectas. Intenta nuevamente.')
   }
 
-  // Si tiene éxito, refrescamos el caché del layout del admin y redirigimos
-  revalidatePath('/admin', 'layout')
-  redirect('/admin/dashboard')
+  let role = 'user'
+  if (data.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+      
+    if (profile?.role) {
+      role = profile.role
+    }
+  }
+
+  if (role === 'admin') {
+    revalidatePath('/admin', 'layout')
+    redirect('/admin/dashboard')
+  } else {
+    revalidatePath('/portal', 'layout')
+    redirect('/portal')
+  }
 }

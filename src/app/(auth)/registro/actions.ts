@@ -25,7 +25,13 @@ export async function register(formData: FormData) {
   })
 
   if (error) {
-    redirect('/registro?message=No se pudo crear la cuenta. Intenta con otro correo.')
+    let errorMsg = 'No se pudo crear la cuenta. Intenta con otro correo o una contraseña más segura.'
+    if (error.message.includes('User already registered')) {
+      errorMsg = 'Este correo ya está registrado. Por favor, inicia sesión.'
+    } else if (error.message.includes('Password should be')) {
+      errorMsg = 'La contraseña debe tener al menos 6 caracteres.'
+    }
+    redirect(`/registro?message=${encodeURIComponent(errorMsg)}`)
   }
 
   redirect('/login?message=Cuenta creada exitosamente. Por favor inicia sesión.')

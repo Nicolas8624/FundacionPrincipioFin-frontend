@@ -36,8 +36,21 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const url = request.nextUrl.clone()
+  
+  let role = 'user'
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+      
+    if (profile?.role) {
+      role = profile.role
+    }
+  }
 
-  // Protección de rutas: Si no hay usuario y se intenta acceder a una ruta protegida
+  // Protección de rutas para usuarios no autenticados
   if (
     !user &&
     (url.pathname.startsWith('/admin') || url.pathname.startsWith('/portal'))
@@ -46,9 +59,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Si el usuario ya está logueado y trata de acceder a login, redirigir al dashboard
-  if (user && url.pathname === '/login') {
-    url.pathname = '/admin/dashboard'
+  // Protección de rutas de Administrador: solo para rol admin
+  if (user && url.pathname.startsWith('/admin') && role !== 'admin') {
+    url.pathname = '/portal'
+    return NextResponse.redirect(url)
+  }
+
+  // Si el usuario ya está logueado y trata de acceder a login, redirigir según su rol
+  if (user && (url.pathname === '/login' || url.pathname === '/registro')) {
+    if (role === 'admin') {
+      url.pathname = '/admin/dashboard'
+    } else {
+      url.pathname = '/portal'
+    }
     return NextResponse.redirect(url)
   }
 
