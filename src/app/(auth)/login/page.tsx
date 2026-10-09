@@ -82,6 +82,7 @@ function LoginContent() {
               type="button"
               onClick={() => {
                 document.cookie = 'local_admin_bypass=true; path=/';
+                document.cookie = 'sb-access-token=mock; path=/';
                 window.location.href = '/admin/dashboard';
               }}
               className="w-full bg-[#1b1b1f] border border-blue-500/50 hover:bg-[#262629] text-blue-300 font-montserrat font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-[13px] mb-4"
