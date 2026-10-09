@@ -4,6 +4,8 @@ import { LogOut } from 'lucide-react';
 import { signout } from './actions';
 import { SidebarNav } from './SidebarNav';
 
+export const instant = false;
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
