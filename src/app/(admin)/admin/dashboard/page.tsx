@@ -1,7 +1,34 @@
-
 import { Calendar, Download, TrendingUp, Building, HeartHandshake, Eye, MoreHorizontal, MessageSquare } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
 
-export default function AdminDashboardPage() {
+function formatDateSpanish(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+export default async function AdminDashboardPage() {
+  const supabase = await createClient();
+
+  // Fetch metrics
+  const { count: enrollmentsCount } = await supabase.from('enrollments').select('*', { count: 'exact', head: true });
+  const { count: phRequestsCount } = await supabase.from('ph_requests').select('*', { count: 'exact', head: true });
+  const { count: donationsCount } = await supabase.from('donations').select('*', { count: 'exact', head: true });
+  const { count: messagesCount } = await supabase.from('contact_messages').select('*', { count: 'exact', head: true });
+
+  // Fetch recent messages
+  const { data: recentMessages } = await supabase
+    .from('contact_messages')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  // Fetch recent PH requests
+  const { data: recentPhRequests } = await supabase
+    .from('ph_requests')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
   return (
     <div className="pb-10">
       {/* Header */}
@@ -38,35 +65,15 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Inscripciones del mes
+            Inscripciones Totales
           </h3>
           <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">48</p>
-            <span className="flex items-center gap-1 text-[#D4AF37] text-xs font-medium bg-[#D4AF37]/10 px-2 py-1 rounded-md mb-1.5">
-              <TrendingUp className="w-3 h-3" /> +14%
-            </span>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{enrollmentsCount || 0}</p>
           </div>
-          <p className="text-xs text-[#99907c]">Respecto al mes anterior</p>
+          <p className="text-xs text-[#99907c]">Personas registradas en talleres</p>
         </div>
 
         {/* Metric 2 */}
-        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
-              <BookOpenIcon className="w-5 h-5" />
-            </div>
-          </div>
-          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Cursos activos
-          </h3>
-          <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">10</p>
-            <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">EN CURSO</span>
-          </div>
-          <p className="text-xs text-[#99907c]">3 sedes y salones comunales</p>
-        </div>
-
-        {/* Metric 3 */}
         <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
@@ -74,18 +81,15 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[150px]">
-            Solicitudes PH pendientes
+            Solicitudes PH
           </h3>
           <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">5</p>
-            <span className="flex items-center gap-1 text-[#ffb4ab] text-xs font-medium bg-[#93000a]/20 px-2 py-1 rounded-md mb-1.5">
-              Prioritarias
-            </span>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{phRequestsCount || 0}</p>
           </div>
-          <p className="text-xs text-[#99907c]">Requieren revisión técnica</p>
+          <p className="text-xs text-[#99907c]">Solicitudes de conjuntos registradas</p>
         </div>
 
-        {/* Metric 4 */}
+        {/* Metric 3 */}
         <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
@@ -93,13 +97,28 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Donaciones recibidas
+            Donaciones Registradas
           </h3>
           <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">12</p>
-            <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">Alianzas</span>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{donationsCount || 0}</p>
           </div>
-          <p className="text-xs text-[#99907c]">$14.8M COP captados este mes</p>
+          <p className="text-xs text-[#99907c]">Intenciones de aporte captadas</p>
+        </div>
+
+        {/* Metric 4 */}
+        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-6">
+            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+          </div>
+          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
+            Mensajes de Contacto
+          </h3>
+          <div className="flex items-end gap-2 mb-2">
+            <p className="text-5xl font-semibold text-[#D4AF37]">{messagesCount || 0}</p>
+          </div>
+          <p className="text-xs text-[#99907c]">Consultas desde el formulario de contacto</p>
         </div>
 
       </div>
@@ -167,41 +186,27 @@ export default function AdminDashboardPage() {
               </p>
               <h2 className="text-xl font-semibold text-white">Últimos mensajes de contacto</h2>
             </div>
-            <div className="bg-[#2a2417] text-[#D4AF37] text-[10px] px-2 py-1 rounded font-semibold border border-[#D4AF37]/30">
-              4 Nuevos
-            </div>
           </div>
 
           <div className="flex-1 space-y-4">
-            <MessageItem 
-              initials="SM" 
-              name="Sandra Milena Roa" 
-              time="Hoy, 10:24 a.m." 
-              subject="Inscripción Taller Cerámica" 
-            />
-            <MessageItem 
-              initials="CR" 
-              name="Conjunto Res. Altagracia" 
-              time="Ayer, 4:15 p.m." 
-              subject="Propuesta Propiedad Horizontal" 
-            />
-            <MessageItem 
-              initials="DA" 
-              name="Distribuidora Andina SAS" 
-              time="12 Mar, 2:30 p.m." 
-              subject="Donación de materiales y pintura" 
-            />
-            <MessageItem 
-              initials="CM" 
-              name="Carlos Julio Mendoza" 
-              time="11 Mar, 9:10 a.m." 
-              subject="Consulta horarios fin de semana" 
-            />
+            {recentMessages && recentMessages.length > 0 ? (
+              recentMessages.map((msg: any) => (
+                <MessageItem 
+                  key={msg.id}
+                  initials={msg.full_name?.substring(0,2).toUpperCase() || 'NA'} 
+                  name={msg.full_name || 'Sin nombre'} 
+                  time={formatDateSpanish(msg.created_at)} 
+                  subject={msg.subject || 'Sin asunto'} 
+                />
+              ))
+            ) : (
+              <p className="text-[#99907c] text-sm">No hay mensajes recientes.</p>
+            )}
           </div>
 
-          <button className="w-full mt-6 text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] text-center pt-4 border-t border-[#262629]">
+          <a href="/admin/mensajes" className="block w-full mt-6 text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] text-center pt-4 border-t border-[#262629]">
             Gestionar todos los mensajes →
-          </button>
+          </a>
         </div>
       </div>
 
@@ -215,12 +220,9 @@ export default function AdminDashboardPage() {
             <h2 className="text-xl font-semibold text-white">Últimas solicitudes de propiedad horizontal</h2>
           </div>
           <div className="flex gap-4">
-             <button className="bg-[#1b1b1f] border border-[#262629] px-4 py-2 rounded-lg text-[#d0c5af] text-sm hover:text-white transition-colors">
-                Filtrar estado
-             </button>
-             <button className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A]">
-                Ver Todas (18)
-             </button>
+             <a href="/admin/solicitudes-ph" className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A]">
+                Ver Todas
+             </a>
           </div>
         </div>
 
@@ -236,38 +238,23 @@ export default function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody className="text-sm">
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Agrupación Residencial Bosques del Sur"
-                details="Suba, Bogotá · 180 aptos"
-                admin="Diana Marcela Vega"
-                date="14 Mar 2026"
-                status="PENDIENTE"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#e4e1e7]" />}
-                name="Torres de Castilla Real II"
-                details="Kennedy, Bogotá · 240 aptos"
-                admin="Argenis Beltrán"
-                date="13 Mar 2026"
-                status="EN REVISIÓN"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Conjunto Sendero de los Sauces"
-                details="Usaquén, Bogotá · 96 casas"
-                admin="Mauricio Gómez"
-                date="12 Mar 2026"
-                status="APROBADA"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Multifamiliares Timiza Etapa 3"
-                details="Kennedy, Bogotá · 310 aptos"
-                admin="Claudia Patricia Reyes"
-                date="10 Mar 2026"
-                status="PENDIENTE"
-              />
+              {recentPhRequests && recentPhRequests.length > 0 ? (
+                recentPhRequests.map((req: any) => (
+                  <TableRow 
+                    key={req.id}
+                    icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
+                    name={req.complex_name || 'Sin nombre'}
+                    details={req.location || 'Ubicación no especificada'}
+                    admin={req.applicant_name || 'Sin administrador'}
+                    date={formatDateSpanish(req.created_at)}
+                    status={req.status || 'PENDIENTE'}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-4 text-[#99907c] text-center">No hay solicitudes recientes.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -277,26 +264,6 @@ export default function AdminDashboardPage() {
 }
 
 // Helper components for the page
-function BookOpenIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-    </svg>
-  )
-}
-
 function MessageItem({ initials, name, time, subject }: { initials: string, name: string, time: string, subject: string }) {
   return (
     <div className="bg-[#1b1b1f] p-4 rounded-xl border border-[#262629] flex gap-4">
@@ -328,7 +295,7 @@ function TableRow({ icon, name, details, admin, date, status }: TableRowProps) {
     if (s === 'PENDIENTE') return 'border-[#D4AF37] text-[#D4AF37]';
     if (s === 'EN REVISIÓN') return 'border-[#e4e1e7] text-[#e4e1e7]';
     if (s === 'APROBADA') return 'bg-[#D4AF37] text-[#0A0A0E] border-[#D4AF37]';
-    return '';
+    return 'border-[#e4e1e7] text-[#e4e1e7]';
   }
 
   return (
