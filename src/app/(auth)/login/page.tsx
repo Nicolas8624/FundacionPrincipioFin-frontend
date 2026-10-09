@@ -76,21 +76,7 @@ function LoginContent() {
           </Link>
         </div>
 
-        {process.env.NODE_ENV === 'development' && (
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => {
-                document.cookie = 'local_admin_bypass=true; path=/';
-                document.cookie = 'sb-access-token=mock; path=/';
-                window.location.href = '/admin/dashboard';
-              }}
-              className="w-full bg-[#1b1b1f] border border-blue-500/50 hover:bg-[#262629] text-blue-300 font-montserrat font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-[13px] mb-4"
-            >
-              🚀 Entrar Directo como Admin (Dev)
-            </button>
-          </div>
-        )}
+
 
         {message && (
           <div className="p-3 bg-[#93000a]/20 border border-[#93000a] rounded text-[#ffb4ab] text-xs font-inter text-center">
