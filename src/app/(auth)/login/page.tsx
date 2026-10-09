@@ -77,9 +77,17 @@ function LoginContent() {
         </div>
 
         {process.env.NODE_ENV === 'development' && (
-          <div className="p-3 bg-blue-900/20 border border-blue-500/50 rounded text-blue-200 text-xs font-inter text-center">
-            Credenciales de prueba local:<br/>
-            <strong>admin@fundacion.org / admin123</strong>
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                document.cookie = 'local_admin_bypass=true; path=/';
+                window.location.href = '/admin/dashboard';
+              }}
+              className="w-full bg-[#1b1b1f] border border-blue-500/50 hover:bg-[#262629] text-blue-300 font-montserrat font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-[13px] mb-4"
+            >
+              🚀 Entrar Directo como Admin (Dev)
+            </button>
           </div>
         )}
 
