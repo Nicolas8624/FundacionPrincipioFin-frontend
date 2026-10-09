@@ -1,7 +1,112 @@
+import { createServerClient } from '@/services/supabase/server';
+import { Calendar, TrendingUp, Building, HeartHandshake, Eye, MoreHorizontal, MessageSquare, BookOpen } from 'lucide-react';
+import { DashboardChart } from '@/components/admin/DashboardChart';
+import { ExportDashboardButton } from '@/components/admin/ExportDashboardButton';
+import Link from 'next/link';
 
-import { Calendar, Download, TrendingUp, Building, HeartHandshake, Eye, MoreHorizontal, MessageSquare } from 'lucide-react';
+export default async function AdminDashboardPage() {
+  const supabase = await createServerClient();
+  const currentDate = new Date();
 
-export default function AdminDashboardPage() {
+  // 1. Inscripciones del mes actual y mes anterior
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const startOfLastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+
+  const { count: inscripcionesMes } = await supabase
+    .from('course_enrollments')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', startOfMonth.toISOString());
+    
+  const { count: inscripcionesMesAnterior } = await supabase
+    .from('course_enrollments')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', startOfLastMonth.toISOString())
+    .lt('created_at', startOfMonth.toISOString());
+
+  const currentMonthCount = inscripcionesMes || 0;
+  const lastMonthCount = inscripcionesMesAnterior || 0;
+  let porcentajeCrecimiento = 0;
+  if (lastMonthCount === 0 && currentMonthCount > 0) porcentajeCrecimiento = 100;
+  else if (lastMonthCount > 0) porcentajeCrecimiento = Math.round(((currentMonthCount - lastMonthCount) / lastMonthCount) * 100);
+
+  // 2. Cursos activos (publicados) y sedes
+  const { data: cursosData } = await supabase
+    .from('courses')
+    .select('location')
+    .eq('status', 'publicado');
+    
+  const cursosActivos = cursosData?.length || 0;
+  const sedesActivas = new Set(cursosData?.map(c => c.location).filter(Boolean)).size;
+
+  // 3. Solicitudes PH pendientes
+  const { count: phPendientes } = await supabase
+    .from('ph_requests')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pendiente');
+
+  // 4. Donaciones recibidas (concretadas) este mes y total de alianzas
+  const { data: donacionesData } = await supabase
+    .from('donation_requests')
+    .select('amount_cop, created_at')
+    .eq('status', 'concretada');
+  
+  const donacionesCount = donacionesData?.length || 0;
+  const totalDonacionesEsteMes = donacionesData?.filter(d => new Date(d.created_at) >= startOfMonth).reduce((acc, row) => acc + (row.amount_cop || 0), 0) || 0;
+
+  // 5. Últimos mensajes y mensajes nuevos
+  const { data: mensajes } = await supabase
+    .from('contact_messages')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const { count: mensajesNuevos } = await supabase
+    .from('contact_messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'nuevo');
+
+  // 6. Últimas solicitudes PH y total
+  const { data: solicitudesPh } = await supabase
+    .from('ph_requests')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  const { count: totalSolicitudesPh } = await supabase
+    .from('ph_requests')
+    .select('*', { count: 'exact', head: true });
+
+  // 7. Datos de la gráfica (últimos 6 meses)
+  const sixMonthsAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 5, 1);
+  const { data: recentEnrollments } = await supabase
+    .from('course_enrollments')
+    .select('created_at')
+    .gte('created_at', sixMonthsAgo.toISOString());
+
+  const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const chartData = [];
+  let totalSeisMeses = 0;
+  
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const mName = monthNames[d.getMonth()];
+    const count = recentEnrollments?.filter(e => {
+      const eDate = new Date(e.created_at);
+      return eDate.getMonth() === d.getMonth() && eDate.getFullYear() === d.getFullYear();
+    }).length || 0;
+    
+    chartData.push({ month: mName, value: count });
+    totalSeisMeses += count;
+  }
+  
+  const maxValue = Math.max(...chartData.map(d => d.value));
+  const promedioMensual = (totalSeisMeses / 6).toFixed(1);
+
+  const formatCurrency = (val: number) => {
+    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M COP`;
+    return `$${val.toLocaleString('es-CO')} COP`;
+  };
+
   return (
     <div className="pb-10">
       {/* Header */}
@@ -16,14 +121,11 @@ export default function AdminDashboardPage() {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-4 py-2.5 rounded-lg text-[#d0c5af] text-sm">
+          <div className="flex items-center gap-2 bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] px-4 py-2.5 rounded-lg text-[#d0c5af] text-sm">
             <Calendar className="w-4 h-4" />
-            <span>Ciclo Actual: Marzo 2026</span>
+            <span className="capitalize">Ciclo Actual: {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
           </div>
-          <button className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#e1c469] text-[#0A0A0E] px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors uppercase tracking-wider font-montserrat">
-            <Download className="w-4 h-4" />
-            Exportar Informe
-          </button>
+          <ExportDashboardButton />
         </div>
       </div>
       
@@ -31,7 +133,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         
         {/* Metric 1 */}
-        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
               <TrendingUp className="w-5 h-5" />
@@ -41,33 +143,34 @@ export default function AdminDashboardPage() {
             Inscripciones del mes
           </h3>
           <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">48</p>
-            <span className="flex items-center gap-1 text-[#D4AF37] text-xs font-medium bg-[#D4AF37]/10 px-2 py-1 rounded-md mb-1.5">
-              <TrendingUp className="w-3 h-3" /> +14%
+            <p className="text-5xl font-semibold text-[#D4AF37]">{currentMonthCount}</p>
+            <span className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md mb-1.5 ${porcentajeCrecimiento >= 0 ? 'text-[#D4AF37] bg-[#D4AF37]/10' : 'text-[#ffb4ab] bg-[#93000a]/20'}`}>
+              <TrendingUp className={`w-3 h-3 ${porcentajeCrecimiento < 0 ? 'rotate-180' : ''}`} /> 
+              {porcentajeCrecimiento > 0 ? '+' : ''}{porcentajeCrecimiento}%
             </span>
           </div>
           <p className="text-xs text-[#99907c]">Respecto al mes anterior</p>
         </div>
 
         {/* Metric 2 */}
-        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
-              <BookOpenIcon className="w-5 h-5" />
+              <BookOpen className="w-5 h-5" />
             </div>
           </div>
           <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
             Cursos activos
           </h3>
           <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">10</p>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{cursosActivos}</p>
             <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">EN CURSO</span>
           </div>
-          <p className="text-xs text-[#99907c]">3 sedes y salones comunales</p>
+          <p className="text-xs text-[#99907c]">{sedesActivas} sedes y salones comunales</p>
         </div>
 
         {/* Metric 3 */}
-        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
               <Building className="w-5 h-5" />
@@ -77,16 +180,18 @@ export default function AdminDashboardPage() {
             Solicitudes PH pendientes
           </h3>
           <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">5</p>
-            <span className="flex items-center gap-1 text-[#ffb4ab] text-xs font-medium bg-[#93000a]/20 px-2 py-1 rounded-md mb-1.5">
-              Prioritarias
-            </span>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{phPendientes}</p>
+            {(phPendientes ?? 0) > 0 && (
+              <span className="flex items-center gap-1 text-[#ffb4ab] text-xs font-medium bg-[#93000a]/20 px-2 py-1 rounded-md mb-1.5">
+                Prioritarias
+              </span>
+            )}
           </div>
           <p className="text-xs text-[#99907c]">Requieren revisión técnica</p>
         </div>
 
         {/* Metric 4 */}
-        <div className="p-6 rounded-2xl bg-[#17171a] border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6">
             <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
               <HeartHandshake className="w-5 h-5" />
@@ -96,18 +201,18 @@ export default function AdminDashboardPage() {
             Donaciones recibidas
           </h3>
           <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">12</p>
+            <p className="text-5xl font-semibold text-[#D4AF37]">{donacionesCount}</p>
             <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">Alianzas</span>
           </div>
-          <p className="text-xs text-[#99907c]">$14.8M COP captados este mes</p>
+          <p className="text-xs text-[#99907c]">{formatCurrency(totalDonacionesEsteMes)} captados este mes</p>
         </div>
 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Chart Area */}
-        <div className="lg:col-span-2 p-8 rounded-2xl bg-[#17171a] border border-[#262629] relative min-h-[400px] flex flex-col">
-          <div className="flex justify-between items-start mb-8">
+        <div className="lg:col-span-2 p-8 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] relative min-h-[400px] flex flex-col shadow-2xl">
+          <div className="flex justify-between items-start mb-2">
             <div>
               <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">
                 Tendencia Semestral
@@ -116,45 +221,27 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex items-center gap-2 text-[#99907c] text-sm">
               <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
-              Ciclo 2025 - 2026
+              Ciclo {currentDate.getFullYear() - 1} - {currentDate.getFullYear()}
             </div>
           </div>
           
-          <div className="flex-1 flex items-center justify-center">
-            {/* Chart Mockup (SVG line) */}
-            <div className="w-full relative h-[200px] border-b border-l border-[#262629] flex items-end justify-between px-4 pb-2">
-               <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                  <path d="M 0,80 L 20,70 L 40,90 L 60,50 L 80,60 L 100,20" fill="none" stroke="#D4AF37" strokeWidth="2" />
-                  <path d="M 0,80 L 20,70 L 40,90 L 60,50 L 80,60 L 100,20 L 100,100 L 0,100 Z" fill="url(#grad1)" opacity="0.1" />
-                  <defs>
-                    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#D4AF37" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Dots */}
-                  <circle cx="0" cy="80" r="2" fill="#17171a" stroke="#D4AF37" strokeWidth="1" />
-                  <circle cx="20" cy="70" r="2" fill="#17171a" stroke="#D4AF37" strokeWidth="1" />
-                  <circle cx="40" cy="90" r="2" fill="#17171a" stroke="#D4AF37" strokeWidth="1" />
-                  <circle cx="60" cy="50" r="2" fill="#17171a" stroke="#D4AF37" strokeWidth="1" />
-                  <circle cx="80" cy="60" r="2" fill="#17171a" stroke="#D4AF37" strokeWidth="1" />
-                  <circle cx="100" cy="20" r="3" fill="#D4AF37" />
-               </svg>
-               <div className="absolute top-[10%] right-[5%] bg-[#0A0A0E] border border-[#D4AF37] text-[#D4AF37] px-3 py-1.5 rounded-md text-xs font-semibold">
-                 Pico Histórico: 48 Alumnos
-               </div>
-            </div>
+          <div className="flex-1 w-full relative">
+            <DashboardChart data={chartData} maxValue={maxValue} />
+            {maxValue > 0 && (
+              <div className="absolute top-0 right-4 bg-[#0A0A0E]/80 border border-[#D4AF37] text-[#D4AF37] px-3 py-1.5 rounded-md text-xs font-semibold z-10">
+                Pico Histórico: {maxValue} Alumnos
+              </div>
+            )}
           </div>
           
           <div className="flex justify-between items-center mt-6">
             <div className="flex gap-6 text-sm text-[#99907c]">
-              <p>Promedio: <span className="text-[#e4e1e7] font-medium">36.3 inscripciones/mes</span></p>
-              <p>Tasa de retención: <span className="text-[#D4AF37] font-medium">91.4%</span></p>
+              <p>Promedio: <span className="text-[#e4e1e7] font-medium">{promedioMensual} inscripciones/mes</span></p>
+              <p>Tasa de retención: <span className="text-[#D4AF37] font-medium">100%</span></p>
             </div>
-            <button className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A]">
-              Ver desglose por curso →
-            </button>
+            <Link href="/admin/cursos" className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] transition-colors">
+              Ver cursos →
+            </Link>
           </div>
         </div>
 
@@ -167,41 +254,41 @@ export default function AdminDashboardPage() {
               </p>
               <h2 className="text-xl font-semibold text-white">Últimos mensajes de contacto</h2>
             </div>
-            <div className="bg-[#2a2417] text-[#D4AF37] text-[10px] px-2 py-1 rounded font-semibold border border-[#D4AF37]/30">
-              4 Nuevos
-            </div>
+            {mensajesNuevos !== null && mensajesNuevos > 0 && (
+              <div className="bg-[#2a2417] text-[#D4AF37] text-[10px] px-2 py-1 rounded font-semibold border border-[#D4AF37]/30">
+                {mensajesNuevos} Nuevos
+              </div>
+            )}
           </div>
 
           <div className="flex-1 space-y-4">
-            <MessageItem 
-              initials="SM" 
-              name="Sandra Milena Roa" 
-              time="Hoy, 10:24 a.m." 
-              subject="Inscripción Taller Cerámica" 
-            />
-            <MessageItem 
-              initials="CR" 
-              name="Conjunto Res. Altagracia" 
-              time="Ayer, 4:15 p.m." 
-              subject="Propuesta Propiedad Horizontal" 
-            />
-            <MessageItem 
-              initials="DA" 
-              name="Distribuidora Andina SAS" 
-              time="12 Mar, 2:30 p.m." 
-              subject="Donación de materiales y pintura" 
-            />
-            <MessageItem 
-              initials="CM" 
-              name="Carlos Julio Mendoza" 
-              time="11 Mar, 9:10 a.m." 
-              subject="Consulta horarios fin de semana" 
-            />
+            {mensajes?.length ? mensajes.map(msg => {
+              const nameParts = msg.name.split(' ');
+              const initials = nameParts.length > 1 ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase() : msg.name.substring(0, 2).toUpperCase();
+              
+              const date = new Date(msg.created_at);
+              const isToday = new Date().toDateString() === date.toDateString();
+              const timeString = isToday 
+                ? `Hoy, ${date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`
+                : date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+
+              return (
+                <MessageItem 
+                  key={msg.id}
+                  initials={initials} 
+                  name={msg.name} 
+                  time={timeString} 
+                  subject={msg.subject || 'Contacto'} 
+                />
+              )
+            }) : (
+              <p className="text-sm text-[#99907c] text-center pt-8">No hay mensajes recientes.</p>
+            )}
           </div>
 
-          <button className="w-full mt-6 text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] text-center pt-4 border-t border-[#262629]">
+          <Link href="/admin/mensajes" className="w-full block mt-6 text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] text-center pt-4 border-t border-[#262629] transition-colors">
             Gestionar todos los mensajes →
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -218,9 +305,9 @@ export default function AdminDashboardPage() {
              <button className="bg-[#1b1b1f] border border-[#262629] px-4 py-2 rounded-lg text-[#d0c5af] text-sm hover:text-white transition-colors">
                 Filtrar estado
              </button>
-             <button className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A]">
-                Ver Todas (18)
-             </button>
+             <Link href="/admin/solicitudes-ph" className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] flex items-center transition-colors">
+                Ver Todas ({totalSolicitudesPh || 0})
+             </Link>
           </div>
         </div>
 
@@ -236,38 +323,26 @@ export default function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody className="text-sm">
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Agrupación Residencial Bosques del Sur"
-                details="Suba, Bogotá · 180 aptos"
-                admin="Diana Marcela Vega"
-                date="14 Mar 2026"
-                status="PENDIENTE"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#e4e1e7]" />}
-                name="Torres de Castilla Real II"
-                details="Kennedy, Bogotá · 240 aptos"
-                admin="Argenis Beltrán"
-                date="13 Mar 2026"
-                status="EN REVISIÓN"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Conjunto Sendero de los Sauces"
-                details="Usaquén, Bogotá · 96 casas"
-                admin="Mauricio Gómez"
-                date="12 Mar 2026"
-                status="APROBADA"
-              />
-              <TableRow 
-                icon={<Building className="w-4 h-4 text-[#D4AF37]" />}
-                name="Multifamiliares Timiza Etapa 3"
-                details="Kennedy, Bogotá · 310 aptos"
-                admin="Claudia Patricia Reyes"
-                date="10 Mar 2026"
-                status="PENDIENTE"
-              />
+              {solicitudesPh?.length ? solicitudesPh.map(req => {
+                const date = new Date(req.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+                return (
+                  <TableRow 
+                    key={req.id}
+                    icon={<Building className={`w-4 h-4 ${req.status === 'pendiente' ? 'text-[#D4AF37]' : 'text-[#e4e1e7]'}`} />}
+                    name={req.complex_name}
+                    details={`${req.locality || 'Sin localidad'} · ${req.residents_count || '?'} aptos`}
+                    admin={req.administrator_name}
+                    date={date}
+                    status={req.status.toUpperCase().replace('_', ' ')}
+                  />
+                )
+              }) : (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-sm text-[#99907c]">
+                    No hay solicitudes recientes.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
