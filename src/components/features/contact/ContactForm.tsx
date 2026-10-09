@@ -1,15 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { submitContactForm } from "@/actions/contact";
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 1500);
+    setIsSuccess(false);
+    setErrorMsg("");
+
+    const formData = new FormData(e.currentTarget);
+    const result = await submitContactForm(formData);
+
+    if (result.success) {
+      setIsSuccess(true);
+      e.currentTarget.reset();
+    } else {
+      setErrorMsg(result.error || "Ocurrió un error inesperado al enviar el mensaje.");
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -26,6 +42,24 @@ export function ContactForm() {
             </p>
           </div>
 
+          {isSuccess && (
+            <div className="mb-8 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
+              <p className="text-green-200">
+                ¡Gracias por escribirnos! Tu mensaje ha sido enviado con éxito y nos pondremos en contacto contigo pronto.
+              </p>
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
+              <p className="text-red-200">
+                {errorMsg}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -35,6 +69,7 @@ export function ContactForm() {
                 <input
                   type="text"
                   id="name"
+                  name="name"
                   required
                   className="w-full bg-space-black/60 border border-space-border/80 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                 />
@@ -46,6 +81,7 @@ export function ContactForm() {
                 <input
                   type="tel"
                   id="phone"
+                  name="phone"
                   required
                   className="w-full bg-space-black/60 border border-space-border/80 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                 />
@@ -60,6 +96,7 @@ export function ContactForm() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   required
                   className="w-full bg-space-black/60 border border-space-border/80 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                 />
@@ -71,6 +108,7 @@ export function ContactForm() {
                 <input
                   type="text"
                   id="subject"
+                  name="subject"
                   required
                   className="w-full bg-space-black/60 border border-space-border/80 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                 />
@@ -83,6 +121,7 @@ export function ContactForm() {
               </label>
               <textarea
                 id="message"
+                name="message"
                 rows={5}
                 required
                 className="w-full bg-space-black/60 border border-space-border/80 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner resize-none"
@@ -93,6 +132,7 @@ export function ContactForm() {
               <input
                 type="checkbox"
                 id="data_policy"
+                name="data_policy"
                 required
                 className="mt-1 shrink-0 accent-gold-primary"
               />
