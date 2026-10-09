@@ -6,6 +6,8 @@ import { SidebarNav } from './SidebarNav';
 import { StarfieldBackground } from '@/components/ui/StarfieldBackground';
 import { EarthBackground } from '@/components/ui/EarthBackground';
 
+export const instant = false;
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();

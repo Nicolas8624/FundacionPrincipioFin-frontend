@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Send } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { submitEnrollment } from "@/actions/enrollment";
 
 const COURSES = [
   { id: "c1", title: "Pintura en Cerámica" },
@@ -18,6 +19,8 @@ const COURSES = [
 export function EnrollmentForm() {
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [isMinor, setIsMinor] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
 
@@ -39,16 +42,48 @@ export function EnrollmentForm() {
     setIsMinor(age < 18);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 1500); // Mock
+    setIsSuccess(false);
+    setErrorMsg("");
+
+    const formData = new FormData(e.currentTarget);
+    const result = await submitEnrollment(formData);
+
+    if (result.success) {
+      setIsSuccess(true);
+      e.currentTarget.reset();
+      setSelectedCourse("");
+    } else {
+      setErrorMsg(result.error || "Ocurrió un error inesperado al enviar la inscripción.");
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
     <section className="py-12 relative z-10 border-t border-space-border/50">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto bg-space-card/80 backdrop-blur-md border border-space-border rounded-2xl p-6 md:p-10 shadow-xl">
+          {isSuccess && (
+            <div className="mb-8 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
+              <p className="text-green-200">
+                ¡Gracias por inscribirte! Hemos recibido tu solicitud correctamente.
+              </p>
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
+              <p className="text-red-200">
+                {errorMsg}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label htmlFor="course" className="block text-sm font-medium text-gray-300">
@@ -56,6 +91,7 @@ export function EnrollmentForm() {
               </label>
               <select
                 id="course"
+                name="program_of_interest"
                 required
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
@@ -75,6 +111,7 @@ export function EnrollmentForm() {
               <input
                 type="text"
                 id="fullname"
+                name="full_name"
                 required
                 className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
               />
@@ -87,6 +124,7 @@ export function EnrollmentForm() {
                 </label>
                 <select
                   id="doc_type"
+                  name="doc_type"
                   required
                   className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors appearance-none"
                 >
@@ -102,6 +140,7 @@ export function EnrollmentForm() {
                 <input
                   type="text"
                   id="doc_number"
+                  name="doc_number"
                   required
                   className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
@@ -128,6 +167,7 @@ export function EnrollmentForm() {
                 <input
                   type="tel"
                   id="phone"
+                  name="phone"
                   required
                   className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
@@ -142,6 +182,7 @@ export function EnrollmentForm() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   required
                   className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
@@ -153,6 +194,7 @@ export function EnrollmentForm() {
                 <input
                   type="text"
                   id="location"
+                  name="neighborhood"
                   required
                   className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 />
@@ -177,6 +219,7 @@ export function EnrollmentForm() {
               <input
                 type="checkbox"
                 id="data_policy"
+                name="data_consent"
                 required
                 className="mt-1 shrink-0 accent-gold-primary"
               />

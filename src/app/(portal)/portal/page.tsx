@@ -6,6 +6,8 @@ import { createServerClient } from '@/services/supabase/server';
 import { redirect } from 'next/navigation';
 import { signout } from '@/app/(admin)/actions';
 
+export const instant = false;
+
 export default async function PortalPage() {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
