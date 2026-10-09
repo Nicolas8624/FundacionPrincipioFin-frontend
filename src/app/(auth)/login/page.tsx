@@ -76,6 +76,8 @@ function LoginContent() {
           </Link>
         </div>
 
+
+
         {message && (
           <div className="p-3 bg-[#93000a]/20 border border-[#93000a] rounded text-[#ffb4ab] text-xs font-inter text-center">
             {message}

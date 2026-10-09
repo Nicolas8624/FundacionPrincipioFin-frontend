@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BookOpen, Users, Building, HeartHandshake, MessageSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Users, Building, HeartHandshake, MessageSquare, Settings, Images } from 'lucide-react';
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -14,6 +14,7 @@ export function SidebarNav() {
     { href: '/admin/solicitudes-ph', label: 'Solicitudes PH', icon: Building },
     { href: '/admin/donaciones', label: 'Donaciones y alianzas', icon: HeartHandshake },
     { href: '/admin/mensajes', label: 'Mensajes de contacto', icon: MessageSquare },
+    { href: '/admin/galeria', label: 'Galería Multimedia', icon: Images },
   ];
 
   const settingsLink = { href: '/admin/configuracion', label: 'Ajustes del Sistema', icon: Settings };
