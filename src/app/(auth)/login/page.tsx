@@ -76,6 +76,13 @@ function LoginContent() {
           </Link>
         </div>
 
+        {process.env.NODE_ENV === 'development' && (
+          <div className="p-3 bg-blue-900/20 border border-blue-500/50 rounded text-blue-200 text-xs font-inter text-center">
+            Credenciales de prueba local:<br/>
+            <strong>admin@fundacion.org / admin123</strong>
+          </div>
+        )}
+
         {message && (
           <div className="p-3 bg-[#93000a]/20 border border-[#93000a] rounded text-[#ffb4ab] text-xs font-inter text-center">
             {message}

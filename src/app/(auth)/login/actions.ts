@@ -14,6 +14,15 @@ export async function login(formData: FormData) {
     redirect('/login?message=El correo y la contraseña son obligatorios.')
   }
 
+  // Fallback para desarrollo local
+  if (process.env.NODE_ENV === 'development' && email === 'admin@fundacion.org' && password === 'admin123') {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    cookieStore.set('local_admin_bypass', 'true');
+    revalidatePath('/admin', 'layout');
+    redirect('/admin/dashboard');
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
