@@ -1,16 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { submitPhRequest } from "@/actions/ph";
 
 export function PhForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Connect with Supabase via Dev 1 client in Phase 3
     setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 1500); // Temporary mock
+    setIsSuccess(false);
+    setErrorMsg("");
+
+    const formData = new FormData(e.currentTarget);
+    const result = await submitPhRequest(formData);
+
+    if (result.success) {
+      setIsSuccess(true);
+      e.currentTarget.reset();
+    } else {
+      setErrorMsg(result.error || "Ocurrió un error inesperado al enviar la solicitud.");
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -26,6 +41,24 @@ export function PhForm() {
             </p>
           </div>
 
+          {isSuccess && (
+            <div className="mb-8 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
+              <p className="text-green-200">
+                ¡Gracias por tu solicitud! Nos pondremos en contacto pronto para coordinar la alianza.
+              </p>
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
+              <AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
+              <p className="text-red-200">
+                {errorMsg}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -35,6 +68,7 @@ export function PhForm() {
                 <input
                   type="text"
                   id="ph_name"
+                  name="complex_name"
                   required
                   className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="Ej. Conjunto Residencial Los Pinos"
@@ -47,6 +81,7 @@ export function PhForm() {
                 <input
                   type="text"
                   id="admin_name"
+                  name="applicant_name"
                   required
                   className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="Ej. Juan Pérez"
@@ -62,6 +97,7 @@ export function PhForm() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   required
                   className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="administracion@conjunto.com"
@@ -74,6 +110,7 @@ export function PhForm() {
                 <input
                   type="tel"
                   id="phone"
+                  name="phone"
                   required
                   className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
                   placeholder="300 000 0000"
@@ -88,6 +125,7 @@ export function PhForm() {
               <input
                 type="text"
                 id="location"
+                name="location"
                 required
                 className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 placeholder="Ej. Ciudad Bolívar, Barrio Madelena"
@@ -100,6 +138,7 @@ export function PhForm() {
               </label>
               <textarea
                 id="message"
+                name="message"
                 rows={4}
                 required
                 className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all resize-none"
@@ -111,6 +150,7 @@ export function PhForm() {
               <input
                 type="checkbox"
                 id="data_policy"
+                name="data_consent"
                 required
                 className="mt-1 shrink-0 accent-gold-primary"
               />
