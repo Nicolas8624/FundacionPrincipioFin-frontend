@@ -26,51 +26,65 @@ export default function AdminGalleryPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
-    const formData = new FormData(e.currentTarget);
     
-    if (file) {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+    try {
+      const formData = new FormData(form);
       
-      if (!uploadError && data) {
-        const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
-        formData.append('fileUrl', publicUrlData.publicUrl);
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+        
+        if (!uploadError && data) {
+          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+          formData.append('fileUrl', publicUrlData.publicUrl);
+        }
       }
+      
+      await createGalleryItem(formData);
+      form.reset();
+      setFile(null);
+      await loadItems();
+    } catch (error) {
+      console.error("Error al publicar:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    await createGalleryItem(formData);
-    e.currentTarget.reset();
-    setFile(null);
-    await loadItems();
-    setIsSubmitting(false);
   };
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingItem) return;
     setIsSubmitting(true);
-    const formData = new FormData(e.currentTarget);
     
-    if (file) {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
       
-      if (!uploadError && data) {
-        const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
-        formData.append('fileUrl', publicUrlData.publicUrl);
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+        
+        if (!uploadError && data) {
+          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+          formData.append('fileUrl', publicUrlData.publicUrl);
+        }
+      } else {
+        formData.append('fileUrl', editingItem.url);
       }
-    } else {
-      formData.append('fileUrl', editingItem.url);
+      
+      await updateGalleryItem(editingItem.id, formData);
+      setEditingItem(null);
+      setFile(null);
+      await loadItems();
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    await updateGalleryItem(editingItem.id, formData);
-    setEditingItem(null);
-    setFile(null);
-    await loadItems();
-    setIsSubmitting(false);
   };
 
   const handleDelete = async (id: string) => {
