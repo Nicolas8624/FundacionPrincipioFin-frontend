@@ -14,15 +14,6 @@ export async function login(formData: FormData) {
     return { error: 'El correo y la contraseña son obligatorios.' }
   }
 
-  // Fallback para desarrollo local (cualquier credencial sirve)
-  if (process.env.NODE_ENV === 'development') {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    cookieStore.set('local_admin_bypass', 'true', { path: '/' });
-    revalidatePath('/admin', 'layout');
-    return { success: true, redirect: '/admin/dashboard' };
-  }
-
   let isSuccess = false;
   let errorMessage = "";
   let targetRoute = "";
@@ -35,7 +26,7 @@ export async function login(formData: FormData) {
 
     if (error) {
       console.error("DEBUG SUPABASE ERROR:", error.message);
-      errorMessage = error.message;
+      errorMessage = "Credenciales inválidas o correo no confirmado.";
     } else {
       isSuccess = true;
       let role = 'user';

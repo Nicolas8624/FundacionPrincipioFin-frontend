@@ -12,17 +12,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const supabase = await createServerClient();
   let { data: { user } } = await supabase.auth.getUser();
 
-  if (!user && process.env.NODE_ENV === 'development') {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    if (cookieStore.get('local_admin_bypass')?.value === 'true') {
-      user = { 
-        email: 'admin@fundacion.org', 
-        user_metadata: { full_name: 'Admin Local (Bypass)' } 
-      } as any;
-    }
-  }
-
   if (!user) {
     redirect('/login');
   }
