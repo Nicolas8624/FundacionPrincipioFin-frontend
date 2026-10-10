@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { getGalleryItems, createGalleryItem, deleteGalleryItem, updateGalleryItem } from '@/actions/gallery';
-import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X } from 'lucide-react';
+import { createBrowserClient } from '@/services/supabase/client';
+import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X, FileUp } from 'lucide-react';
 
 export default function AdminGalleryPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<any | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const supabase = createBrowserClient();
 
   const loadItems = async () => {
     setLoading(true);
@@ -25,8 +28,21 @@ export default function AdminGalleryPage() {
     e.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
+    
+    if (file) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+      
+      if (!uploadError && data) {
+        const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+        formData.append('fileUrl', publicUrlData.publicUrl);
+      }
+    }
+    
     await createGalleryItem(formData);
     e.currentTarget.reset();
+    setFile(null);
     await loadItems();
     setIsSubmitting(false);
   };
@@ -36,8 +52,23 @@ export default function AdminGalleryPage() {
     if (!editingItem) return;
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
+    
+    if (file) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+      
+      if (!uploadError && data) {
+        const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+        formData.append('fileUrl', publicUrlData.publicUrl);
+      }
+    } else {
+      formData.append('fileUrl', editingItem.url);
+    }
+    
     await updateGalleryItem(editingItem.id, formData);
     setEditingItem(null);
+    setFile(null);
     await loadItems();
     setIsSubmitting(false);
   };
@@ -114,14 +145,25 @@ export default function AdminGalleryPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">URL del Archivo</label>
-                <input 
-                  type="url" 
-                  name="fileUrl" 
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
-                  placeholder="https://..."
-                />
-                <p className="text-[10px] text-gray-500 mt-1">* En desarrollo, usamos URLs públicas directas.</p>
+                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Archivo Multimedia</label>
+                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-6 text-center cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*,video/*"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {file ? (
+                    <div className="text-sm font-medium text-gold-primary truncate">
+                      {file.name}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                      <FileUp className="w-6 h-6" />
+                      <span className="text-xs">Haz clic o arrastra un archivo aquí</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button 
@@ -253,13 +295,25 @@ export default function AdminGalleryPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">URL del Archivo</label>
-                <input 
-                  type="url" 
-                  name="fileUrl" 
-                  defaultValue={editingItem.url}
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
-                />
+                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Actualizar Archivo (Opcional)</label>
+                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-4 text-center cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*,video/*"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {file ? (
+                    <div className="text-sm font-medium text-gold-primary truncate">
+                      {file.name}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                      <FileUp className="w-5 h-5" />
+                      <span className="text-[10px]">Haz clic para subir un nuevo archivo y reemplazar el actual</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="pt-2 flex gap-3">
