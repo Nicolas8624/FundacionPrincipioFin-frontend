@@ -6,7 +6,7 @@ import { SidebarNav } from './SidebarNav';
 import { StarfieldBackground } from '@/components/ui/StarfieldBackground';
 import { EarthBackground } from '@/components/ui/EarthBackground';
 
-export const instant = false;
+export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
