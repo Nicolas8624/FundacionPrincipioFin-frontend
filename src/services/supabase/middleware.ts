@@ -50,6 +50,18 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Bypass para desarrollo local
+  const isLocalDev = process.env.NODE_ENV === 'development';
+  const hasBypassCookie = request.cookies.get('local_admin_bypass')?.value === 'true';
+  
+  if (isLocalDev && hasBypassCookie) {
+    if (url.pathname === '/login' || url.pathname === '/registro') {
+      url.pathname = '/admin/dashboard';
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
+
   // Protección de rutas para usuarios no autenticados
   if (
     !user &&
