@@ -12,6 +12,20 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg(null);
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const result = await login(formData);
+    if (result?.error) {
+      setErrorMsg(result.error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative z-10 w-full max-w-[420px] p-10 rounded-2xl bg-[#0A0A0E]/80 backdrop-blur-xl border border-[#4d4635] shadow-2xl">
@@ -29,7 +43,7 @@ function LoginContent() {
         </h1>
       </div>
 
-      <form className="space-y-6" action={login}>
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
           <label className="block text-[10px] font-montserrat uppercase tracking-[0.18em] text-[#e4e1e7] mb-2 font-semibold">
             Correo Electrónico
@@ -78,19 +92,20 @@ function LoginContent() {
 
 
 
-        {message && (
+        {(errorMsg || message) && (
           <div className="p-3 bg-[#93000a]/20 border border-[#93000a] rounded text-[#ffb4ab] text-xs font-inter text-center">
-            {message}
+            {errorMsg || message}
           </div>
         )}
 
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#D4AF37] to-[#e1c469] text-[#0A0A0E] font-montserrat font-semibold tracking-[0.15em] py-[14px] px-6 rounded-lg hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] transition-all flex items-center justify-center gap-2 text-sm"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-[#D4AF37] to-[#e1c469] text-[#0A0A0E] font-montserrat font-semibold tracking-[0.15em] py-[14px] px-6 rounded-lg hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            INGRESAR
-            <LogIn className="w-[18px] h-[18px] ml-1" />
+            {loading ? "INGRESANDO..." : "INGRESAR"}
+            {!loading && <LogIn className="w-[18px] h-[18px] ml-1" />}
           </button>
         </div>
       </form>

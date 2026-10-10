@@ -11,7 +11,7 @@ export async function login(formData: FormData) {
   const password = formData.get('password') as string
 
   if (!email || !password) {
-    redirect('/login?message=El correo y la contraseña son obligatorios.')
+    return { error: 'El correo y la contraseña son obligatorios.' }
   }
 
   // Fallback para desarrollo local (cualquier credencial sirve)
@@ -23,14 +23,22 @@ export async function login(formData: FormData) {
     redirect('/admin/dashboard');
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  let data;
+  try {
+    const res = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    data = res.data;
+    const error = res.error;
 
-  if (error) {
-    // Si falla, retornamos a /login con el mensaje de error en la URL
-    redirect('/login?message=Credenciales incorrectas. Intenta nuevamente.')
+    if (error) {
+      console.error("DEBUG SUPABASE ERROR:", error.message);
+      return { error: error.message };
+    }
+  } catch (err: any) {
+    console.error("DEBUG CATCH ERROR:", err);
+    return { error: err.message || "Error inesperado de conexión" };
   }
 
   let role = 'user'
