@@ -2,11 +2,11 @@ import { createServerClient } from '@/services/supabase/server';
 import { Calendar, TrendingUp, Building, HeartHandshake, Eye, MoreHorizontal, MessageSquare, BookOpen } from 'lucide-react';
 import { DashboardChart } from '@/components/admin/DashboardChart';
 import { ExportDashboardButton } from '@/components/admin/ExportDashboardButton';
-import { connection } from 'next/server';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
-  await connection();
   const supabase = await createServerClient();
   const currentDate = new Date();
 
