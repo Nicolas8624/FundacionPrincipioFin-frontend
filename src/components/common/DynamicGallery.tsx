@@ -27,6 +27,16 @@ export function DynamicGallery({ section }: { section: string }) {
     load();
   }, [section]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedItem(null);
+    };
+    if (selectedItem) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedItem]);
+
   if (loading) {
     return (
       <div className="w-full h-40 flex flex-col items-center justify-center gap-3">
@@ -80,30 +90,41 @@ export function DynamicGallery({ section }: { section: string }) {
 
       {/* Lightbox Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 animate-fade-in">
-          <button 
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
-            onClick={() => setSelectedItem(null)}
-          >
-            <X className="w-8 h-8" />
-          </button>
-          
-          <div className="max-w-5xl w-full max-h-[80vh] flex flex-col items-center">
-            {selectedItem.type === 'image' ? (
-              <img 
-                src={selectedItem.url} 
-                alt={selectedItem.title} 
-                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-space-border/50"
-              />
-            ) : (
-              <video 
-                src={selectedItem.url} 
-                controls
-                autoPlay
-                className="max-w-full max-h-[75vh] rounded-lg shadow-2xl border border-space-border/50 outline-none"
-              />
-            )}
-            <p className="text-gold-primary mt-6 text-lg font-montserrat tracking-wide">{selectedItem.title}</p>
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 animate-fade-in"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div className="flex flex-col items-center w-full">
+            <div 
+              className="relative max-w-5xl inline-block"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 z-50 p-2 text-white bg-black/70 hover:bg-black/90 rounded-full border border-amber-500/30 transition-all cursor-pointer shadow-xl"
+                aria-label="Cerrar vista previa"
+              >
+                <X className="w-6 h-6 text-amber-400" />
+              </button>
+              
+              {selectedItem.type === 'image' ? (
+                <img 
+                  src={selectedItem.url} 
+                  alt={selectedItem.title} 
+                  className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-space-border/50"
+                />
+              ) : (
+                <video 
+                  src={selectedItem.url} 
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-[75vh] rounded-lg shadow-2xl border border-space-border/50 outline-none"
+                />
+              )}
+            </div>
+            <p className="text-gold-primary mt-6 text-lg font-montserrat tracking-wide text-center" onClick={(e) => e.stopPropagation()}>
+              {selectedItem.title}
+            </p>
           </div>
         </div>
       )}

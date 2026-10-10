@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getGalleryItems, createGalleryItem, deleteGalleryItem, updateGalleryItem } from '@/actions/gallery';
-import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X } from 'lucide-react';
+import { getGalleryItems } from '@/actions/gallery';
+import { createBrowserClient } from '@/services/supabase/client';
+import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X, FileUp } from 'lucide-react';
 
 export default function AdminGalleryPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<any | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const supabase = createBrowserClient();
 
   const loadItems = async () => {
     setLoading(true);
@@ -23,29 +26,121 @@ export default function AdminGalleryPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
-    const formData = new FormData(e.currentTarget);
-    await createGalleryItem(formData);
-    e.currentTarget.reset();
-    await loadItems();
-    setIsSubmitting(false);
+    
+    try {
+      const formData = new FormData(form);
+      const title = formData.get('title') as string;
+      const section = formData.get('section') as string;
+      const type = formData.get('type') as string;
+      let finalUrl = "";
+      
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+        
+        if (uploadError) {
+          alert(`Error en Supabase Storage: ${uploadError.message}`);
+          console.error('Storage Error:', uploadError);
+          setIsSubmitting(false);
+          return;
+        }
+        if (data) {
+          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+          finalUrl = publicUrlData.publicUrl;
+        }
+      }
+      
+      const { error: dbError } = await supabase
+        .from('gallery_items')
+        .insert([{
+          title,
+          section,
+          type,
+          url: finalUrl || 'https://via.placeholder.com/800x600?text=Nueva+Imagen'
+        }]);
+
+      if (dbError) {
+        alert(`Error en Tabla Supabase: ${dbError.message}`);
+        console.error('Database Error:', dbError);
+        setIsSubmitting(false);
+        return;
+      }
+      
+      form.reset();
+      setFile(null);
+      await loadItems();
+    } catch (error: any) {
+      console.error("Error al publicar:", error);
+      alert(`Error inesperado: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingItem) return;
     setIsSubmitting(true);
-    const formData = new FormData(e.currentTarget);
-    await updateGalleryItem(editingItem.id, formData);
-    setEditingItem(null);
-    await loadItems();
-    setIsSubmitting(false);
+    
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const title = formData.get('title') as string;
+      const section = formData.get('section') as string;
+      const type = formData.get('type') as string;
+      let finalUrl = editingItem.url;
+      
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
+        
+        if (uploadError) {
+          alert(`Error en Supabase Storage al actualizar: ${uploadError.message}`);
+          console.error('Storage Error:', uploadError);
+          setIsSubmitting(false);
+          return;
+        }
+        if (data) {
+          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+          finalUrl = publicUrlData.publicUrl;
+        }
+      }
+      
+      const { error: dbError } = await supabase
+        .from('gallery_items')
+        .update({ title, section, type, url: finalUrl })
+        .eq('id', editingItem.id);
+
+      if (dbError) {
+        alert(`Error en Tabla Supabase: ${dbError.message}`);
+        console.error('Database Error:', dbError);
+        setIsSubmitting(false);
+        return;
+      }
+      
+      setEditingItem(null);
+      setFile(null);
+      await loadItems();
+    } catch (error: any) {
+      console.error("Error al actualizar:", error);
+      alert(`Error inesperado: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este elemento?')) return;
-    await deleteGalleryItem(id);
-    await loadItems();
+    if (!confirm("¿Deseas eliminar este archivo?")) return;
+    const { error } = await supabase.from('gallery_items').delete().eq('id', id);
+    if (error) {
+      alert(`Error al eliminar: ${error.message}`);
+    } else {
+      await loadItems();
+    }
   };
 
   return (
@@ -114,14 +209,25 @@ export default function AdminGalleryPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">URL del Archivo</label>
-                <input 
-                  type="url" 
-                  name="fileUrl" 
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
-                  placeholder="https://..."
-                />
-                <p className="text-[10px] text-gray-500 mt-1">* En desarrollo, usamos URLs públicas directas.</p>
+                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Archivo Multimedia</label>
+                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-6 text-center cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*,video/*"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {file ? (
+                    <div className="text-sm font-medium text-gold-primary truncate">
+                      {file.name}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                      <FileUp className="w-6 h-6" />
+                      <span className="text-xs">Haz clic o arrastra un archivo aquí</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button 
@@ -253,13 +359,25 @@ export default function AdminGalleryPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">URL del Archivo</label>
-                <input 
-                  type="url" 
-                  name="fileUrl" 
-                  defaultValue={editingItem.url}
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
-                />
+                <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Actualizar Archivo (Opcional)</label>
+                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-4 text-center cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*,video/*"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {file ? (
+                    <div className="text-sm font-medium text-gold-primary truncate">
+                      {file.name}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                      <FileUp className="w-5 h-5" />
+                      <span className="text-[10px]">Haz clic para subir un nuevo archivo y reemplazar el actual</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="pt-2 flex gap-3">

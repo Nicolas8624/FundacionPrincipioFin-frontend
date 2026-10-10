@@ -4,6 +4,8 @@ import { DashboardChart } from '@/components/admin/DashboardChart';
 import { ExportDashboardButton } from '@/components/admin/ExportDashboardButton';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
   const supabase = await createServerClient();
   const currentDate = new Date();
