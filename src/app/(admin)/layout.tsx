@@ -33,7 +33,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq('id', user.id)
     .single();
 
-  const userFullName = profile?.full_name || user.user_metadata?.full_name || 'Sin Nombre';
+  const userFullName = profile?.full_name || user.user_metadata?.full_name || 'Administrador';
 
   return (
     <div className="h-screen bg-transparent flex text-[#e4e1e7] font-inter overflow-hidden relative">
@@ -55,25 +55,26 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <SidebarNav />
 
-        <div className="p-6 mt-auto border-t border-[#262629] flex-shrink-0">
-          <div className="bg-[#1b1b1f] rounded-xl p-4 flex items-center gap-3 mb-4 border border-[#262629]">
+        <div className="p-6 pb-12 mt-auto border-t border-[#262629] flex-shrink-0">
+          <div className="bg-[#1b1b1f] rounded-xl p-3 flex items-center gap-3 border border-[#262629]">
             <div className="w-10 h-10 rounded-lg bg-[#D4AF37] flex items-center justify-center text-[#0A0A0E] font-bold font-montserrat text-lg flex-shrink-0">
-              {(userFullName[0] || user.email?.[0] || 'A').toUpperCase()}
+              {(userFullName[0] || user?.email?.[0] || 'A').toUpperCase()}
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden flex-1">
               <p className="text-sm font-semibold text-[#e4e1e7] truncate">{userFullName}</p>
               <p className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c] truncate">
-                Administrador
+                {user?.email || 'Administrador'}
               </p>
             </div>
+            <form action={signout} className="flex-shrink-0">
+              <button 
+                title="Cerrar sesión"
+                className="p-2 rounded-lg bg-transparent hover:bg-[#93000a]/20 text-[#ffb4ab] hover:text-[#ffded8] transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </form>
           </div>
-
-          <form action={signout}>
-            <button className="flex items-center gap-2 text-sm text-[#ffb4ab] hover:text-[#ffded8] transition-colors font-medium">
-              <LogOut className="w-4 h-4" />
-              Cerrar sesión
-            </button>
-          </form>
         </div>
       </aside>
 
