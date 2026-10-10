@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getGalleryItems, createGalleryItem, deleteGalleryItem, updateGalleryItem } from '@/actions/gallery';
+import { getGalleryItems } from '@/actions/gallery';
 import { createBrowserClient } from '@/services/supabase/client';
 import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X, FileUp } from 'lucide-react';
 
@@ -31,24 +31,50 @@ export default function AdminGalleryPage() {
     
     try {
       const formData = new FormData(form);
+      const title = formData.get('title') as string;
+      const section = formData.get('section') as string;
+      const type = formData.get('type') as string;
+      let finalUrl = "";
       
       if (file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
         
-        if (!uploadError && data) {
+        if (uploadError) {
+          alert(`Error en Supabase Storage: ${uploadError.message}`);
+          console.error('Storage Error:', uploadError);
+          setIsSubmitting(false);
+          return;
+        }
+        if (data) {
           const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
-          formData.append('fileUrl', publicUrlData.publicUrl);
+          finalUrl = publicUrlData.publicUrl;
         }
       }
       
-      await createGalleryItem(formData);
+      const { error: dbError } = await supabase
+        .from('gallery_items')
+        .insert([{
+          title,
+          section,
+          type,
+          url: finalUrl || 'https://via.placeholder.com/800x600?text=Nueva+Imagen'
+        }]);
+
+      if (dbError) {
+        alert(`Error en Tabla Supabase: ${dbError.message}`);
+        console.error('Database Error:', dbError);
+        setIsSubmitting(false);
+        return;
+      }
+      
       form.reset();
       setFile(null);
       await loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al publicar:", error);
+      alert(`Error inesperado: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -62,35 +88,59 @@ export default function AdminGalleryPage() {
     try {
       const form = e.currentTarget;
       const formData = new FormData(form);
+      const title = formData.get('title') as string;
+      const section = formData.get('section') as string;
+      const type = formData.get('type') as string;
+      let finalUrl = editingItem.url;
       
       if (file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const { error: uploadError, data } = await supabase.storage.from('gallery').upload(fileName, file);
         
-        if (!uploadError && data) {
-          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
-          formData.append('fileUrl', publicUrlData.publicUrl);
+        if (uploadError) {
+          alert(`Error en Supabase Storage al actualizar: ${uploadError.message}`);
+          console.error('Storage Error:', uploadError);
+          setIsSubmitting(false);
+          return;
         }
-      } else {
-        formData.append('fileUrl', editingItem.url);
+        if (data) {
+          const { data: publicUrlData } = supabase.storage.from('gallery').getPublicUrl(data.path);
+          finalUrl = publicUrlData.publicUrl;
+        }
       }
       
-      await updateGalleryItem(editingItem.id, formData);
+      const { error: dbError } = await supabase
+        .from('gallery_items')
+        .update({ title, section, type, url: finalUrl })
+        .eq('id', editingItem.id);
+
+      if (dbError) {
+        alert(`Error en Tabla Supabase: ${dbError.message}`);
+        console.error('Database Error:', dbError);
+        setIsSubmitting(false);
+        return;
+      }
+      
       setEditingItem(null);
       setFile(null);
       await loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar:", error);
+      alert(`Error inesperado: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este elemento?')) return;
-    await deleteGalleryItem(id);
-    await loadItems();
+    if (!confirm("¿Deseas eliminar este archivo?")) return;
+    const { error } = await supabase.from('gallery_items').delete().eq('id', id);
+    if (error) {
+      alert(`Error al eliminar: ${error.message}`);
+    } else {
+      await loadItems();
+    }
   };
 
   return (
