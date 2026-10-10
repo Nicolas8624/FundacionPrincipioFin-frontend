@@ -20,7 +20,7 @@ export async function login(formData: FormData) {
     const cookieStore = await cookies();
     cookieStore.set('local_admin_bypass', 'true', { path: '/' });
     revalidatePath('/admin', 'layout');
-    redirect('/admin/dashboard');
+    return { success: true, redirect: '/admin/dashboard' };
   }
 
   let isSuccess = false;
