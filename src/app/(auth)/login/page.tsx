@@ -15,14 +15,20 @@ function LoginContent() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAction = async (formData: FormData) => {
     setLoading(true);
     setErrorMsg(null);
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const result = await login(formData);
-    if (result?.error) {
-      setErrorMsg(result.error);
+    try {
+      const result = await login(formData);
+      if (result?.error) {
+        setErrorMsg(result.error);
+        setLoading(false);
+      } else if (result?.success && result?.redirect) {
+        // Redirigir desde el cliente de forma nativa para evitar problemas de estado
+        window.location.href = result.redirect;
+      }
+    } catch (e) {
+      setErrorMsg("Error inesperado de red.");
       setLoading(false);
     }
   };
@@ -43,7 +49,7 @@ function LoginContent() {
         </h1>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-6" action={handleAction}>
         <div>
           <label className="block text-[10px] font-montserrat uppercase tracking-[0.18em] text-[#e4e1e7] mb-2 font-semibold">
             Correo Electrónico

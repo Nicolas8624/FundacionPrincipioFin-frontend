@@ -65,9 +65,10 @@ export async function login(formData: FormData) {
     isSuccess = false;
   }
 
-  // CRÍTICO: redirect debe ejecutarse fuera del try/catch para que Next.js lo maneje
+  // CRÍTICO: en vez de usar redirect() en el servidor que puede causar congelamiento en el cliente,
+  // devolvemos la ruta de éxito para que el cliente navegue explícitamente.
   if (isSuccess && targetRoute) {
-    redirect(targetRoute);
+    return { success: true, redirect: targetRoute };
   }
 
   return { error: errorMessage };
