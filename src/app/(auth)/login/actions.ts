@@ -23,42 +23,52 @@ export async function login(formData: FormData) {
     redirect('/admin/dashboard');
   }
 
-  let data;
+  let isSuccess = false;
+  let errorMessage = "";
+  let targetRoute = "";
+
   try {
-    const res = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
-    data = res.data;
-    const error = res.error;
+    });
 
     if (error) {
       console.error("DEBUG SUPABASE ERROR:", error.message);
-      return { error: error.message };
+      errorMessage = error.message;
+    } else {
+      isSuccess = true;
+      let role = 'user';
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (profile?.role) {
+          role = profile.role;
+        }
+      }
+
+      if (role === 'admin') {
+        revalidatePath('/admin', 'layout');
+        targetRoute = '/admin/dashboard';
+      } else {
+        revalidatePath('/portal', 'layout');
+        targetRoute = '/portal';
+      }
     }
   } catch (err: any) {
     console.error("DEBUG CATCH ERROR:", err);
-    return { error: err.message || "Error inesperado de conexión" };
+    errorMessage = err.message || "Error inesperado de conexión";
+    isSuccess = false;
   }
 
-  let role = 'user'
-  if (data.user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
-      
-    if (profile?.role) {
-      role = profile.role
-    }
+  // CRÍTICO: redirect debe ejecutarse fuera del try/catch para que Next.js lo maneje
+  if (isSuccess && targetRoute) {
+    redirect(targetRoute);
   }
 
-  if (role === 'admin') {
-    revalidatePath('/admin', 'layout')
-    redirect('/admin/dashboard')
-  } else {
-    revalidatePath('/portal', 'layout')
-    redirect('/portal')
-  }
+  return { error: errorMessage };
 }
