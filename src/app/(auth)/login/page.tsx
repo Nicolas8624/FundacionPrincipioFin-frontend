@@ -27,8 +27,9 @@ function LoginContent() {
         // Redirigir desde el cliente de forma nativa para evitar problemas de estado
         window.location.href = result.redirect;
       }
-    } catch (e) {
-      setErrorMsg("Error inesperado de red.");
+    } catch (e: any) {
+      console.error("Client Error:", e);
+      setErrorMsg("Error inesperado: " + (e?.message || String(e)));
       setLoading(false);
     }
   };
