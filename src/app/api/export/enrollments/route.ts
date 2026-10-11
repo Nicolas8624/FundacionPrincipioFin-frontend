@@ -41,18 +41,21 @@ export async function GET() {
 
   // Build CSV
   const headers = ['ID', 'Nombre Completo', 'Tipo Doc', 'Num Doc', 'Email', 'Telefono', 'Curso Solicitado', 'Modalidad', 'Estado', 'Fecha Registro'];
-  const rows = enrollments.map(e => [
-    e.id,
-    `"${e.full_name}"`, // Quote to handle commas
-    e.document_type,
-    e.document_number,
-    e.email || '',
-    e.phone || '',
-    `"${e.course?.title || 'Desconocido'}"`,
-    e.course?.modality || '',
-    e.status,
-    new Date(e.created_at).toLocaleString('es-CO')
-  ]);
+  const rows = enrollments.map(e => {
+    const course = (Array.isArray(e.course) ? e.course[0] : e.course) as { title?: string; modality?: string } | undefined;
+    return [
+      e.id,
+      `"${e.full_name}"`, // Quote to handle commas
+      e.document_type,
+      e.document_number,
+      e.email || '',
+      e.phone || '',
+      `"${course?.title || 'Desconocido'}"`,
+      course?.modality || '',
+      e.status,
+      new Date(e.created_at).toLocaleString('es-CO')
+    ];
+  });
 
   const csvContent = [
     headers.join(','),
