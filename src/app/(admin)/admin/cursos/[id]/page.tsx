@@ -1,45 +1,49 @@
-import Link from 'next/link';
-import { ChevronLeft, Hammer } from 'lucide-react';
-import Image from 'next/image';
+import { createServerClient } from '@/services/supabase/server';
+import { ClassroomWorkspace } from '@/components/admin/classroom/ClassroomWorkspace';
 
-export default function CourseDetailsPlaceholderPage({ params }: { params: { id: string } }) {
-  return (
-    <div className="max-w-[1600px] mx-auto min-h-[70vh] flex flex-col items-center justify-center space-y-8 pb-10">
-      
-      <div className="w-full flex justify-start mb-8">
-        <Link 
-          href="/admin/cursos" 
-          className="flex items-center gap-2 text-[#d0c5af] hover:text-white transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span>Volver a Programas Formativos</span>
-        </Link>
-      </div>
+export default async function CourseClassroomPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { id } = await params;
+  const sParams = searchParams ? await searchParams : {};
+  const initialTab = sParams.tab === 'estudiantes' ? 'estudiantes' : 'aula';
 
-      <div className="relative w-64 h-64 md:w-80 md:h-80 opacity-80 animate-pulse-slow">
-        <Image
-          src="/images/onboarding/planet3.png"
-          alt="Planeta en construcción"
-          fill
-          className="object-contain drop-shadow-[0_0_50px_rgba(212,175,55,0.15)]"
-        />
-      </div>
+  const supabase = await createServerClient();
 
-      <div className="text-center space-y-4 max-w-2xl px-4">
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
-            <Hammer className="w-8 h-8" />
-          </div>
-        </div>
-        <h1 className="text-3xl md:text-5xl font-semibold font-montserrat tracking-wide text-white">
-          Aula Virtual en Construcción
-        </h1>
-        <p className="text-[#99907c] text-lg max-w-xl mx-auto">
-          Próximamente podrás gestionar el mini classroom de este programa (ID: <span className="font-mono text-[#d0c5af] text-sm">{params.id}</span>).
-          Aquí podrás ver los estudiantes inscritos, subir materiales, asignar tareas y revisar las entregas.
-        </p>
-      </div>
-      
-    </div>
-  );
+  // Try to load course from Supabase
+  const { data: courseData } = await supabase
+    .from('courses')
+    .select(`
+      id,
+      title,
+      modality,
+      schedule_text,
+      capacity,
+      category:course_categories(name, accent_color)
+    `)
+    .eq('id', id)
+    .single();
+
+  // Robust course object: use Supabase if exists, otherwise fallback to active course format
+  const course = courseData ? {
+    id: courseData.id,
+    title: courseData.title || 'Pintura en Cerámica y Oficios',
+    modality: courseData.modality || 'hibrido',
+    schedule_text: courseData.schedule_text || 'Sábados 9:00 a.m. - 1:00 p.m.',
+    capacity: courseData.capacity || 35,
+    category: Array.isArray(courseData.category) ? courseData.category[0] : courseData.category
+  } : {
+    id,
+    title: 'Pintura en Cerámica y Oficios',
+    modality: 'hibrido',
+    schedule_text: 'Sábados 9:00 a.m. - 1:00 p.m.',
+    capacity: 35,
+    category: { name: 'Arte y Cultura' }
+  };
+
+  return <ClassroomWorkspace course={course} initialTab={initialTab} />;
 }
