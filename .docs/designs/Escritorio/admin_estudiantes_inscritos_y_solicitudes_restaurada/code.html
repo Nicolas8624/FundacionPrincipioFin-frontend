@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-surface":"#e4e1e7","inverse-primary":"#735c00","primary-container":"#d4af37","on-surface-variant":"#d0c5af","on-primary-fixed-variant":"#574500","tertiary-fixed-dim":"#c4c7cc","on-secondary-fixed":"#231b00","error-container":"#93000a","primary-fixed":"#ffe088","on-error-container":"#ffdad6","on-error":"#690005","outline":"#99907c","surface-container-lowest":"#0e0e12","primary":"#f2ca50","surface-container-highest":"#353439","surface-container":"#1f1f24","on-secondary-container":"#eccf73","error":"#ffb4ab","primary-fixed-dim":"#e9c349","on-tertiary":"#2d3135","surface-variant":"#353439","background":"#131317","on-primary":"#3c2f00","tertiary-container":"#b0b3b8","tertiary":"#ccced3","secondary-container":"#6c5701","on-secondary-fixed-variant":"#564500","on-primary-fixed":"#241a00","inverse-on-surface":"#303034","on-tertiary-fixed":"#181c20","surface-container-high":"#2a292e","tertiary-fixed":"#e0e3e8","on-background":"#e4e1e7","outline-variant":"#4d4635","on-secondary":"#3c2f00","secondary":"#e1c469","secondary-fixed-dim":"#e1c469","on-tertiary-container":"#42454a","surface-tint":"#e9c349","inverse-surface":"#e4e1e7","surface-bright":"#39393d","surface-dim":"#131317","on-tertiary-fixed-variant":"#43474b","surface":"#131317","on-primary-container":"#554300","secondary-fixed":"#ffe082","surface-container-low":"#1b1b1f"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin-mobile":"1.25rem","space-xl":"3.5rem","space-lg":"2rem","margin":"4rem","gutter-mobile":"1rem","space-xs":"0.375rem","space-sm":"0.75rem","gutter":"1.5rem","space-md":"1.25rem"},"fontFamily":{"headline-md":["Montserrat"],"label-sm":["Montserrat"],"headline-lg-mobile":["Montserrat"],"body-lg":["Inter"],"display-hero":["Montserrat"],"display-hero-mobile":["Montserrat"],"headline-sm":["Montserrat"],"body-md":["Inter"],"body-sm":["Inter"],"headline-lg":["Montserrat"],"label-md":["Montserrat"]},"fontSize":{"headline-md":["28px",{"lineHeight":"36px","letterSpacing":"0.06em","fontWeight":"500"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.18em","fontWeight":"600"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"0.06em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-hero":["56px",{"lineHeight":"68px","letterSpacing":"0.12em","fontWeight":"600"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","letterSpacing":"0.04em","fontWeight":"500"}],"body-md":["16px",{"lineHeight":"26px","fontWeight":"400"}],"body-sm":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg":["40px",{"lineHeight":"48px","letterSpacing":"0.08em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.15em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen"><aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest border-r border-outline-variant/30 z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="pt-6 pb-5 px-6 flex items-center gap-3 border-b border-outline-variant/20"><img alt="logo.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTPB7z2bizq2qP5L-ICnZXzZymMiCPyCT6YFCWs23hnnWRQJJIl4-iqYdlcA1Mz9MZncMTkM3mx7IHOT5gcRuSAPgChNKUlWaxtFbRqpZF5Nkm1IdIe-A6kwQIBEk7_IVlzJXBqm4PV4-nqd6KFVmN4Cb2n1Re91XBrfVkQAcyLUJC9jkmDDZKNjCkGe8x2r07f0Zo_JcysjWNjVJY-T873aQZCTjwu0NLfu8qIFxYFgAXTXH9isXjFuPbO0Lm4oeyszISDe2odA"/><span class="font-headline-sm text-[16px] font-semibold text-primary uppercase tracking-wider">Principio &amp; Fin</span></div><div class="px-4 py-4"><p class="px-3 mb-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">Administración</p><nav class="space-y-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold shadow-[0_0_15px_rgba(212,175,55,0.2)]"><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-resumen" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-sm text-body-sm">Resumen</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary-container text-on-primary-container font-semibold shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all duration-150" data-path="admin-cursos" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-body-sm text-body-sm">Cursos</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-inscripciones" href="#"><span class="material-symbols-outlined text-[20px]">assignment</span><span class="font-body-sm text-body-sm">Inscripciones</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-solicitudes-ph" href="#"><span class="material-symbols-outlined text-[20px]">apartment</span><span class="font-body-sm text-body-sm">Solicitudes PH</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-donaciones-y-alianzas" href="#"><span class="material-symbols-outlined text-[20px]">volunteer_activism</span><span class="font-body-sm text-body-sm">Donaciones y alianzas</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-mensajes-de-contacto" href="#"><span class="material-symbols-outlined text-[20px]">mail</span><span class="font-body-sm text-body-sm">Mensajes de contacto</span></a></nav></div></div><div class="p-4 border-t border-outline-variant/20"><div class="flex items-center gap-3 px-3 py-3 mb-2 rounded-lg bg-surface-container-low/70 border border-outline-variant/20"><div class="w-9 h-9 rounded bg-primary-container text-on-primary-container font-headline-sm text-sm font-bold flex items-center justify-center tracking-wider shadow-[0_0_10px_rgba(212,175,55,0.3)]">AD</div><div class="flex flex-col text-left overflow-hidden"><span class="font-label-md text-label-md text-on-surface truncate">Administrador</span><span class="font-label-sm text-[9px] uppercase tracking-wider text-primary font-semibold">ADMINISTRADOR</span></div></div><a class="flex items-center gap-3 px-3 py-2.5 rounded text-error hover:bg-error-container hover:text-on-error-container transition-all duration-150" data-path="login" href="#"><span class="material-symbols-outlined text-[20px]">logout</span><span class="font-body-sm text-body-sm font-medium">Cerrar sesión</span></a></div></aside><div class="pl-[260px]"><main class="relative bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Subtle Cosmic Background Accent Orbs (Decorative & Contained) -->
+<div class="relative w-full px-6 lg:px-12 py-8 overflow-hidden">
+<div class="absolute -top-32 right-16 w-96 h-96 rounded-full bg-primary/5 blur-[120px] pointer-events-none"></div>
+<div class="absolute top-1/2 -left-32 w-80 h-80 rounded-full bg-secondary-container/10 blur-[100px] pointer-events-none"></div>
+<!-- Breadcrumb Context & Back Link -->
+<div class="relative z-10 flex flex-wrap items-center gap-2 mb-6 text-on-surface-variant font-label-md text-label-md tracking-wider">
+<a class="inline-flex items-center gap-1.5 text-primary hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Volver a Gestión de Cursos</span>
+</a>
+<span class="text-outline-variant font-medium">/</span>
+<span class="text-on-surface-variant uppercase">Pintura en Cerámica y Oficios</span>
+<span class="text-outline-variant font-medium">/</span>
+<span class="text-primary font-semibold uppercase tracking-widest bg-surface-container-high px-2 py-0.5 rounded">ESTUDIANTES Y POSTULACIONES</span>
+</div>
+<!-- Header Section with Title, Subtitle and Action Badges -->
+<div class="relative z-10 flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-8 border-b border-outline-variant/20">
+<div class="space-y-3 max-w-4xl">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed-dim">Gestión Académica • Cohorte Activa</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          Estudiantes y Solicitudes del Curso
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl leading-relaxed">
+          Gestiona los participantes matriculados en la cohorte actual, valida solicitudes de ingreso pendientes, registra aprobaciones y certificaciones, o gestiona retiros formativos con rigor institucional.
+        </p>
+<!-- Course Metadata Badges -->
+<div class="pt-2 flex flex-wrap items-center gap-2.5">
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wider">
+<span class="material-symbols-outlined text-[16px] text-primary">devices</span>
+<span>MODALIDAD: <strong class="text-on-surface">VIRTUAL &amp; PRESENCIAL</strong></span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wider">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span>
+<span>COHORTE: <strong class="text-on-surface">2026-I</strong></span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wider">
+<span class="material-symbols-outlined text-[16px] text-primary">person_outline</span>
+<span>DOCENTE: <strong class="text-on-surface">MAESTRA LUCÍA FORERO</strong></span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container/20 text-primary-fixed font-label-sm text-label-sm tracking-wider">
+<span class="material-symbols-outlined text-[16px] text-primary">groups</span>
+<span>CUPOS: <strong>32/35 MATRICULADOS</strong> (3 DISPONIBLES)</span>
+</div>
+</div>
+</div>
+<!-- Quick Action Header CTAs -->
+<div class="flex items-center gap-3">
+<button class="px-4 py-2.5 rounded bg-surface-container-high text-on-surface hover:bg-surface-bright transition-all font-label-md text-label-md tracking-wider uppercase flex items-center gap-2 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">file_download</span>
+<span>Descargar Lista</span>
+</button>
+<button class="px-5 py-2.5 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-md text-label-md tracking-wider uppercase flex items-center gap-2 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_28px_rgba(212,175,55,0.5)] transition-all" onclick="document.getElementById('modal-inscribir').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>+ Inscribir Estudiante Directo</span>
+</button>
+</div>
+</div>
+<!-- Key Metrics Bento Row (4 Cards) -->
+<div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+<!-- Metric 1: Total Inscritos -->
+<div class="rounded-xl bg-surface-container-low p-6 transition-all hover:bg-surface-container shadow-md flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Total Inscritos</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">32</span>
+<span class="font-body-sm text-body-sm text-primary font-medium">/ 35 cupos</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">badge</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/15 flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ocupación aula</span>
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-[91%] h-full bg-primary rounded-full"></div>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold">91%</span>
+</div>
+</div>
+</div>
+<!-- Metric 2: Solicitudes Pendientes -->
+<div class="rounded-xl bg-surface-container-low p-6 transition-all hover:bg-surface-container shadow-md flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Solicitudes Pendientes</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">05</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">en revisión</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-secondary-container/40 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">pending_actions</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/15 flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Espera de admisión / beca</span>
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            Prioridad alta
+          </span>
+</div>
+</div>
+<!-- Metric 3: Aprobados / Certificados -->
+<div class="rounded-xl bg-surface-container-low p-6 transition-all hover:bg-surface-container shadow-md flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Aprobados / Certificados</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">18</span>
+<span class="font-body-sm text-body-sm text-tertiary-fixed-dim">estudiantes</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined text-[22px]">workspace_premium</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/15 flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rúbrica aprobada (≥ 3.5)</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">56.2% cohorte</span>
+</div>
+</div>
+<!-- Metric 4: En Proceso Formativo -->
+<div class="rounded-xl bg-surface-container-low p-6 transition-all hover:bg-surface-container shadow-md flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">En Proceso Formativo</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">14</span>
+<span class="font-body-sm text-body-sm text-tertiary">cursando módulos</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">trending_up</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/15 flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Asistencia media</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">94.0% promedio</span>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs Section -->
+<div class="relative z-10 mt-10 flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant/20">
+<div class="flex items-center gap-8">
+<button class="relative pb-4 font-headline-sm text-headline-sm text-primary font-semibold flex items-center gap-2.5" id="tab-matriculados" onclick="switchView('matriculados')" type="button">
+<span>Estudiantes Matriculados</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold">32</span>
+<span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary shadow-[0_0_8px_rgba(212,175,55,0.6)]" id="indicator-matriculados"></span>
+</button>
+<button class="relative pb-4 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-2.5" id="tab-solicitudes" onclick="switchView('solicitudes')" type="button">
+<span>Solicitudes de Ingreso</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">5</span>
+<span class="hidden absolute bottom-0 left-0 w-full h-[2px] bg-primary shadow-[0_0_8px_rgba(212,175,55,0.6)]" id="indicator-solicitudes"></span>
+</button>
+<button class="relative pb-4 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-2.5" id="tab-inactivos" onclick="switchView('inactivos')" type="button">
+<span>Retirados / Inactivos</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">2</span>
+<span class="hidden absolute bottom-0 left-0 w-full h-[2px] bg-primary shadow-[0_0_8px_rgba(212,175,55,0.6)]" id="indicator-inactivos"></span>
+</button>
+</div>
+<div class="flex items-center gap-2 pb-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant/70 uppercase tracking-widest">Última sincronización: Hoy 11:42 AM</span>
+</div>
+</div>
+<!-- FILTER & SEARCH BAR -->
+<div class="relative z-10 mt-6 p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+<!-- Search Input -->
+<div class="flex-1 relative">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant/70 absolute left-3.5 top-1/2 -translate-y-1/2">search</span>
+<input class="w-full pl-11 pr-4 py-2.5 rounded bg-surface text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary shadow-inner" id="filter-input" onkeyup="filterStudents()" placeholder="Buscar por nombre, documento o correo..." type="text"/>
+</div>
+<!-- Filters & Actions -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Filter Academic Status -->
+<div class="flex items-center gap-2 bg-surface px-3 py-2 rounded">
+<span class="material-symbols-outlined text-[18px] text-primary">filter_list</span>
+<select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer" id="select-status" onchange="filterStudents()">
+<option class="bg-surface-container-high text-on-surface" value="all">Todos los estados</option>
+<option class="bg-surface-container-high text-on-surface" value="Aprobado / Certificado">Aprobado / Certificado</option>
+<option class="bg-surface-container-high text-on-surface" value="En Formación">En Formación</option>
+<option class="bg-surface-container-high text-on-surface" value="Requisitos Completos">Requisitos Completos</option>
+</select>
+</div>
+<!-- Filter Cupo Type -->
+<div class="flex items-center gap-2 bg-surface px-3 py-2 rounded">
+<span class="material-symbols-outlined text-[18px] text-primary">category</span>
+<select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer" id="select-type" onchange="filterStudents()">
+<option class="bg-surface-container-high text-on-surface" value="all">Todos los cupos</option>
+<option class="bg-surface-container-high text-on-surface" value="Beca Inclusión Artesanal">Beca Inclusión Artesanal</option>
+<option class="bg-surface-container-high text-on-surface" value="Convenio PH">Convenio PH</option>
+<option class="bg-surface-container-high text-on-surface" value="Cupo Regular">Cupo Regular</option>
+</select>
+</div>
+<!-- Quick Clear Button -->
+<button class="p-2.5 rounded bg-surface hover:bg-surface-container-high text-on-surface-variant transition-colors" onclick="resetFilters()" title="Restablecer filtros" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</button>
+</div>
+</div>
+<!-- VIEW 1: ESTUDIANTES MATRICULADOS (TABLA PRINCIPAL) -->
+<div class="relative z-10 mt-6 space-y-4" id="view-matriculados">
+<div class="overflow-x-auto rounded-xl bg-surface-container-low shadow-lg">
+<table class="w-full text-left border-collapse" id="students-table">
+<thead>
+<tr class="bg-surface-container-high/60 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
+<th class="py-4 px-6 font-semibold">Estudiante • Contacto</th>
+<th class="py-4 px-4 font-semibold">Tipo de Cupo</th>
+<th class="py-4 px-4 font-semibold">Progreso &amp; Asistencia</th>
+<th class="py-4 px-4 font-semibold">Promedio</th>
+<th class="py-4 px-4 font-semibold">Estado Académico</th>
+<th class="py-4 px-6 font-semibold text-right">Acciones Directas</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10 font-body-sm text-body-sm">
+<!-- Student 1 -->
+<tr class="student-row hover:bg-surface-container transition-colors" data-cupo="Beca Inclusión Artesanal" data-name="Camila Andrea Morales" data-status="Aprobado / Certificado">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-sm font-bold flex items-center justify-center shrink-0">
+                    CM
+                  </div>
+<div class="min-w-0">
+<p class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Camila Andrea Morales</p>
+<p class="text-on-surface-variant text-[13px]">CC 1.020.891.440 • <span class="text-tertiary">camila.morales@artesaniasbogota.co</span></p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-secondary font-label-sm text-label-sm tracking-wider uppercase font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Beca Inclusión Artesanal
+                </span>
+</td>
+<td class="py-4 px-4">
+<div class="w-36 space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Asistencias</span>
+<span class="text-on-surface font-semibold">100%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-full h-full bg-primary rounded-full"></div>
+</div>
+<span class="text-[11px] text-tertiary-fixed-dim block">16 de 16 sesiones</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<div class="flex items-center gap-1.5 font-headline-sm text-[16px] font-bold text-primary">
+<span>4.9</span>
+<span class="text-[12px] font-normal text-on-surface-variant">/ 5.0</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-container/20 text-primary font-label-sm text-label-sm tracking-wide font-semibold">
+<span class="material-symbols-outlined text-[15px]">verified</span>
+                  Aprobado / Certificado
+                </span>
+</td>
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-primary-container/15 text-primary-fixed hover:bg-primary-container hover:text-on-primary font-label-sm text-label-sm tracking-wider uppercase transition-all flex items-center gap-1.5" title="Certificado emitido" type="button">
+<span class="material-symbols-outlined text-[16px]">card_membership</span>
+<span>Certificado Emitido</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors" onclick="confirmRetiro('Camila Andrea Morales')" title="Retirar del curso" type="button">
+<span class="material-symbols-outlined text-[18px]">person_remove</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Ver Historial / Evidencias" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Student 2 -->
+<tr class="student-row hover:bg-surface-container transition-colors" data-cupo="Convenio PH" data-name="Andrés Felipe Rodríguez" data-status="En Formación">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-primary font-headline-sm text-sm font-bold flex items-center justify-center shrink-0">
+                    AR
+                  </div>
+<div class="min-w-0">
+<p class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Andrés Felipe Rodríguez</p>
+<p class="text-on-surface-variant text-[13px]">CC 80.245.119 • <span class="text-tertiary">andres.rodriguez@phbogota.org</span></p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm tracking-wider uppercase">
+<span class="material-symbols-outlined text-[13px] text-primary">apartment</span>
+                  Convenio PH
+                </span>
+</td>
+<td class="py-4 px-4">
+<div class="w-36 space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Asistencias</span>
+<span class="text-on-surface font-semibold">88%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-[88%] h-full bg-secondary rounded-full"></div>
+</div>
+<span class="text-[11px] text-tertiary-fixed-dim block">14 de 16 sesiones</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<div class="flex items-center gap-1.5 font-headline-sm text-[16px] font-bold text-on-surface">
+<span>4.2</span>
+<span class="text-[12px] font-normal text-on-surface-variant">/ 5.0</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-highest text-tertiary-fixed font-label-sm text-label-sm tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  En Formación
+                </span>
+</td>
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-primary-container text-on-primary hover:bg-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold transition-all flex items-center gap-1.5 shadow-sm" onclick="aprobarEstudiante('Andrés Felipe Rodríguez')" type="button">
+<span class="material-symbols-outlined text-[16px]">school</span>
+<span>Aprobar Curso</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors" onclick="confirmRetiro('Andrés Felipe Rodríguez')" title="Retirar del curso" type="button">
+<span class="material-symbols-outlined text-[18px]">person_remove</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Ver Historial / Evidencias" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Student 3 -->
+<tr class="student-row hover:bg-surface-container transition-colors" data-cupo="Cupo Regular" data-name="María Paula Gómez" data-status="Requisitos Completos">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface font-headline-sm text-sm font-bold flex items-center justify-center shrink-0">
+                    MG
+                  </div>
+<div class="min-w-0">
+<p class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">María Paula Gómez</p>
+<p class="text-on-surface-variant text-[13px]">CC 52.890.312 • <span class="text-tertiary">mariap.gomez@gmail.com</span></p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm tracking-wider uppercase">
+                  Cupo Regular
+                </span>
+</td>
+<td class="py-4 px-4">
+<div class="w-36 space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Asistencias</span>
+<span class="text-on-surface font-semibold">94%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-[94%] h-full bg-primary rounded-full"></div>
+</div>
+<span class="text-[11px] text-tertiary-fixed-dim block">15 de 16 sesiones</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<div class="flex items-center gap-1.5 font-headline-sm text-[16px] font-bold text-primary">
+<span>4.6</span>
+<span class="text-[12px] font-normal text-on-surface-variant">/ 5.0</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-bright text-primary font-label-sm text-label-sm tracking-wide font-semibold">
+<span class="material-symbols-outlined text-[15px]">task_alt</span>
+                  Requisitos Completos
+                </span>
+</td>
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-primary-container text-on-primary hover:bg-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold transition-all flex items-center gap-1.5 shadow-sm" onclick="aprobarEstudiante('María Paula Gómez')" type="button">
+<span class="material-symbols-outlined text-[16px]">school</span>
+<span>Aprobar Curso</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors" onclick="confirmRetiro('María Paula Gómez')" title="Retirar del curso" type="button">
+<span class="material-symbols-outlined text-[18px]">person_remove</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Ver Historial / Evidencias" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Student 4 -->
+<tr class="student-row hover:bg-surface-container transition-colors" data-cupo="Beca Inclusión Artesanal" data-name="Carlos Eduardo Quintero" data-status="En Formación">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container font-headline-sm text-sm font-bold flex items-center justify-center shrink-0">
+                    CQ
+                  </div>
+<div class="min-w-0">
+<p class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Carlos Eduardo Quintero</p>
+<p class="text-on-surface-variant text-[13px]">CC 1.014.220.890 • <span class="text-tertiary">carlos.quintero@artes.org</span></p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-secondary font-label-sm text-label-sm tracking-wider uppercase font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Beca Inclusión Artesanal
+                </span>
+</td>
+<td class="py-4 px-4">
+<div class="w-36 space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Asistencias</span>
+<span class="text-on-surface font-semibold">81%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-[81%] h-full bg-secondary-fixed-dim rounded-full"></div>
+</div>
+<span class="text-[11px] text-tertiary-fixed-dim block">13 de 16 sesiones</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<div class="flex items-center gap-1.5 font-headline-sm text-[16px] font-bold text-on-surface">
+<span>3.8</span>
+<span class="text-[12px] font-normal text-on-surface-variant">/ 5.0</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-highest text-tertiary-fixed font-label-sm text-label-sm tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  En Formación
+                </span>
+</td>
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-all flex items-center gap-1.5" onclick="aprobarEstudiante('Carlos Eduardo Quintero')" type="button">
+<span class="material-symbols-outlined text-[16px]">school</span>
+<span>Aprobar Curso</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors" onclick="confirmRetiro('Carlos Eduardo Quintero')" title="Retirar del curso" type="button">
+<span class="material-symbols-outlined text-[18px]">person_remove</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Ver Historial / Evidencias" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Student 5 -->
+<tr class="student-row hover:bg-surface-container transition-colors" data-cupo="Convenio PH" data-name="Valentina Torres Castro" data-status="Aprobado / Certificado">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-sm font-bold flex items-center justify-center shrink-0">
+                    VT
+                  </div>
+<div class="min-w-0">
+<p class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Valentina Torres Castro</p>
+<p class="text-on-surface-variant text-[13px]">CC 1.033.456.912 • <span class="text-tertiary">valentina.torres@phbogota.org</span></p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm tracking-wider uppercase">
+<span class="material-symbols-outlined text-[13px] text-primary">apartment</span>
+                  Convenio PH
+                </span>
+</td>
+<td class="py-4 px-4">
+<div class="w-36 space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Asistencias</span>
+<span class="text-on-surface font-semibold">100%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="w-full h-full bg-primary rounded-full"></div>
+</div>
+<span class="text-[11px] text-tertiary-fixed-dim block">16 de 16 sesiones</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<div class="flex items-center gap-1.5 font-headline-sm text-[16px] font-bold text-primary">
+<span>5.0</span>
+<span class="text-[12px] font-normal text-on-surface-variant">/ 5.0</span>
+</div>
+</td>
+<td class="py-4 px-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-container/20 text-primary font-label-sm text-label-sm tracking-wide font-semibold">
+<span class="material-symbols-outlined text-[15px]">verified</span>
+                  Aprobado / Certificado
+                </span>
+</td>
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-primary-container/15 text-primary-fixed hover:bg-primary-container hover:text-on-primary font-label-sm text-label-sm tracking-wider uppercase transition-all flex items-center gap-1.5" title="Certificado emitido" type="button">
+<span class="material-symbols-outlined text-[16px]">card_membership</span>
+<span>Certificado Emitido</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors" onclick="confirmRetiro('Valentina Torres Castro')" title="Retirar del curso" type="button">
+<span class="material-symbols-outlined text-[18px]">person_remove</span>
+</button>
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Ver Historial / Evidencias" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer of Table -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">
+<span>Mostrando <strong class="text-on-surface">5</strong> de <strong class="text-on-surface">32</strong> estudiantes matriculados</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded bg-surface hover:bg-surface-container-high text-on-surface-variant disabled:opacity-40" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="px-3 py-1 rounded bg-primary-container text-on-primary font-semibold text-label-sm">1</span>
+<button class="px-3 py-1 rounded bg-surface hover:bg-surface-container-high text-on-surface font-label-sm" type="button">2</button>
+<button class="px-3 py-1 rounded bg-surface hover:bg-surface-container-high text-on-surface font-label-sm" type="button">3</button>
+<button class="p-2 rounded bg-surface hover:bg-surface-container-high text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- VIEW 2: SOLICITUDES DE INGRESO PENDIENTES (5 Solicitudes) -->
+<div class="relative z-10 mt-6 space-y-6" id="view-solicitudes">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Postulaciones en Espera de Admisión</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Revisa el perfil social y vocacional de los postulantes antes de asignar los 3 cupos vacantes disponibles.</p>
+</div>
+<div class="px-3.5 py-1.5 rounded-full bg-secondary-container/30 text-secondary font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+          3 Cupos restantes en cohorte
+        </div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- Application 1 -->
+<div class="p-6 rounded-xl bg-surface-container-low shadow-md space-y-4 hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-secondary-container text-on-secondary-container font-headline-sm text-base font-bold flex items-center justify-center">
+                LG
+              </div>
+<div>
+<h3 class="font-headline-sm text-[17px] font-semibold text-on-surface">Luz Marina Granados</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Bosa Central • Tel: +57 312 405 8812</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase font-semibold">
+              Presencial
+            </span>
+</div>
+<div class="p-3.5 rounded bg-surface/70 space-y-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Motivación / Perfil vocacional</span>
+<p class="font-body-sm text-body-sm text-on-surface italic">
+              "Madre comunitaria interesada en emprender con técnicas ancestrales de esmaltado para sustento de su hogar y talleres a jóvenes del sector."
+            </p>
+</div>
+<div class="flex items-center justify-between pt-2">
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1" href="#">
+<span>Ver formulario completo</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-colors" onclick="rechazarSolicitud('Luz Marina Granados')" type="button">
+                Rechazar / Reasignar
+              </button>
+<button class="px-4 py-2 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold shadow-sm hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all" onclick="admitirEstudiante('Luz Marina Granados')" type="button">
+                Admitir en el Curso
+              </button>
+</div>
+</div>
+</div>
+<!-- Application 2 -->
+<div class="p-6 rounded-xl bg-surface-container-low shadow-md space-y-4 hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-surface-container-high text-primary font-headline-sm text-base font-bold flex items-center justify-center">
+                JM
+              </div>
+<div>
+<h3 class="font-headline-sm text-[17px] font-semibold text-on-surface">Julián David Moreno</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Kennedy (Patio Bonito) • Tel: +57 319 720 1944</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase font-semibold">
+              Híbrida
+            </span>
+</div>
+<div class="p-3.5 rounded bg-surface/70 space-y-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Motivación / Perfil vocacional</span>
+<p class="font-body-sm text-body-sm text-on-surface italic">
+              "Joven bachiller egresado en búsqueda de formación en oficio ancestral para rescatar técnicas de moldeado de barro y apoyo familiar."
+            </p>
+</div>
+<div class="flex items-center justify-between pt-2">
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1" href="#">
+<span>Ver formulario completo</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-colors" onclick="rechazarSolicitud('Julián David Moreno')" type="button">
+                Rechazar / Reasignar
+              </button>
+<button class="px-4 py-2 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold shadow-sm hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all" onclick="admitirEstudiante('Julián David Moreno')" type="button">
+                Admitir en el Curso
+              </button>
+</div>
+</div>
+</div>
+<!-- Application 3 -->
+<div class="p-6 rounded-xl bg-surface-container-low shadow-md space-y-4 hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-surface-container-high text-on-surface font-headline-sm text-base font-bold flex items-center justify-center">
+                EP
+              </div>
+<div>
+<h3 class="font-headline-sm text-[17px] font-semibold text-on-surface">Esperanza Parra Pinzón</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Suba Rincón • Tel: +57 301 552 9011</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase font-semibold">
+              Presencial
+            </span>
+</div>
+<div class="p-3.5 rounded bg-surface/70 space-y-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Motivación / Perfil vocacional</span>
+<p class="font-body-sm text-body-sm text-on-surface italic">
+              "Artesana tradicional con experiencia básica que busca formalizar conocimientos y acceder a los canales de exhibición de la Fundación."
+            </p>
+</div>
+<div class="flex items-center justify-between pt-2">
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1" href="#">
+<span>Ver formulario completo</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-colors" onclick="rechazarSolicitud('Esperanza Parra Pinzón')" type="button">
+                Rechazar / Reasignar
+              </button>
+<button class="px-4 py-2 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold shadow-sm hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all" onclick="admitirEstudiante('Esperanza Parra Pinzón')" type="button">
+                Admitir en el Curso
+              </button>
+</div>
+</div>
+</div>
+<!-- Application 4 -->
+<div class="p-6 rounded-xl bg-surface-container-low shadow-md space-y-4 hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-secondary-container text-on-secondary-container font-headline-sm text-base font-bold flex items-center justify-center">
+                HO
+              </div>
+<div>
+<h3 class="font-headline-sm text-[17px] font-semibold text-on-surface">Hernando Ortiz Celis</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ciudad Bolívar • Tel: +57 320 891 2231</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase font-semibold">
+              Virtual Asistido
+            </span>
+</div>
+<div class="p-3.5 rounded bg-surface/70 space-y-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Motivación / Perfil vocacional</span>
+<p class="font-body-sm text-body-sm text-on-surface italic">
+              "Postulación apoyada por líder barrial para terapia ocupacional y creación de taller comunitario de cerámica decorativa."
+            </p>
+</div>
+<div class="flex items-center justify-between pt-2">
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1" href="#">
+<span>Ver formulario completo</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-colors" onclick="rechazarSolicitud('Hernando Ortiz Celis')" type="button">
+                Rechazar / Reasignar
+              </button>
+<button class="px-4 py-2 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-sm text-label-sm tracking-wider uppercase font-semibold shadow-sm hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all" onclick="admitirEstudiante('Hernando Ortiz Celis')" type="button">
+                Admitir en el Curso
+              </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- VIEW 3: RETIRADOS / INACTIVOS (Oculta por defecto) -->
+<div class="hidden relative z-10 mt-6 space-y-4" id="view-inactivos">
+<div class="p-6 rounded-xl bg-surface-container-low shadow-md space-y-4">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Registro Histórico de Deserciones y Retiros</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Estos participantes fueron dados de baja por solicitud propia o inasistencia reiterada. Sus calificaciones parciales quedan congeladas en el historial.</p>
+<div class="divide-y divide-outline-variant/10">
+<div class="py-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold">
+                SA
+              </div>
+<div>
+<p class="font-semibold text-on-surface">Santiago Alvarado Nieto • CC 1.018.990.123</p>
+<p class="text-[12px] text-error">Motivo: Traslado de ciudad laboral • Fecha: 12 Febrero 2026</p>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded bg-surface hover:bg-surface-container text-on-surface-variant text-label-sm uppercase" onclick="alert('Historial académico archivado con éxito')" type="button">
+              Ver acta de retiro
+            </button>
+</div>
+<div class="py-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold">
+                GL
+              </div>
+<div>
+<p class="font-semibold text-on-surface">Gloria Lizeth Cárdenas • CC 52.118.094</p>
+<p class="text-[12px] text-error">Motivo: Inasistencia injustificada (&gt;30%) • Fecha: 01 Marzo 2026</p>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded bg-surface hover:bg-surface-container text-on-surface-variant text-label-sm uppercase" onclick="alert('Historial académico archivado con éxito')" type="button">
+              Ver acta de retiro
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Institutional Footer & Certification Protocol Banner -->
+<div class="relative z-10 mt-12 p-6 rounded-xl bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[28px]">shield_with_heart</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-headline-sm text-[16px] font-semibold text-on-surface tracking-wide uppercase">
+            Protocolo de Certificación y Acreditación de Oficios • Principio &amp; Fin
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl">
+            Para la emisión del certificado con valor institucional, cada estudiante requiere una calificación mínima aprobatoria de <strong class="text-primary">3.5 / 5.0</strong> y un porcentaje de asistencia de al menos el <strong class="text-primary">80%</strong> de las horas prácticas.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<a class="px-4 py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-sm text-label-sm tracking-wider uppercase transition-colors" href="#">
+          Ver Manual de Acreditación
+        </a>
+</div>
+</div>
+</div>
+<!-- MODAL: INSCRIBIR ESTUDIANTE DIRECTO (Hidden initially) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md" id="modal-inscribir">
+<div class="w-full max-w-lg rounded-2xl bg-surface-container p-6 lg:p-8 shadow-2xl space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[24px]">school</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Inscripción Directa</h3>
+</div>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface transition-colors" onclick="document.getElementById('modal-inscribir').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Matricula a un estudiante previamente verificado en el curso <strong>Pintura en Cerámica y Oficios (2026-I)</strong>.
+      </p>
+<form class="space-y-4" onsubmit="handleInscripcion(event)">
+<div class="space-y-1.5">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Nombre Completo</label>
+<input class="w-full px-3.5 py-2.5 rounded bg-surface text-on-surface placeholder:text-on-surface-variant/40 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ej: Diana Marcela Cifuentes" required="" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="space-y-1.5">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Documento de Identidad</label>
+<input class="w-full px-3.5 py-2.5 rounded bg-surface text-on-surface placeholder:text-on-surface-variant/40 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="CC / TI número" required="" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Teléfono / WhatsApp</label>
+<input class="w-full px-3.5 py-2.5 rounded bg-surface text-on-surface placeholder:text-on-surface-variant/40 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="+57 300 000 0000" required="" type="tel"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Correo Electrónico</label>
+<input class="w-full px-3.5 py-2.5 rounded bg-surface text-on-surface placeholder:text-on-surface-variant/40 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="estudiante@ejemplo.org" required="" type="email"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Tipo de Cupo / Financiación</label>
+<select class="w-full px-3.5 py-2.5 rounded bg-surface text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" required="">
+<option value="Beca Inclusión Artesanal">Beca Inclusión Artesanal</option>
+<option value="Convenio PH">Convenio PH (Propiedad Horizontal)</option>
+<option value="Cupo Regular">Cupo Regular</option>
+</select>
+</div>
+<div class="pt-4 flex items-center justify-end gap-3">
+<button class="px-4 py-2.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md uppercase tracking-wider hover:bg-surface-bright transition-colors" onclick="document.getElementById('modal-inscribir').classList.add('hidden')" type="button">
+            Cancelar
+          </button>
+<button class="px-5 py-2.5 rounded bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-md text-label-md uppercase tracking-wider font-semibold shadow-md hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all" type="submit">
+            Confirmar Matrícula
+          </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script>
+  function switchView(tabKey) {
+    // Hide all views
+    document.getElementById('view-matriculados').classList.add('hidden');
+    document.getElementById('view-solicitudes').classList.add('hidden');
+    document.getElementById('view-inactivos').classList.add('hidden');
+
+    // Remove active styles on tab buttons
+    const tabs = ['matriculados', 'solicitudes', 'inactivos'];
+    tabs.forEach(t => {
+      const btn = document.getElementById('tab-' + t);
+      const ind = document.getElementById('indicator-' + t);
+      btn.classList.remove('text-primary');
+      btn.classList.add('text-on-surface-variant');
+      if (ind) ind.classList.add('hidden');
+    });
+
+    // Activate selected
+    document.getElementById('view-' + tabKey).classList.remove('hidden');
+    const activeBtn = document.getElementById('tab-' + tabKey);
+    const activeInd = document.getElementById('indicator-' + tabKey);
+    activeBtn.classList.add('text-primary');
+    activeBtn.classList.remove('text-on-surface-variant');
+    if (activeInd) activeInd.classList.remove('hidden');
+  }
+
+  function filterStudents() {
+    const searchVal = document.getElementById('filter-input').value.toLowerCase();
+    const statusVal = document.getElementById('select-status').value;
+    const typeVal = document.getElementById('select-type').value;
+
+    const rows = document.querySelectorAll('.student-row');
+    rows.forEach(row => {
+      const name = row.dataset.name.toLowerCase();
+      const status = row.dataset.status;
+      const cupo = row.dataset.cupo;
+
+      const matchesSearch = name.includes(searchVal);
+      const matchesStatus = (statusVal === 'all') || (status === statusVal);
+      const matchesCupo = (typeVal === 'all') || (cupo === typeVal);
+
+      if (matchesSearch && matchesStatus && matchesCupo) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  function resetFilters() {
+    document.getElementById('filter-input').value = '';
+    document.getElementById('select-status').value = 'all';
+    document.getElementById('select-type').value = 'all';
+    filterStudents();
+  }
+
+  function aprobarEstudiante(name) {
+    if (confirm(`¿Confirmas la acreditación y aprobación del curso para ${name}? Esta acción registrará el diploma digital oficial.`)) {
+      alert(`¡${name} ha sido certificado con éxito! El certificado ha sido generado.`);
+    }
+  }
+
+  function confirmRetiro(name) {
+    if (confirm(`¿Deseas retirar a ${name} de la cohorte actual? La información formativa y asistencia quedarán archivadas en la sección de inactivos sin perderse.`)) {
+      alert(`El estudiante ${name} ha sido transferido a la lista de retirados.`);
+    }
+  }
+
+  function admitirEstudiante(name) {
+    if (confirm(`¿Aprobar solicitud de ingreso para ${name}? Se asignará formalmente un cupo disponible en esta cohorte.`)) {
+      alert(`¡Solicitud aprobada! ${name} fue registrado en la lista de matriculados.`);
+    }
+  }
+
+  function rechazarSolicitud(name) {
+    if (confirm(`¿Deseas posponer o reasignar la solicitud de ${name} para la siguiente cohorte?`)) {
+      alert(`La postulación de ${name} ha sido reasignada.`);
+    }
+  }
+
+  function handleInscripcion(e) {
+    e.preventDefault();
+    alert("¡Estudiante inscrito con éxito! La lista y el aforo han sido actualizados.");
+    document.getElementById('modal-inscribir').classList.add('hidden');
+  }
+</script></main></div>
+</body></html>
