@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <StarfieldBackground />
       <EarthBackground />
       {/* Sidebar Admin */}
-      <aside className="w-[280px] bg-[#0A0A0E] flex flex-col flex-shrink-0 relative z-20 border-r border-[#262629] h-full">
+      <aside className="w-[280px] bg-[#0A0A0E] flex flex-col flex-shrink-0 relative z-10 border-r border-[#262629] h-full">
         <div className="p-8 pb-6 flex-shrink-0">
           <img 
             src="/images/logo-admin.png" 
@@ -68,7 +68,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       {/* Contenido Principal */}
-      <main className="flex-1 h-full overflow-y-auto bg-transparent relative z-10">
+      <main className="flex-1 h-full overflow-y-auto bg-transparent relative z-20">
         <div className="p-10 w-full max-w-[1600px] mx-auto">
           {children}
         </div>

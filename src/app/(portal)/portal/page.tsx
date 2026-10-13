@@ -6,7 +6,7 @@ import { createServerClient } from '@/services/supabase/server';
 import { redirect } from 'next/navigation';
 import { signout } from '@/app/(admin)/actions';
 
-export const instant = false;
+export const dynamic = 'force-dynamic';
 
 export default async function PortalPage() {
   const supabase = await createServerClient();
