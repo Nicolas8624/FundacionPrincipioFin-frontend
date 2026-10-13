@@ -8,7 +8,7 @@ export function ContactInfoGrid() {
       title: "Teléfono / WhatsApp",
       detail: FOUNDATION.contact.phone,
       action: {
-        href: "https://wa.me/573009096862",
+        href: "https://wa.me/573009096862?text=Hola%2C%20tengo%20una%20duda%20sobre%20la%20fundaci%C3%B3n",
         target: "_blank",
         rel: "noopener noreferrer",
         title: "Chatear por WhatsApp",
