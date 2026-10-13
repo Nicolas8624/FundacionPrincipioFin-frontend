@@ -9,6 +9,7 @@ interface WithdrawalActModalProps {
   studentName: string;
   documentNumber: string;
   courseTitle: string;
+  cohort?: string | null;
   date: string;
   reason: string;
   attendancePercentage?: string;
@@ -21,23 +22,24 @@ export function WithdrawalActModal({
   studentName,
   documentNumber,
   courseTitle,
+  cohort,
   date,
   reason,
-  attendancePercentage = '45%',
-  frozenScore = '2.8 / 5.0'
+  attendancePercentage = '—',
+  frozenScore = '—'
 }: WithdrawalActModalProps) {
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl bg-[#131317] border border-rose-500/30 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-2xl max-h-[85vh] bg-[#131317] border border-rose-500/30 rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400">
               <FileText className="w-5 h-5" />
@@ -55,7 +57,7 @@ export function WithdrawalActModal({
           </button>
         </div>
 
-        <div className="p-6 sm:p-8 space-y-6 text-[#e4e1e7] text-sm leading-relaxed">
+        <div className="p-6 sm:p-8 space-y-6 text-[#e4e1e7] text-sm leading-relaxed flex-1 overflow-y-auto min-h-0">
           <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
             <div>
@@ -73,7 +75,7 @@ export function WithdrawalActModal({
             <div>
               <p className="text-[10px] text-[#99907c] uppercase font-montserrat tracking-wider">Programa / Cohorte</p>
               <p className="font-semibold text-white mt-0.5">{courseTitle}</p>
-              <p className="text-xs text-[#99907c]">Cohorte 2026-I</p>
+              <p className="text-xs text-[#99907c]">{cohort ? `Cohorte ${cohort}` : 'Cohorte Activa'}</p>
             </div>
             <div>
               <p className="text-[10px] text-[#99907c] uppercase font-montserrat tracking-wider">Fecha Efectiva de Baja</p>
@@ -98,7 +100,7 @@ export function WithdrawalActModal({
           </p>
         </div>
 
-        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between flex-shrink-0">
           <span className="text-[11px] text-[#99907c]">Folio Digital: ACT-RET-{Math.floor(Math.random() * 90000 + 10000)}</span>
           <div className="flex items-center gap-3">
             <button

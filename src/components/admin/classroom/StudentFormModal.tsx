@@ -31,14 +31,14 @@ export function StudentFormModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl bg-[#131317] border border-[#262629] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-2xl max-h-[85vh] bg-[#131317] border border-[#262629] rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] font-montserrat font-bold flex items-center justify-center text-sm">
               {applicant.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
@@ -56,7 +56,7 @@ export function StudentFormModal({
           </button>
         </div>
 
-        <div className="p-6 space-y-6 text-sm text-[#e4e1e7] max-h-[75vh] overflow-y-auto">
+        <div className="p-6 space-y-6 text-sm text-[#e4e1e7] flex-1 overflow-y-auto min-h-0">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="p-3 bg-[#1b1b1f] rounded-xl border border-[#262629]">
               <span className="text-[10px] text-[#99907c] uppercase font-montserrat block">Modalidad Solicitada</span>
@@ -113,7 +113,7 @@ export function StudentFormModal({
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between flex-shrink-0">
           <span className="text-xs text-[#99907c] flex items-center gap-1">
             <Clock className="w-3.5 h-3.5" />
             Estado: En espera de cupo

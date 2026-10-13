@@ -9,6 +9,7 @@ interface DiplomaPreviewModalProps {
   studentName: string;
   documentNumber: string;
   courseTitle: string;
+  instructorName?: string | null;
   averageGrade: string;
   completionDate?: string;
   code?: string;
@@ -20,23 +21,25 @@ export function DiplomaPreviewModal({
   studentName,
   documentNumber,
   courseTitle,
+  instructorName,
   averageGrade,
-  completionDate = '14 de Marzo de 2026',
-  code = 'FPF-2026-CERT-0894'
+  completionDate,
+  code = 'FPF-CERT'
 }: DiplomaPreviewModalProps) {
+  const displayDate = completionDate || new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-3xl bg-[#131317] border border-[#D4AF37]/40 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-3xl max-h-[88vh] bg-[#131317] border border-[#D4AF37]/40 rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262629] bg-[#1b1b1f] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37]">
               <Award className="w-5 h-5" />
@@ -55,7 +58,7 @@ export function DiplomaPreviewModal({
         </div>
 
         {/* Certificate Card Body */}
-        <div className="p-8 sm:p-12 bg-gradient-to-b from-[#1b1b1f] via-[#131317] to-[#0A0A0E] text-center relative overflow-hidden">
+        <div className="p-8 sm:p-12 bg-gradient-to-b from-[#1b1b1f] via-[#131317] to-[#0A0A0E] text-center relative overflow-y-auto flex-1 min-h-0">
           {/* Decorative Borders */}
           <div className="absolute inset-4 border border-[#D4AF37]/30 rounded-xl pointer-events-none"></div>
           <div className="absolute inset-5 border border-[#D4AF37]/10 rounded-lg pointer-events-none"></div>
@@ -91,7 +94,7 @@ export function DiplomaPreviewModal({
               </div>
               <div>
                 <p className="text-[10px] text-[#99907c] uppercase font-montserrat">Fecha Emisión</p>
-                <p className="text-white font-medium text-xs mt-0.5">{completionDate}</p>
+                <p className="text-white font-medium text-xs mt-0.5">{displayDate}</p>
               </div>
               <div>
                 <p className="text-[10px] text-[#99907c] uppercase font-montserrat">Folio Digital</p>
@@ -102,8 +105,8 @@ export function DiplomaPreviewModal({
             <div className="pt-6 border-t border-[#262629] flex items-end justify-around">
               <div className="text-center space-y-1">
                 <div className="w-32 h-0.5 bg-[#99907c]/40 mx-auto"></div>
-                <p className="text-white text-xs font-montserrat font-medium">Maestra Lucía Forero</p>
-                <p className="text-[10px] text-[#99907c]">Docente Formadora</p>
+                <p className="text-white text-xs font-montserrat font-medium">{instructorName || 'Docente Formador(a)'}</p>
+                <p className="text-[10px] text-[#99907c]">Docente Formador(a)</p>
               </div>
               <div className="w-14 h-14 rounded-full border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] bg-[#D4AF37]/5 shadow-inner">
                 <Award className="w-7 h-7" />
@@ -118,7 +121,7 @@ export function DiplomaPreviewModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-[#262629] bg-[#1b1b1f] flex items-center justify-between flex-shrink-0">
           <span className="text-[11px] text-[#99907c] flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
             Certificado con validez oficial para inserción laboral y convenios PH

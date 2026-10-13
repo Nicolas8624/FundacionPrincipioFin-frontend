@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, GraduationCap, User, Phone, Mail, FileText, Check } from 'lucide-react';
+import { X, GraduationCap, User, Phone, Mail, FileText, Check, AlertCircle } from 'lucide-react';
+import { createBrowserClient } from '@/services/supabase/client';
+import { useRouter } from 'next/navigation';
 
 interface DirectEnrollmentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  courseId: string;
   courseTitle: string;
   onSuccess: (studentData: {
     fullName: string;
@@ -19,46 +22,84 @@ interface DirectEnrollmentModalProps {
 export function DirectEnrollmentModal({
   isOpen,
   onClose,
+  courseId,
   courseTitle,
   onSuccess
 }: DirectEnrollmentModalProps) {
+  const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [documentNumber, setDocumentNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [cupoType, setCupoType] = useState('Beca Inclusión Artesanal');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !documentNumber) return;
     setIsSubmitting(true);
+    setError(null);
 
-    setTimeout(() => {
-      onSuccess({
-        fullName,
-        documentNumber,
-        phone,
-        email,
-        cupoType
-      });
-      setIsSubmitting(false);
+    try {
+      const supabase = createBrowserClient();
+      const { data: insertedData, error: insertError } = await supabase
+        .from('course_enrollments')
+        .insert([
+          {
+            course_id: courseId,
+            full_name: fullName.trim(),
+            document_type: 'CC',
+            document_number: documentNumber.trim(),
+            phone: phone.trim() || null,
+            email: email.trim() || null,
+            cupo_type: cupoType,
+            status: 'confirmada',
+            accepted_data_policy: true,
+            attended_sessions: 0,
+            average_grade: null,
+            has_certificate: false
+          }
+        ])
+        .select()
+        .single();
+
+      if (insertError) {
+        throw new Error(insertError.message);
+      }
+
+      onSuccess(
+        insertedData || {
+          fullName,
+          documentNumber,
+          phone,
+          email,
+          cupoType
+        }
+      );
+
+      router.refresh();
       onClose();
-    }, 400);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Error al guardar la inscripción');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-lg bg-[#131317] border border-[#262629] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-lg max-h-[85vh] bg-[#131317] border border-[#262629] rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#262629] bg-[#1b1b1f]">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#262629] bg-[#1b1b1f] flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
             <h3 className="text-white font-montserrat font-semibold text-lg">Inscripción Directa</h3>
@@ -71,10 +112,17 @@ export function DirectEnrollmentModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
           <p className="text-xs text-[#99907c] leading-relaxed">
             Matricula a un estudiante previamente verificado en el curso <strong className="text-white">{courseTitle}</strong> (Cohorte 2026-I).
           </p>
+
+          {error && (
+            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <label className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c] flex items-center gap-1.5">

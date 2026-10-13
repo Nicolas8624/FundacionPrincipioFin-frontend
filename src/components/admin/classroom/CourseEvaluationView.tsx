@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@/services/supabase/client';
 import { 
   FolderCheck, 
   Clock, 
@@ -23,53 +25,86 @@ import {
   Sparkles, 
   Check, 
   AlertCircle,
-  Eye,
-  Sliders
+  FileText,
+  Sliders,
+  FolderPlus,
+  BookOpen,
+  FileSpreadsheet,
+  ClipboardList
 } from 'lucide-react';
 import { CreateAssignmentModal } from './CreateAssignmentModal';
 import { ImageLightboxModal } from './ImageLightboxModal';
+import { FormModal } from './FormModal';
+import type {
+  ClassroomCourse,
+  ClassroomModule,
+  ClassroomAssignment,
+  ClassroomSubmission,
+  RubricCriterion
+} from './types';
+import {
+  getInitials,
+  formatDate,
+  formatModality,
+  downloadCSV,
+  slugify
+} from './types';
 
-interface SubmissionItem {
-  id: string;
-  studentName: string;
-  initials: string;
-  document: string;
-  projectTitle: string;
-  submittedAt: string;
-  isLate: boolean;
-  status: 'Pendiente de Calificar' | 'Aprobado' | 'Corrección' | 'Distinción';
-  score?: number;
-  badge?: string;
-  studentNote?: string;
-  correctionNote?: string;
-  photos: { url: string; title: string }[];
-  criterion1: number;
-  criterion2: number;
-  criterion3: number;
-  feedback: string;
-  groupSchedule: string;
-  moduleKey: string;
-}
+const DEFAULT_RUBRIC_CRITERIA: RubricCriterion[] = [
+  {
+    id: 'crit-1',
+    number: 1,
+    title: 'Técnica y Modelado',
+    weight: 35,
+    description: 'Consistencia de técnica, simetría, grosor y estabilidad estructural.'
+  },
+  {
+    id: 'crit-2',
+    number: 2,
+    title: 'Calidad y Acabado',
+    weight: 35,
+    description: 'Tratamiento homogéneo de superficies, vidriado y pulido de detalles.'
+  },
+  {
+    id: 'crit-3',
+    number: 3,
+    title: 'Creatividad y Narrativa',
+    weight: 30,
+    description: 'Aporte simbólico, propuesta identitaria y relato comunitario.'
+  }
+];
 
-interface CourseEvaluationViewProps {
-  courseTitle: string;
-  modalityText?: string;
-  cohortText?: string;
-  teacherText?: string;
+export interface CourseEvaluationViewProps {
+  course: ClassroomCourse;
+  modules: ClassroomModule[];
+  assignments: ClassroomAssignment[];
+  submissions: ClassroomSubmission[];
   totalEnrolledCount?: number;
   onSwitchToStudentsTab?: () => void;
+  onSwitchToActivitiesTab?: () => void;
 }
 
 export function CourseEvaluationView({
-  courseTitle,
-  modalityText = 'Virtual & Presencial',
-  cohortText = '2026-I',
-  teacherText = 'Maestra Lucía Forero',
-  totalEnrolledCount = 32,
-  onSwitchToStudentsTab
+  course,
+  modules = [],
+  assignments = [],
+  submissions: initialSubmissions = [],
+  totalEnrolledCount = 0,
+  onSwitchToStudentsTab,
+  onSwitchToActivitiesTab
 }: CourseEvaluationViewProps) {
+  const router = useRouter();
+
+  // Local state for submissions to support optimistic updates
+  const [submissionsList, setSubmissionsList] = useState<ClassroomSubmission[]>(initialSubmissions);
+
+  useEffect(() => {
+    setSubmissionsList(initialSubmissions);
+  }, [initialSubmissions]);
+
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateModuleModalOpen, setIsCreateModuleModalOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -78,185 +113,128 @@ export function CourseEvaluationView({
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Filter states
-  const [activeModuleTab, setActiveModuleTab] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('todos');
-  const [scheduleFilter, setScheduleFilter] = useState('todos');
+  // Mappings
+  const assignmentsMap = useMemo(() => {
+    const map = new Map<string, ClassroomAssignment>();
+    assignments.forEach((a) => map.set(a.id, a));
+    return map;
+  }, [assignments]);
 
-  // Submissions initial data
-  const [submissions, setSubmissions] = useState<SubmissionItem[]>([
-    {
-      id: 'sub-1',
-      studentName: 'Camila Andrea Morales',
-      initials: 'CM',
-      document: 'CC 1.014.289.430',
-      projectTitle: 'Proyecto 2: Jarrón con Esmaltado Azul Cobalto',
-      submittedAt: '14 Mar 2026, 10:45 a.m. (A tiempo)',
-      isLate: false,
-      status: 'Pendiente de Calificar',
-      badge: 'Beneficiaria Beca de Inclusión Artesanal',
-      studentNote: 'Profesora Lucía, apliqué dos capas de esmalte cobalto después de la primera cocción a 950°C. La pieza no presentó grietas y mantuve el patrón en espiral del taller.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=800&q=80',
-          title: '1_Pieza_Final_Cobalto.jpg'
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80',
-          title: '2_Proceso_Pincel_Vidriado.jpg'
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
-          title: '3_Post_Horneado_Textura.jpg'
-        }
-      ],
-      criterion1: 4.7,
-      criterion2: 4.9,
-      criterion3: 4.8,
-      feedback: 'Excelente dominio de la técnica de vidriado. El acabado azul cobalto resalta las texturas en espiral logradas en el modelado. Felicitaciones por la dedicación y el cumplimiento de las temperaturas de cocción sugeridas.',
-      groupSchedule: 'sabados',
-      moduleKey: 'mod2'
-    },
-    {
-      id: 'sub-2',
-      studentName: 'Andrés Felipe Rodríguez',
-      initials: 'AR',
-      document: 'CC 1.020.784.112',
-      projectTitle: 'Proyecto 1: Escultura Cántaro Tradicional',
-      submittedAt: '13 Mar 2026 • 2 archivos adjuntos',
-      isLate: false,
-      status: 'Aprobado',
-      score: 4.5,
-      studentNote: 'Cántaro modelado a mano respetando proporciones muiscas.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80',
-          title: 'Cantaro_Modelado.jpg'
-        }
-      ],
-      criterion1: 4.5,
-      criterion2: 4.4,
-      criterion3: 4.6,
-      feedback: 'Gran pulso en el acabado de las asas. Muy buen grosor general.',
-      groupSchedule: 'sabados',
-      moduleKey: 'mod1'
-    },
-    {
-      id: 'sub-3',
-      studentName: 'María Paula Gómez',
-      initials: 'MG',
-      document: 'CC 52.849.201',
-      projectTitle: 'Proyecto 2: Muestrario de Texturas',
-      submittedAt: '14 Mar 2026, 09:12 a.m. • 2 imágenes adjuntas',
-      isLate: false,
-      status: 'Pendiente de Calificar',
-      studentNote: 'Ensayé esgrafiado sobre engobe claro con textura de peine.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=800&q=80',
-          title: 'Muestrario_Texturas.jpg'
-        }
-      ],
-      criterion1: 4.2,
-      criterion2: 4.5,
-      criterion3: 4.4,
-      feedback: 'Excelente exploración de bajorrelieve en la arcilla.',
-      groupSchedule: 'martes',
-      moduleKey: 'mod2'
-    },
-    {
-      id: 'sub-4',
-      studentName: 'Julián David Herrera',
-      initials: 'JH',
-      document: 'CC 1.032.411.902',
-      projectTitle: 'Proyecto 3: Esmalte y Cocción en Alta',
-      submittedAt: '12 Mar 2026',
-      isLate: true,
-      status: 'Corrección',
-      score: 2.8,
-      correctionNote: 'Requiere ajustar registro de temperatura y re-enviar foto cenital.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
-          title: 'Coccion_Revision.jpg'
-        }
-      ],
-      criterion1: 3.0,
-      criterion2: 2.5,
-      criterion3: 3.0,
-      feedback: 'Se observa craquelado no intencional por enfriamiento prematuro del horno. Por favor revisar guía de curvas térmicas.',
-      groupSchedule: 'sabados',
-      moduleKey: 'mod3'
-    },
-    {
-      id: 'sub-5',
-      studentName: 'Valentina Torres Castro',
-      initials: 'VT',
-      document: 'CC 1.018.992.304',
-      projectTitle: 'Proyecto 1: Pieza Funcional Taza Artesanal',
-      submittedAt: 'Calificado el 12 Mar 2026 • Maestra Lucía Forero',
-      isLate: false,
-      status: 'Distinción',
-      score: 5.0,
-      badge: 'Mención de Honor',
-      studentNote: 'Taza ergonómica con esmaltado interior no tóxico y grabado exterior.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=800&q=80',
-          title: 'Taza_Final_Mencion.jpg'
-        }
-      ],
-      criterion1: 5.0,
-      criterion2: 5.0,
-      criterion3: 5.0,
-      feedback: 'Perfección técnica e identidad comunitaria impecable. Recomendada para catálogo de exposición.',
-      groupSchedule: 'martes',
-      moduleKey: 'mod1'
-    },
-    {
-      id: 'sub-6',
-      studentName: 'Carlos Eduardo Quintero',
-      initials: 'CQ',
-      document: 'CC 80.123.456',
-      projectTitle: 'Proyecto 3: Cuenco Decorativo Bosa',
-      submittedAt: '14 Mar 2026, 08:30 a.m. • 1 PDF + 2 fotos',
-      isLate: false,
-      status: 'Pendiente de Calificar',
-      studentNote: 'Registro fotográfico del proceso de bruñido con piedra de río.',
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80',
-          title: 'Cuenco_Brunido.jpg'
-        }
-      ],
-      criterion1: 4.3,
-      criterion2: 4.1,
-      criterion3: 4.5,
-      feedback: 'Buen trabajo en el bruñido natural con piedra de río.',
-      groupSchedule: 'sabados',
-      moduleKey: 'mod3'
-    }
-  ]);
+  const modulesMap = useMemo(() => {
+    const map = new Map<string, ClassroomModule>();
+    modules.forEach((m) => map.set(m.id, m));
+    return map;
+  }, [modules]);
+
+  // Filter states
+  const [activeModuleTab, setActiveModuleTab] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'todos' | 'pendiente' | 'aprobado' | 'correccion'>('todos');
+
+  // Filtered Submissions
+  const filteredSubmissions = useMemo(() => {
+    return submissionsList.filter((s) => {
+      const assignment = assignmentsMap.get(s.assignment_id);
+      const moduleId = assignment?.module_id;
+
+      // Module match
+      if (activeModuleTab !== 'all') {
+        if (moduleId !== activeModuleTab) return false;
+      }
+
+      // Search match (name, document, project)
+      if (searchTerm.trim()) {
+        const query = searchTerm.toLowerCase();
+        const nameMatch = s.student_name?.toLowerCase().includes(query);
+        const docMatch = s.student_document?.toLowerCase().includes(query);
+        const projMatch = (s.project_title || assignment?.title || '')
+          .toLowerCase()
+          .includes(query);
+        if (!nameMatch && !docMatch && !projMatch) return false;
+      }
+
+      // Status match
+      if (statusFilter === 'pendiente') {
+        if (s.status !== 'entregada') return false;
+      } else if (statusFilter === 'aprobado') {
+        if (s.status !== 'calificada' || (s.score || 0) < 3.5) return false;
+      } else if (statusFilter === 'correccion') {
+        if (s.status !== 'devuelta') return false;
+      }
+
+      return true;
+    });
+  }, [submissionsList, assignmentsMap, activeModuleTab, searchTerm, statusFilter]);
 
   // Active target student for Grading Studio
-  const [activeSubmissionId, setActiveSubmissionId] = useState<string>('sub-1');
-  const activeSubmission = submissions.find(s => s.id === activeSubmissionId) || submissions[0];
+  const [activeSubmissionId, setActiveSubmissionId] = useState<string | null>(() => {
+    return filteredSubmissions[0]?.id || submissionsList[0]?.id || null;
+  });
 
-  // Studio Grading State (reactive to active submission)
-  const [crit1, setCrit1] = useState<number>(activeSubmission.criterion1);
-  const [crit2, setCrit2] = useState<number>(activeSubmission.criterion2);
-  const [crit3, setCrit3] = useState<number>(activeSubmission.criterion3);
-  const [feedbackText, setFeedbackText] = useState<string>(activeSubmission.feedback);
+  useEffect(() => {
+    if (filteredSubmissions.length > 0) {
+      if (!filteredSubmissions.some((s) => s.id === activeSubmissionId)) {
+        setActiveSubmissionId(filteredSubmissions[0].id);
+      }
+    } else if (submissionsList.length > 0) {
+      if (!submissionsList.some((s) => s.id === activeSubmissionId)) {
+        setActiveSubmissionId(submissionsList[0].id);
+      }
+    } else {
+      setActiveSubmissionId(null);
+    }
+  }, [filteredSubmissions, submissionsList, activeSubmissionId]);
+
+  const activeSubmission = useMemo(() => {
+    if (!activeSubmissionId) return null;
+    return submissionsList.find((s) => s.id === activeSubmissionId) || null;
+  }, [submissionsList, activeSubmissionId]);
+
+  const activeAssignment = useMemo(() => {
+    if (!activeSubmission) return null;
+    return assignmentsMap.get(activeSubmission.assignment_id) || null;
+  }, [activeSubmission, assignmentsMap]);
+
+  // Dynamic criteria for active assignment
+  const activeCriteria = useMemo<RubricCriterion[]>(() => {
+    if (activeAssignment?.rubric_criteria && Array.isArray(activeAssignment.rubric_criteria) && activeAssignment.rubric_criteria.length > 0) {
+      return activeAssignment.rubric_criteria;
+    }
+    return DEFAULT_RUBRIC_CRITERIA;
+  }, [activeAssignment]);
+
+  // Studio Grading State
+  const [criteriaScores, setCriteriaScores] = useState<Record<string, number>>({});
+  const [feedbackText, setFeedbackText] = useState<string>('');
   const [manualOverrideScore, setManualOverrideScore] = useState<string>('');
 
-  // When changing active submission, load its state
-  const handleSelectSubmission = (sub: SubmissionItem) => {
-    setActiveSubmissionId(sub.id);
-    setCrit1(sub.criterion1);
-    setCrit2(sub.criterion2);
-    setCrit3(sub.criterion3);
-    setFeedbackText(sub.feedback);
+  // Sync grading state when activeSubmission changes
+  useEffect(() => {
+    if (activeSubmission) {
+      const initialScores: Record<string, number> = {};
+      const savedScores = activeSubmission.rubric_scores || {};
+
+      activeCriteria.forEach((crit) => {
+        initialScores[crit.id] = savedScores[crit.id] !== undefined
+          ? Number(savedScores[crit.id])
+          : (activeSubmission.score ? Math.min(5, Number(activeSubmission.score)) : 4.5);
+      });
+
+      setCriteriaScores(initialScores);
+      setFeedbackText(activeSubmission.feedback || '');
+      setManualOverrideScore(activeSubmission.score !== null && activeSubmission.score !== undefined ? String(activeSubmission.score) : '');
+    } else {
+      setCriteriaScores({});
+      setFeedbackText('');
+      setManualOverrideScore('');
+    }
+  }, [activeSubmission, activeCriteria]);
+
+  const handleCriterionChange = (criterionId: string, val: number) => {
+    setCriteriaScores((prev) => ({
+      ...prev,
+      [criterionId]: val
+    }));
     setManualOverrideScore('');
   };
 
@@ -265,76 +243,138 @@ export function CourseEvaluationView({
     if (manualOverrideScore && !isNaN(parseFloat(manualOverrideScore))) {
       return parseFloat(manualOverrideScore).toFixed(1);
     }
-    const val = (crit1 * 0.35) + (crit2 * 0.35) + (crit3 * 0.30);
-    return val.toFixed(1);
-  }, [crit1, crit2, crit3, manualOverrideScore]);
+    if (activeCriteria.length === 0) return '5.0';
 
-  // Filtered Submissions
-  const filteredSubmissions = useMemo(() => {
-    return submissions.filter(s => {
-      const matchModule = activeModuleTab === 'all' || s.moduleKey === activeModuleTab;
-      const matchSearch = 
-        s.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.document.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.projectTitle.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchStatus = 
-        statusFilter === 'todos' ||
-        (statusFilter === 'pendiente' && s.status === 'Pendiente de Calificar') ||
-        (statusFilter === 'aprobado' && (s.status === 'Aprobado' || s.status === 'Distinción')) ||
-        (statusFilter === 'correccion' && s.status === 'Corrección');
-
-      const matchSchedule = scheduleFilter === 'todos' || s.groupSchedule === scheduleFilter;
-
-      return matchModule && matchSearch && matchStatus && matchSchedule;
+    let weightedSum = 0;
+    let totalWeight = 0;
+    activeCriteria.forEach((crit) => {
+      const score = criteriaScores[crit.id] ?? 4.0;
+      const weight = crit.weight > 0 ? crit.weight : (100 / activeCriteria.length);
+      weightedSum += score * weight;
+      totalWeight += weight;
     });
-  }, [submissions, activeModuleTab, searchTerm, statusFilter, scheduleFilter]);
 
-  // KPIs
-  const totalDeliveries = submissions.length * 10 + 4; // realistic total cohort deliveries
-  const pendingGradingCount = submissions.filter(s => s.status === 'Pendiente de Calificar').length;
-  const approvedCount = submissions.filter(s => s.status === 'Aprobado' || s.status === 'Distinción').length;
+    if (totalWeight > 0) {
+      const result = weightedSum / totalWeight;
+      return Math.min(5.0, Math.max(1.0, result)).toFixed(1);
+    }
+    return '4.5';
+  }, [activeCriteria, criteriaScores, manualOverrideScore]);
+
+  // Real Dynamic KPIs
+  const totalSubmissionsCount = submissionsList.length;
+  const pendingGradingCount = submissionsList.filter((s) => s.status === 'entregada').length;
+  const approvedCount = submissionsList.filter((s) => s.status === 'calificada' && (s.score || 0) >= 3.5).length;
+  const devueltaCount = submissionsList.filter((s) => s.status === 'devuelta').length;
+
+  const gradedSubmissions = useMemo(() => {
+    return submissionsList.filter((s) => s.score !== null && s.score !== undefined);
+  }, [submissionsList]);
+
+  const averageScoreFormatted = useMemo(() => {
+    if (gradedSubmissions.length === 0) return '—';
+    const sum = gradedSubmissions.reduce((acc, s) => acc + (s.score || 0), 0);
+    return (sum / gradedSubmissions.length).toFixed(1);
+  }, [gradedSubmissions]);
+
+  const approvalRateFormatted = useMemo(() => {
+    if (totalSubmissionsCount === 0) return '0%';
+    return `${Math.round((approvedCount / totalSubmissionsCount) * 100)}%`;
+  }, [totalSubmissionsCount, approvedCount]);
 
   // Actions
-  const handleSaveGrade = (statusToSet: 'Aprobado' | 'Corrección' | 'Distinción') => {
-    const finalScore = parseFloat(calculatedScore);
-    setSubmissions(prev => prev.map(s => {
-      if (s.id === activeSubmission.id) {
-        return {
-          ...s,
-          status: statusToSet,
+  const handleSaveGrade = async (statusToSet: 'Aprobado' | 'Corrección' | 'Distinción') => {
+    if (!activeSubmission) return;
+
+    const finalScore = Math.max(1, Math.min(5, parseFloat(calculatedScore) || 5.0));
+    const dbStatus = statusToSet === 'Corrección' ? 'devuelta' : 'calificada';
+    const badgeValue = statusToSet === 'Distinción' ? 'Mención de Honor' : null;
+
+    // Optimistic UI update
+    setSubmissionsList((prev) =>
+      prev.map((s) => {
+        if (s.id === activeSubmission.id) {
+          return {
+            ...s,
+            status: dbStatus,
+            score: finalScore,
+            rubric_scores: criteriaScores,
+            feedback: feedbackText,
+            badge: badgeValue,
+            graded_at: new Date().toISOString()
+          };
+        }
+        return s;
+      })
+    );
+
+    try {
+      const supabase = createBrowserClient();
+      const { error } = await supabase
+        .from('submissions')
+        .update({
           score: finalScore,
-          criterion1: crit1,
-          criterion2: crit2,
-          criterion3: crit3,
+          status: dbStatus,
+          rubric_scores: criteriaScores,
           feedback: feedbackText,
-          badge: statusToSet === 'Distinción' ? 'Mención de Honor' : s.badge
-        };
+          badge: badgeValue,
+          graded_at: new Date().toISOString()
+        })
+        .eq('id', activeSubmission.id);
+
+      if (error) {
+        console.error('Error al calificar entrega:', error);
+        showToast(`Error al guardar en base de datos: ${error.message}`);
+        return;
       }
-      return s;
-    }));
-    showToast(`Calificación (${finalScore}/5.0) guardada para ${activeSubmission.studentName}. Boletín actualizado.`);
+
+      router.refresh();
+      showToast(`Calificación (${finalScore.toFixed(1)}/5.0) guardada para ${activeSubmission.student_name}.`);
+    } catch (err: any) {
+      console.error('Error inesperado al calificar:', err);
+      showToast('Ocurrió un error inesperado al guardar la calificación.');
+    }
   };
 
   const handleExportConsolidado = () => {
-    const headers = ['Estudiante', 'Documento', 'Proyecto', 'Estado Entrega', 'Nota Final', 'Fecha'];
-    const rows = submissions.map(s => [
-      `"${s.studentName}"`,
-      s.document,
-      `"${s.projectTitle}"`,
-      `"${s.status}"`,
-      s.score ?? calculatedScore,
-      `"${s.submittedAt}"`
-    ]);
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `consolidado_notas_${courseTitle.replace(/\s+/g, '_').toLowerCase()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Consolidado de calificaciones exportado en CSV exitosamente.');
+    if (submissionsList.length === 0) {
+      showToast('No hay calificaciones registradas para exportar en este curso.');
+      return;
+    }
+
+    const headers = [
+      'Estudiante',
+      'Documento',
+      'Asignación / Proyecto',
+      'Estado Entrega',
+      'Nota Definitiva',
+      'Distinción',
+      'Fecha de Entrega',
+      'Fecha Calificación',
+      'Retroalimentación'
+    ];
+
+    const rows = submissionsList.map((s) => {
+      const asg = assignmentsMap.get(s.assignment_id);
+      return [
+        s.student_name,
+        s.student_document,
+        s.project_title || asg?.title || 'Evidencia de Curso',
+        s.status === 'calificada' ? 'Calificada' : s.status === 'devuelta' ? 'Requiere Ajustes' : 'Entregada',
+        s.score !== null && s.score !== undefined ? s.score.toFixed(1) : 'Sin calificar',
+        s.badge || '—',
+        formatDate(s.submitted_at, true),
+        formatDate(s.graded_at, true),
+        s.feedback || '—'
+      ];
+    });
+
+    downloadCSV(
+      `consolidado_calificaciones_${slugify(course.title)}.csv`,
+      headers,
+      rows
+    );
+    showToast('Consolidado de calificaciones descargado exitosamente en CSV.');
   };
 
   return (
@@ -353,42 +393,44 @@ export function CourseEvaluationView({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse"></span>
             <span className="text-[11px] font-montserrat uppercase tracking-widest text-[#D4AF37] font-semibold">
-              Aula Virtual & Taller • Seguimiento Pedagógico
+              Aula Virtual & Taller • Seguimiento Pedagógico Real
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
             Evaluación y Evidencias de Curso
           </h1>
           <p className="text-sm text-[#99907c] max-w-3xl leading-relaxed">
-            Supervisa las entregas prácticas, fotografías de proyectos y asignaciones enviadas por los estudiantes inscritos. Califica con la rúbrica comunitaria, retroalimenta y certifica el avance formativo.
+            Supervisa las entregas prácticas, fotografías y asignaciones cargadas por los estudiantes inscritos. Califica mediante la rúbrica comunitaria, retroalimenta de forma pedagógica y consolida el boletín oficial.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-2.5">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] text-xs font-montserrat uppercase tracking-wider">
               <Layers className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Modalidad: <strong className="text-white font-semibold">{modalityText}</strong></span>
+              <span>Modalidad: <strong className="text-white font-semibold">{formatModality(course.modality)}</strong></span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] text-xs font-montserrat uppercase tracking-wider">
               <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Cohorte: <strong className="text-white font-semibold">{cohortText}</strong></span>
+              <span>Cohorte: <strong className="text-white font-semibold">{course.cohort || 'Sin cohorte'}</strong></span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] text-xs font-montserrat uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Docente: <strong className="text-white font-semibold">{teacherText}</strong></span>
+              <span>Docente: <strong className="text-white font-semibold">{course.instructor_name || 'Sin docente asignado'}</strong></span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#ffe082] text-xs font-montserrat uppercase tracking-wider">
               <Users className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>{totalEnrolledCount} Estudiantes inscritos</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] text-xs font-montserrat uppercase tracking-wider">
-              <TrendingUp className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Asistencia promedio: 94%</span>
-            </div>
+            {course.schedule_text && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] text-xs font-montserrat uppercase tracking-wider">
+                <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Horario: <strong className="text-white font-semibold">{course.schedule_text}</strong></span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 4 Bento KPI Metrics Grid */}
+      {/* 4 Bento KPI Metrics Grid (100% Real) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Metric 1 */}
         <div className="p-5 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/30 transition-all shadow-md flex flex-col justify-between relative overflow-hidden group">
@@ -399,13 +441,16 @@ export function CourseEvaluationView({
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-montserrat font-bold text-white">{totalDeliveries}</span>
-            <span className="inline-flex items-center gap-0.5 text-xs text-[#D4AF37] font-semibold font-montserrat uppercase">
-              <TrendingUp className="w-3.5 h-3.5" /> +12 esta semana
+            <span className="text-3xl font-montserrat font-bold text-white">{totalSubmissionsCount}</span>
+            <span className="text-xs text-[#99907c] font-montserrat">
+              {assignments.length > 0 ? `${assignments.length} tareas activas` : 'Sin tareas aún'}
             </span>
           </div>
           <div className="w-full bg-[#262629] h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-[#D4AF37] h-full rounded-full w-full"></div>
+            <div 
+              className="bg-[#D4AF37] h-full rounded-full transition-all duration-500"
+              style={{ width: totalSubmissionsCount > 0 ? '100%' : '0%' }}
+            />
           </div>
         </div>
 
@@ -418,11 +463,20 @@ export function CourseEvaluationView({
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-montserrat font-bold text-amber-400">11</span>
-            <span className="text-xs text-[#99907c] uppercase font-montserrat">Revisión prioritaria</span>
+            <span className="text-3xl font-montserrat font-bold text-amber-400">{pendingGradingCount}</span>
+            <span className="text-xs text-[#99907c] uppercase font-montserrat">
+              {pendingGradingCount > 0 ? 'Revisión prioritaria' : 'Al día'}
+            </span>
           </div>
           <div className="w-full bg-[#262629] h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-amber-400 h-full rounded-full w-[28%]"></div>
+            <div 
+              className="bg-amber-400 h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: totalSubmissionsCount > 0 
+                  ? `${Math.round((pendingGradingCount / totalSubmissionsCount) * 100)}%` 
+                  : '0%' 
+              }}
+            />
           </div>
         </div>
 
@@ -435,28 +489,46 @@ export function CourseEvaluationView({
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-montserrat font-bold text-white">49</span>
-            <span className="text-xs text-emerald-400 uppercase font-semibold font-montserrat">Calificación alta</span>
+            <span className="text-3xl font-montserrat font-bold text-white">{approvedCount}</span>
+            <span className="text-xs text-emerald-400 uppercase font-semibold font-montserrat">
+              {approvalRateFormatted} del total
+            </span>
           </div>
           <div className="w-full bg-[#262629] h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-emerald-500 h-full rounded-full w-[76%]"></div>
+            <div 
+              className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: totalSubmissionsCount > 0 
+                  ? `${Math.round((approvedCount / totalSubmissionsCount) * 100)}%` 
+                  : '0%' 
+              }}
+            />
           </div>
         </div>
 
         {/* Metric 4 */}
         <div className="p-5 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/30 transition-all shadow-md flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-montserrat uppercase tracking-widest text-[#99907c]">Tasa de Finalización</span>
+            <span className="text-[11px] font-montserrat uppercase tracking-widest text-[#99907c]">Promedio Evaluado</span>
             <div className="w-9 h-9 rounded-lg bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#D4AF37]">
               <Award className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-montserrat font-bold text-white">82.5%</span>
-            <span className="text-xs text-[#99907c] uppercase font-montserrat">Cumplimiento cohorte</span>
+            <span className="text-3xl font-montserrat font-bold text-white">{averageScoreFormatted}</span>
+            <span className="text-xs text-[#99907c] uppercase font-montserrat">
+              {gradedSubmissions.length > 0 ? `${gradedSubmissions.length} con nota` : 'Sin notas aún'}
+            </span>
           </div>
           <div className="w-full bg-[#262629] h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-[#D4AF37] h-full rounded-full w-[82.5%]"></div>
+            <div 
+              className="bg-[#D4AF37] h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: averageScoreFormatted !== '—' 
+                  ? `${Math.min(100, Math.round((parseFloat(averageScoreFormatted) / 5) * 100))}%` 
+                  : '0%' 
+              }}
+            />
           </div>
         </div>
       </div>
@@ -466,18 +538,18 @@ export function CourseEvaluationView({
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-[#D4AF37]" />
           <span className="text-xs font-montserrat uppercase tracking-wider text-[#99907c] font-semibold">
-            Acciones Principales del Curso
+            Acciones Pedagógicas del Curso
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button 
             type="button"
-            onClick={onSwitchToStudentsTab}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#D4AF37] border border-[#D4AF37]/30 hover:border-[#D4AF37]/50 text-xs font-montserrat uppercase tracking-wider font-semibold transition-all shadow-sm"
+            onClick={() => setIsCreateModuleModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
           >
-            <Users className="w-4 h-4" />
-            <span>Ver Lista de Inscritos ({totalEnrolledCount})</span>
+            <FolderPlus className="w-4 h-4 text-[#D4AF37]" />
+            <span>Crear Módulo</span>
           </button>
 
           <button 
@@ -486,8 +558,20 @@ export function CourseEvaluationView({
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#353439] text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
           >
             <Download className="w-4 h-4 text-[#D4AF37]" />
-            <span>Descargar Consolidado (Excel)</span>
+            <span>Descargar Consolidado (CSV)</span>
           </button>
+
+          {onSwitchToActivitiesTab && (
+            <button 
+              type="button"
+              onClick={onSwitchToActivitiesTab}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
+              title="Ver currículo completo, editar y eliminar actividades o módulos"
+            >
+              <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
+              <span>Gestionar Actividades ({assignments.length})</span>
+            </button>
+          )}
 
           <button 
             type="button"
@@ -500,7 +584,7 @@ export function CourseEvaluationView({
         </div>
       </div>
 
-      {/* Module Selector Tabs */}
+      {/* Module Selector Tabs (Real Modules) */}
       <div className="p-2 rounded-xl bg-[#131317] border border-[#262629] flex items-center gap-2 overflow-x-auto shadow-sm">
         <button
           type="button"
@@ -511,94 +595,73 @@ export function CourseEvaluationView({
               : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
           }`}
         >
-          Todas las Asignaciones (64)
+          Todas las Entregas ({submissionsList.length})
         </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveModuleTab('mod1')}
-          className={`px-4 py-2.5 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold whitespace-nowrap transition-colors ${
-            activeModuleTab === 'mod1'
-              ? 'bg-[#262629] text-[#D4AF37]'
-              : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
-          }`}
-        >
-          Proyecto 1: Arcilla & Modelado (15)
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveModuleTab('mod2')}
-          className={`px-4 py-2.5 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
-            activeModuleTab === 'mod2'
-              ? 'bg-[#262629] text-amber-400'
-              : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
-          }`}
-        >
-          <span>Proyecto 2: Esmaltado & Vidriado</span>
-          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-montserrat bg-amber-400/20 text-amber-300">18</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveModuleTab('mod3')}
-          className={`px-4 py-2.5 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold whitespace-nowrap transition-colors ${
-            activeModuleTab === 'mod3'
-              ? 'bg-[#262629] text-[#D4AF37]'
-              : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
-          }`}
-        >
-          Proyecto 3: Quema y Acabados (12)
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveModuleTab('bitacora')}
-          className={`px-4 py-2.5 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold whitespace-nowrap transition-colors ${
-            activeModuleTab === 'bitacora'
-              ? 'bg-[#262629] text-[#D4AF37]'
-              : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
-          }`}
-        >
-          Bitácora Fotográfica (19)
-        </button>
+        {modules && modules.length > 0 ? (
+          modules.map((m) => {
+            const count = submissionsList.filter((s) => {
+              const asg = assignmentsMap.get(s.assignment_id);
+              return asg?.module_id === m.id;
+            }).length;
+            const isActive = activeModuleTab === m.id;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setActiveModuleTab(m.id)}
+                className={`px-4 py-2.5 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#262629] text-[#D4AF37]'
+                    : 'text-[#99907c] hover:text-white hover:bg-[#1b1b1f]'
+                }`}
+              >
+                <span>{m.title}</span>
+                {count > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37]">
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })
+        ) : (
+          <div className="px-4 py-2 text-xs text-[#99907c] italic flex items-center gap-2">
+            <span>No hay módulos temáticos creados aún.</span>
+            <button
+              type="button"
+              onClick={() => setIsCreateModuleModalOpen(true)}
+              className="text-[#D4AF37] hover:underline font-montserrat uppercase text-[11px] font-semibold not-italic"
+            >
+              + Crear primer módulo
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Filters Strip */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-        <div className="md:col-span-5 relative">
+        <div className="md:col-span-6 relative">
           <Search className="w-4 h-4 text-[#99907c] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar estudiante por nombre, cédula o proyecto..."
+            placeholder="Buscar estudiante por nombre, documento o proyecto..."
             className="w-full pl-11 pr-4 py-3 bg-[#131317] border border-[#262629] rounded-lg text-white text-xs placeholder:text-[#99907c]/50 focus:outline-none focus:border-[#D4AF37]"
           />
         </div>
 
-        <div className="md:col-span-3">
+        <div className="md:col-span-5">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
             className="w-full px-4 py-3 bg-[#131317] border border-[#262629] rounded-lg text-white text-xs font-montserrat uppercase focus:outline-none focus:border-[#D4AF37] cursor-pointer"
           >
-            <option value="todos">Estado: Todos los registros</option>
-            <option value="pendiente">Estado: Pendiente de Calificar ({pendingGradingCount})</option>
-            <option value="aprobado">Estado: Aprobado ({approvedCount})</option>
-            <option value="correccion">Estado: Requiere Corrección</option>
-          </select>
-        </div>
-
-        <div className="md:col-span-3">
-          <select
-            value={scheduleFilter}
-            onChange={(e) => setScheduleFilter(e.target.value)}
-            className="w-full px-4 py-3 bg-[#131317] border border-[#262629] rounded-lg text-white text-xs font-montserrat uppercase focus:outline-none focus:border-[#D4AF37] cursor-pointer"
-          >
-            <option value="todos">Horario: Todos los grupos</option>
-            <option value="sabados">Sábados 9:00 a.m. (Presencial Taller)</option>
-            <option value="martes">Martes 6:30 p.m. (Virtual Asincrónico)</option>
+            <option value="todos">Estado: Todas las entregas ({submissionsList.length})</option>
+            <option value="pendiente">Estado: Pendientes de Calificar ({pendingGradingCount})</option>
+            <option value="aprobado">Estado: Aprobadas ({approvedCount})</option>
+            <option value="correccion">Estado: Requiere Ajustes ({devueltaCount})</option>
           </select>
         </div>
 
@@ -608,7 +671,6 @@ export function CourseEvaluationView({
             onClick={() => {
               setSearchTerm('');
               setStatusFilter('todos');
-              setScheduleFilter('todos');
               setActiveModuleTab('all');
             }}
             className="w-full py-3 px-3 rounded-lg bg-[#131317] border border-[#262629] hover:bg-[#1b1b1f] text-[#99907c] hover:text-white text-xs font-montserrat uppercase tracking-wider flex items-center justify-center gap-1 transition-colors"
@@ -625,374 +687,474 @@ export function CourseEvaluationView({
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between px-1">
             <span className="text-xs font-montserrat uppercase tracking-widest text-[#99907c] font-semibold">
-              Entregas Registradas ({filteredSubmissions.length} disponibles)
+              Entregas del Curso ({filteredSubmissions.length} visibles)
             </span>
             <span className="text-xs text-[#99907c]">
-              Mostrando 1-{filteredSubmissions.length} de {totalDeliveries}
+              Total en sistema: {totalSubmissionsCount}
             </span>
           </div>
 
-          {/* Active Selected Submission Card */}
-          {activeSubmission && (
-            <div className="p-6 rounded-xl bg-[#1b1b1f] border-2 border-[#D4AF37] shadow-xl relative overflow-hidden transition-all duration-200">
-              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#D4AF37]"></div>
+          {/* Empty State when no submissions exist */}
+          {submissionsList.length === 0 ? (
+            <div className="p-10 rounded-2xl bg-[#131317] border border-[#262629] text-center space-y-5 shadow-xl">
+              <div className="w-14 h-14 rounded-2xl bg-[#1b1b1f] border border-[#262629] text-[#D4AF37] flex items-center justify-center mx-auto shadow-inner">
+                <FolderCheck className="w-7 h-7" />
+              </div>
+              <div className="space-y-1.5 max-w-md mx-auto">
+                <h3 className="font-montserrat font-bold text-white text-lg">
+                  No hay entregas registradas aún
+                </h3>
+                <p className="text-xs text-[#99907c] leading-relaxed">
+                  Los estudiantes de este curso aún no han subido evidencias o proyectos. Cuando las tareas sean entregadas por los alumnos, aparecerán aquí para ser calificadas con la rúbrica comunitaria.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-md shadow-[#D4AF37]/20 hover:brightness-110 transition-all"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Crear Asignación / Tarea</span>
+                </button>
+                {onSwitchToStudentsTab && (
+                  <button
+                    type="button"
+                    onClick={onSwitchToStudentsTab}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] text-xs font-montserrat uppercase tracking-wider font-semibold transition-all"
+                  >
+                    <Users className="w-4 h-4 text-[#D4AF37]" />
+                    <span>Ver Estudiantes ({totalEnrolledCount})</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : filteredSubmissions.length === 0 ? (
+            <div className="p-8 rounded-xl bg-[#131317] border border-[#262629] text-center space-y-3">
+              <AlertCircle className="w-8 h-8 text-[#99907c] mx-auto" />
+              <p className="text-sm text-white font-montserrat font-semibold">
+                No se encontraron entregas con los filtros actuales
+              </p>
+              <p className="text-xs text-[#99907c]">
+                Prueba borrando el término de búsqueda o cambiando el estado seleccionado.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('todos');
+                  setActiveModuleTab('all');
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b1b1f] text-[#D4AF37] border border-[#262629] text-xs font-montserrat uppercase font-semibold hover:bg-[#262629] transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Restablecer Filtros</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Active Selected Submission Card */}
+              {activeSubmission && (
+                <div className="p-6 rounded-xl bg-[#1b1b1f] border-2 border-[#D4AF37] shadow-xl relative overflow-hidden transition-all duration-200">
+                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#D4AF37]"></div>
 
-              <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-                <div className="flex items-start gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#806b23] text-[#0A0A0E] font-montserrat text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
-                    {activeSubmission.initials}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-montserrat font-bold text-white text-lg">{activeSubmission.studentName}</h3>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold">
-                        Activa
+                  <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#806b23] text-[#0A0A0E] font-montserrat text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                        {getInitials(activeSubmission.student_name)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-montserrat font-bold text-white text-lg">
+                            {activeSubmission.student_name}
+                          </h3>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold">
+                            En Mesa
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-[#99907c] mt-0.5">
+                          <span>{activeSubmission.student_document}</span>
+                          <span>•</span>
+                          <span className="text-amber-400 font-medium">
+                            {activeSubmission.project_title || activeAssignment?.title || 'Evidencia de Curso'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-montserrat uppercase font-semibold ${
+                        activeSubmission.status === 'entregada'
+                          ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                          : activeSubmission.status === 'devuelta'
+                          ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                          : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                      }`}>
+                        {activeSubmission.status === 'entregada' && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        )}
+                        {activeSubmission.status === 'entregada' 
+                          ? 'Pendiente de Calificar' 
+                          : activeSubmission.status === 'devuelta'
+                          ? 'Requiere Ajustes'
+                          : 'Calificada'}
+                      </span>
+                      <span className="text-[11px] text-[#99907c]">
+                        {formatDate(activeSubmission.submitted_at, true)}
+                        {activeSubmission.is_late && ' (Tardía)'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-[#99907c] mt-0.5">
-                      <span>{activeSubmission.document}</span>
-                      <span>•</span>
-                      <span className="text-amber-400 font-medium">{activeSubmission.projectTitle}</span>
+                  </div>
+
+                  {/* Submitted Files Preview (Images or Documents) */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-xs text-[#99907c]">
+                      <span className="font-medium text-white">
+                        {activeSubmission.files && activeSubmission.files.length > 0
+                          ? `${activeSubmission.files.length} Archivo(s) Adjunto(s):`
+                          : 'Archivos Adjuntos:'}
+                      </span>
+                      {activeSubmission.files && activeSubmission.files.some(f => f.url && f.url.match(/\.(jpeg|jpg|png|webp|gif)/i)) && (
+                        <span className="text-[#D4AF37] text-[11px] font-montserrat uppercase tracking-wider font-semibold">
+                          Clic para ampliar imagen
+                        </span>
+                      )}
+                    </div>
+
+                    {activeSubmission.files && activeSubmission.files.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {activeSubmission.files.map((file, i) => {
+                          const isImage = file.url && (
+                            file.mime_type?.startsWith('image/') || 
+                            file.url.match(/\.(jpeg|jpg|png|webp|gif)/i)
+                          );
+
+                          if (isImage && file.url) {
+                            return (
+                              <div 
+                                key={file.id || i}
+                                onClick={() => setLightboxImage({ url: file.url!, title: file.file_name || 'Evidencia de Curso' })}
+                                className="group relative rounded-lg overflow-hidden h-28 bg-[#0e0e12] border border-[#262629] shadow-inner cursor-pointer"
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img 
+                                  src={file.url} 
+                                  alt={file.file_name || 'Evidencia'}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-2">
+                                  <span className="text-[10px] font-montserrat text-white truncate">{file.file_name}</span>
+                                </div>
+                                <div className="absolute inset-0 bg-[#D4AF37]/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <ZoomIn className="w-6 h-6 text-white" />
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <a
+                              key={file.id || i}
+                              href={file.url || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-3 rounded-lg bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/40 text-left transition-colors flex flex-col justify-between"
+                            >
+                              <div className="flex items-center gap-2 text-[#D4AF37]">
+                                <FileText className="w-5 h-5 shrink-0" />
+                                <span className="text-xs text-white font-medium truncate">{file.file_name}</span>
+                              </div>
+                              <span className="text-[10px] text-[#99907c] mt-2 font-montserrat uppercase">Abrir archivo</span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-lg bg-[#131317] border border-[#262629] text-xs text-[#99907c] italic">
+                        Esta entrega no contiene archivos adjuntos multimedia.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Student Narrative Notes */}
+                  {activeSubmission.text_content && (
+                    <div className="p-3.5 rounded-lg bg-[#131317] border border-[#262629] text-xs text-[#d0c5af] flex items-start gap-2.5 mb-3">
+                      <MessageSquare className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                      <p>
+                        <strong className="text-white font-medium">Nota del estudiante:</strong> &quot;{activeSubmission.text_content}&quot;
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="mt-4 pt-3 border-t border-[#262629] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <span className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c]">
+                        {activeSubmission.badge || 'Estudiante Matriculado'}
+                      </span>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 text-[#D4AF37] text-xs font-montserrat uppercase font-semibold">
+                      <span>Seleccionada para Calificar</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse"></span>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex flex-col items-end gap-1">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-montserrat uppercase font-semibold ${
-                    activeSubmission.status === 'Pendiente de Calificar'
-                      ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                      : activeSubmission.status === 'Corrección'
-                      ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                      : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                  }`}>
-                    {activeSubmission.status === 'Pendiente de Calificar' && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    )}
-                    {activeSubmission.status}
-                  </span>
-                  <span className="text-[11px] text-[#99907c]">
-                    {activeSubmission.submittedAt}
-                  </span>
-                </div>
-              </div>
-
-              {/* Submitted Photos & Gallery Preview */}
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-xs text-[#99907c]">
-                  <span className="font-medium text-white">
-                    {activeSubmission.photos.length} Archivos Fotográficos Adjuntos (HD):
-                  </span>
-                  <span className="text-[#D4AF37] text-[11px] font-montserrat uppercase tracking-wider font-semibold">
-                    Haga clic para ampliar
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  {activeSubmission.photos.map((photo, i) => (
-                    <div 
-                      key={i}
-                      onClick={() => setLightboxImage(photo)}
-                      className="group relative rounded-lg overflow-hidden h-28 bg-[#0e0e12] border border-[#262629] shadow-inner cursor-pointer"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={photo.url} 
-                        alt={photo.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-2">
-                        <span className="text-[10px] font-montserrat text-white truncate">{photo.title}</span>
-                      </div>
-                      <div className="absolute inset-0 bg-[#D4AF37]/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <ZoomIn className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Student Narrative Notes */}
-              {activeSubmission.studentNote && (
-                <div className="p-3.5 rounded-lg bg-[#131317] border border-[#262629] text-xs text-[#d0c5af] flex items-start gap-2.5">
-                  <MessageSquare className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
-                  <p>
-                    <strong className="text-white font-medium">Nota del estudiante:</strong> &quot;{activeSubmission.studentNote}&quot;
-                  </p>
                 </div>
               )}
 
-              <div className="mt-4 pt-3 border-t border-[#262629] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c]">
-                    {activeSubmission.badge || 'Estudiante Regular Matriculado'}
-                  </span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 text-[#D4AF37] text-xs font-montserrat uppercase font-semibold">
-                  <span>Seleccionado para Calificar</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse"></span>
-                </div>
-              </div>
-            </div>
-          )}
+              {/* List of other secondary submissions */}
+              {filteredSubmissions
+                .filter((sub) => sub.id !== activeSubmission?.id)
+                .map((sub) => {
+                  const asg = assignmentsMap.get(sub.assignment_id);
+                  return (
+                    <div 
+                      key={sub.id}
+                      className="p-5 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/40 transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-10 h-10 rounded-full bg-[#1b1b1f] border border-[#262629] text-white font-montserrat text-xs font-bold flex items-center justify-center shrink-0">
+                          {getInitials(sub.student_name)}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-montserrat font-semibold text-white text-base">
+                              {sub.student_name}
+                            </h4>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-montserrat uppercase font-semibold ${
+                              sub.status === 'entregada'
+                                ? 'bg-amber-500/15 text-amber-400'
+                                : sub.status === 'devuelta'
+                                ? 'bg-rose-500/15 text-rose-400'
+                                : 'bg-emerald-500/15 text-emerald-400'
+                            }`}>
+                              {sub.status === 'entregada' 
+                                ? 'Pendiente' 
+                                : sub.status === 'devuelta' 
+                                ? 'Requiere Ajustes' 
+                                : 'Calificada'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#99907c]">
+                            {sub.student_document} • Tarea: {sub.project_title || asg?.title || 'Evidencia de Curso'}
+                          </p>
+                          <p className="text-[11px] text-[#99907c]/70 mt-0.5">
+                            {formatDate(sub.submitted_at, true)}
+                          </p>
+                          {sub.correction_note && (
+                            <p className="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              {sub.correction_note}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-          {/* List of other secondary submissions */}
-          {filteredSubmissions
-            .filter(sub => sub.id !== activeSubmission?.id)
-            .map((sub) => (
-              <div 
-                key={sub.id}
-                className="p-5 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/40 transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
-              >
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-full bg-[#1b1b1f] border border-[#262629] text-white font-montserrat text-xs font-bold flex items-center justify-center shrink-0">
-                    {sub.initials}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-montserrat font-semibold text-white text-base">{sub.studentName}</h4>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-montserrat bg-[#1b1b1f] text-[#99907c] uppercase">
-                        {sub.groupSchedule === 'sabados' ? 'Sábados' : 'Martes'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-[#99907c]">{sub.document} • Tarea: {sub.projectTitle}</p>
-                    <p className="text-[11px] text-[#99907c]/70 mt-0.5">
-                      {sub.submittedAt}
-                    </p>
-                    {sub.correctionNote && (
-                      <p className="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        {sub.correctionNote}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                      <div className="flex items-center gap-4 self-end md:self-center shrink-0">
+                        {sub.score !== null && sub.score !== undefined ? (
+                          <div className="text-right">
+                            <span className="font-montserrat font-bold text-lg text-[#D4AF37]">
+                              {sub.score.toFixed(1)}
+                            </span>
+                            <span className="text-xs text-[#99907c]"> / 5.0</span>
+                            <div className="text-[10px] font-montserrat uppercase font-semibold mt-0.5 text-emerald-400">
+                              {sub.badge || (sub.score >= 3.5 ? 'Aprobado' : 'Reprobado')}
+                            </div>
+                          </div>
+                        ) : null}
 
-                <div className="flex items-center gap-4 self-end md:self-center shrink-0">
-                  {sub.score ? (
-                    <div className="text-right">
-                      <span className="font-montserrat font-bold text-lg text-[#D4AF37]">{sub.score.toFixed(1)}</span>
-                      <span className="text-xs text-[#99907c]"> / 5.0</span>
-                      <div className={`text-[10px] font-montserrat uppercase font-semibold mt-0.5 ${
-                        sub.status === 'Distinción' ? 'text-amber-300' : 'text-emerald-400'
-                      }`}>
-                        {sub.badge || 'Aprobado'}
+                        <button
+                          type="button"
+                          onClick={() => setActiveSubmissionId(sub.id)}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#1b1b1f] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#0A0A0E] border border-[#262629] text-xs font-montserrat uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5"
+                        >
+                          <Sliders className="w-3.5 h-3.5" />
+                          <span>Evaluar</span>
+                        </button>
                       </div>
                     </div>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    onClick={() => handleSelectSubmission(sub)}
-                    className="px-3.5 py-1.5 rounded-lg bg-[#1b1b1f] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#0A0A0E] border border-[#262629] text-xs font-montserrat uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>Evaluar</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+                  );
+                })}
+            </>
+          )}
         </div>
 
         {/* Right Column: Sticky Grading Studio / Panel (5 cols) */}
         <div className="lg:col-span-5 sticky top-6 space-y-6">
-          <div className="p-6 rounded-2xl bg-[#131317] border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
-            {/* Studio Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-[#262629]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/15 text-[#D4AF37] flex items-center justify-center">
-                  <Award className="w-5 h-5" />
+          {activeSubmission ? (
+            <div className="p-6 rounded-2xl bg-[#131317] border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
+              {/* Studio Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-[#262629]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/15 text-[#D4AF37] flex items-center justify-center">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-montserrat text-base text-white font-semibold">Panel de Calificación</h3>
+                    <p className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Rúbrica Comunitaria</p>
+                  </div>
                 </div>
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-montserrat font-semibold uppercase ${
+                  activeSubmission.status === 'calificada'
+                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+                    : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
+                }`}>
+                  {activeSubmission.status === 'calificada' ? 'Calificada' : 'Por Evaluar'}
+                </span>
+              </div>
+
+              {/* Active Evaluating Target */}
+              <div className="py-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-montserrat text-base text-white font-semibold">Panel de Calificación</h3>
-                  <p className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Rúbrica Oficial Principio & Fin</p>
+                  <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Estudiante en Mesa:</span>
+                  <p className="font-montserrat font-bold text-white text-base">{activeSubmission.student_name}</p>
+                  <p className="text-xs text-[#D4AF37] mt-0.5">
+                    {activeSubmission.project_title || activeAssignment?.title || 'Evidencia de Curso'}
+                  </p>
                 </div>
-              </div>
-              <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-montserrat font-semibold uppercase">
-                En Calificación
-              </span>
-            </div>
-
-            {/* Active Evaluating Target */}
-            <div className="py-4 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Estudiante en Mesa:</span>
-                <p className="font-montserrat font-bold text-white text-base">{activeSubmission.studentName}</p>
-                <p className="text-xs text-[#D4AF37] mt-0.5">{activeSubmission.projectTitle}</p>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Puntaje Calculado:</span>
-                <div className="flex items-baseline justify-end gap-1">
-                  <span className="text-3xl font-montserrat font-extrabold text-[#D4AF37]">{calculatedScore}</span>
-                  <span className="text-xs text-[#99907c]">/ 5.0</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Rubric Criteria Sliders */}
-            <div className="space-y-4">
-              {/* Criterion 1 */}
-              <div className="p-4 rounded-xl bg-[#1b1b1f] border border-[#262629] space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
-                      1. Técnica de Modelado y Simetría
-                    </h4>
-                    <p className="text-[11px] text-[#99907c]">Consistencia de grosor, unión de piezas y estabilidad.</p>
+                <div className="text-right">
+                  <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#99907c]">Puntaje Ponderado:</span>
+                  <div className="flex items-baseline justify-end gap-1">
+                    <span className="text-3xl font-montserrat font-extrabold text-[#D4AF37]">{calculatedScore}</span>
+                    <span className="text-xs text-[#99907c]">/ 5.0</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded bg-[#262629] font-montserrat text-sm font-bold text-[#D4AF37]">
-                    {crit1.toFixed(1)}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="1.0"
-                  max="5.0"
-                  step="0.1"
-                  value={crit1}
-                  onChange={(e) => setCrit1(parseFloat(e.target.value))}
-                  className="w-full accent-[#D4AF37] h-1.5 bg-[#262629] rounded-lg cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-[#99907c]">
-                  <span>1.0 (Deficiente)</span>
-                  <span>3.0 (Aceptable)</span>
-                  <span>5.0 (Excelente)</span>
                 </div>
               </div>
 
-              {/* Criterion 2 */}
-              <div className="p-4 rounded-xl bg-[#1b1b1f] border border-[#262629] space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
-                      2. Acabado y Uniformidad de Esmalte
-                    </h4>
-                    <p className="text-[11px] text-[#99907c]">Vidriado homogéneo, sin burbujas ni cuarteaduras térmicas.</p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded bg-[#262629] font-montserrat text-sm font-bold text-[#D4AF37]">
-                    {crit2.toFixed(1)}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="1.0"
-                  max="5.0"
-                  step="0.1"
-                  value={crit2}
-                  onChange={(e) => setCrit2(parseFloat(e.target.value))}
-                  className="w-full accent-[#D4AF37] h-1.5 bg-[#262629] rounded-lg cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-[#99907c]">
-                  <span>1.0 (Deficiente)</span>
-                  <span>3.0 (Aceptable)</span>
-                  <span>5.0 (Excelente)</span>
-                </div>
-              </div>
+              {/* Rubric Criteria Sliders */}
+              <div className="space-y-4">
+                {activeCriteria.map((crit) => {
+                  const currentVal = criteriaScores[crit.id] ?? 4.0;
+                  return (
+                    <div key={crit.id} className="p-4 rounded-xl bg-[#1b1b1f] border border-[#262629] space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
+                            {crit.number ? `${crit.number}. ` : ''}{crit.title} ({crit.weight}%)
+                          </h4>
+                          <p className="text-[11px] text-[#99907c]">{crit.description}</p>
+                        </div>
+                        <span className="px-2.5 py-1 rounded bg-[#262629] font-montserrat text-sm font-bold text-[#D4AF37]">
+                          {currentVal.toFixed(1)}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1.0"
+                        max="5.0"
+                        step="0.1"
+                        value={currentVal}
+                        onChange={(e) => handleCriterionChange(crit.id, parseFloat(e.target.value))}
+                        className="w-full accent-[#D4AF37] h-1.5 bg-[#262629] rounded-lg cursor-pointer"
+                      />
+                      <div className="flex justify-between text-[10px] text-[#99907c]">
+                        <span>1.0 (Deficiente)</span>
+                        <span>3.0 (Aceptable)</span>
+                        <span>5.0 (Excelente)</span>
+                      </div>
+                    </div>
+                  );
+                })}
 
-              {/* Criterion 3 */}
-              <div className="p-4 rounded-xl bg-[#1b1b1f] border border-[#262629] space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
-                      3. Creatividad & Narrativa Comunitaria
-                    </h4>
-                    <p className="text-[11px] text-[#99907c]">Aporte simbólico y relato identitario del oficio artesanal.</p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded bg-[#262629] font-montserrat text-sm font-bold text-[#D4AF37]">
-                    {crit3.toFixed(1)}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="1.0"
-                  max="5.0"
-                  step="0.1"
-                  value={crit3}
-                  onChange={(e) => setCrit3(parseFloat(e.target.value))}
-                  className="w-full accent-[#D4AF37] h-1.5 bg-[#262629] rounded-lg cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-[#99907c]">
-                  <span>1.0 (Deficiente)</span>
-                  <span>3.0 (Aceptable)</span>
-                  <span>5.0 (Excelente)</span>
-                </div>
-              </div>
-
-              {/* Definitive Direct Grade Override Input */}
-              <div className="flex items-center justify-between p-3.5 rounded-lg bg-[#1b1b1f] border border-[#262629]">
-                <label className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
-                  Nota Definitiva Ponderada:
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="1.0"
-                    max="5.0"
-                    step="0.1"
-                    value={manualOverrideScore || calculatedScore}
-                    onChange={(e) => setManualOverrideScore(e.target.value)}
-                    className="w-20 px-3 py-1.5 text-center font-montserrat font-bold bg-[#262629] border border-[#262629] rounded-lg text-[#D4AF37] text-base focus:outline-none focus:border-[#D4AF37]"
-                  />
-                  <span className="text-xs text-[#99907c]">/ 5.0</span>
-                </div>
-              </div>
-
-              {/* Pedagogical Feedback Box */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
+                {/* Direct Grade Override Input */}
+                <div className="flex items-center justify-between p-3.5 rounded-lg bg-[#1b1b1f] border border-[#262629]">
                   <label className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
-                    Retroalimentación Pedagógica y Orientación:
+                    Nota Definitiva Ponderada:
                   </label>
-                  <span className="text-[10px] text-[#99907c]">Visible al estudiante</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="1.0"
+                      max="5.0"
+                      step="0.1"
+                      value={manualOverrideScore || calculatedScore}
+                      onChange={(e) => setManualOverrideScore(e.target.value)}
+                      className="w-20 px-3 py-1.5 text-center font-montserrat font-bold bg-[#262629] border border-[#262629] rounded-lg text-[#D4AF37] text-base focus:outline-none focus:border-[#D4AF37]"
+                    />
+                    <span className="text-xs text-[#99907c]">/ 5.0</span>
+                  </div>
                 </div>
-                <textarea
-                  rows={3}
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  placeholder="Escribe comentarios constructivos para el estudiante..."
-                  className="w-full p-3.5 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-xs leading-relaxed placeholder:text-[#99907c]/50 focus:outline-none focus:border-[#D4AF37] resize-none"
-                />
-              </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => handleSaveGrade('Aprobado')}
-                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>Guardar Calificación y Notificar</span>
-                </button>
+                {/* Pedagogical Feedback Box */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-montserrat uppercase tracking-wider text-white font-semibold">
+                      Retroalimentación Pedagógica:
+                    </label>
+                    <span className="text-[10px] text-[#99907c]">Visible al estudiante</span>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    placeholder="Escribe comentarios constructivos sobre técnica, avances y recomendaciones..."
+                    className="w-full p-3.5 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-xs leading-relaxed placeholder:text-[#99907c]/50 focus:outline-none focus:border-[#D4AF37] resize-none"
+                  />
+                </div>
 
-                <div className="grid grid-cols-2 gap-2.5">
+                {/* Action Buttons */}
+                <div className="space-y-2.5 pt-2">
                   <button
                     type="button"
-                    onClick={() => handleSaveGrade('Corrección')}
-                    className="py-2.5 px-3 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-rose-300 border border-[#262629] text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                    onClick={() => handleSaveGrade('Aprobado')}
+                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
                   >
-                    <RotateCw className="w-4 h-4 text-rose-400" />
-                    <span>Solicitar Ajustes</span>
+                    <Send className="w-4 h-4" />
+                    <span>Guardar Calificación y Notificar</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleSaveGrade('Distinción')}
-                    className="py-2.5 px-3 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#D4AF37] border border-[#262629] text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <Award className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Aprobar con Mención</span>
-                  </button>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => handleSaveGrade('Corrección')}
+                      className="py-2.5 px-3 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-rose-300 border border-[#262629] text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <RotateCw className="w-4 h-4 text-rose-400" />
+                      <span>Solicitar Ajustes</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSaveGrade('Distinción')}
+                      className="py-2.5 px-3 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#D4AF37] border border-[#262629] text-xs font-montserrat uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <Award className="w-4 h-4 text-[#D4AF37]" />
+                      <span>Aprobar con Mención</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="p-8 rounded-2xl bg-[#131317] border border-[#262629] text-center space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 flex items-center justify-center mx-auto">
+                <Award className="w-6 h-6" />
+              </div>
+              <div className="space-y-1.5 max-w-sm mx-auto">
+                <h3 className="font-montserrat font-bold text-white text-base">
+                  Panel de Calificación y Rúbrica
+                </h3>
+                <p className="text-xs text-[#99907c] leading-relaxed">
+                  Selecciona una entrega en la columna izquierda para habilitar los deslizadores de la rúbrica comunitaria, calificar los criterios y redactar comentarios formativos.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#1b1b1f] border border-[#262629] text-left space-y-2 mt-4">
+                <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#D4AF37] font-bold">
+                  Lineamientos Pedagógicos
+                </span>
+                <ul className="text-[11px] text-[#99907c] space-y-1.5 list-disc list-inside">
+                  <li>Escala oficial de 1.0 a 5.0 con ponderación por criterios.</li>
+                  <li>Aprobación mínima requerida: 3.5 para expedición de diploma.</li>
+                  <li>Las entregas evaluadas notifican de inmediato al estudiante.</li>
+                </ul>
+              </div>
+            </div>
+          )}
 
           {/* Mini Notice */}
           <div className="p-4 rounded-xl bg-[#131317] border border-[#262629] flex items-center gap-3">
             <Bell className="w-5 h-5 text-[#D4AF37] shrink-0" />
             <p className="text-xs text-[#99907c] leading-relaxed">
-              Al guardar, se enviará una notificación por correo electrónico y el boletín de calificaciones se actualizará automáticamente en el perfil del estudiante.
+              Al guardar, se actualiza el estado de la entrega en base de datos y el consolidado del boletín queda disponible para la emisión de diplomas.
             </p>
           </div>
         </div>
@@ -1002,7 +1164,7 @@ export function CourseEvaluationView({
       <div className="p-8 rounded-2xl bg-[#131317] border border-[#262629] relative overflow-hidden space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2.5 py-1 rounded text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold">
-            Marco Académico 2026
+            Marco Académico Institucional
           </span>
           <span className="text-xs text-[#99907c]">• Acreditación Comunitaria</span>
         </div>
@@ -1016,19 +1178,56 @@ export function CourseEvaluationView({
               Criterios de Aprobación y Certificación de la Fundación Principio & Fin
             </h3>
             <p className="text-xs text-[#99907c] leading-relaxed">
-              Requisitos oficiales validados para la emisión del certificado de formación técnica y artística comunitaria. Conoce los lineamientos de calificación y seguimiento pedagógico vigentes.
+              Requisitos oficiales validados para la emisión del certificado de formación técnica y artística comunitaria: asistencia mínima del 80% a las sesiones programadas y promedio ponderado superior o igual a 3.5 en las asignaciones evaluadas.
             </p>
           </div>
         </div>
       </div>
 
+      {/* Create Module Modal */}
+      <FormModal
+        isOpen={isCreateModuleModalOpen}
+        onClose={() => setIsCreateModuleModalOpen(false)}
+        title="Crear Módulo Temático"
+        description="Añade una nueva unidad formativa al curso para organizar las clases, tareas y evidencias."
+        icon={<BookOpen className="w-5 h-5 text-[#D4AF37]" />}
+        fields={[
+          {
+            name: 'title',
+            label: 'Título del Módulo',
+            placeholder: 'Ej: Módulo 1: Fundamentos y Manejo de Herramientas',
+            required: true
+          }
+        ]}
+        confirmLabel="Crear Módulo"
+        onConfirm={async (vals) => {
+          if (!vals.title || !vals.title.trim()) {
+            return 'Por favor ingresa un título para el módulo.';
+          }
+          const supabase = createBrowserClient();
+          const { error } = await supabase.from('course_modules').insert({
+            course_id: course.id,
+            title: vals.title.trim(),
+            sort_order: modules.length + 1
+          });
+          if (error) {
+            return `Error al crear módulo: ${error.message}`;
+          }
+          router.refresh();
+          showToast(`Módulo "${vals.title.trim()}" creado exitosamente.`);
+        }}
+      />
+
       {/* Create Assignment Modal */}
       <CreateAssignmentModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        courseTitle={courseTitle}
+        courseId={course.id}
+        courseTitle={course.title}
+        modules={modules}
         onAssignmentCreated={(asg) => {
           showToast(`¡Asignación "${asg.title}" creada y publicada con éxito!`);
+          router.refresh();
         }}
       />
 
