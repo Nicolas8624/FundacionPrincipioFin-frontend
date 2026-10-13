@@ -56,10 +56,10 @@ export default async function AdminDonacionesPage() {
                   <TableRow 
                     key={don.id}
                     icon={<HeartHandshake className="w-4 h-4 text-gold-primary" />}
-                    name={don.full_name || 'Anónimo'}
+                    name={don.donor_name || don.full_name || 'Anónimo'}
                     email={don.email || ''}
                     type={don.donation_type || 'Desconocido'}
-                    amount={don.amount_or_description || 'No especificado'}
+                    amount={don.details || don.amount_or_description || 'No especificado'}
                     date={formatDateSpanish(don.created_at)}
                     status={don.status || 'PENDIENTE'}
                   />

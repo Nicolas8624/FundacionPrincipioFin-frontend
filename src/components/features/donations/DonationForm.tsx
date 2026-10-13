@@ -2,30 +2,50 @@
 
 import { useState } from "react";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
-import { submitDonation } from "@/actions/donation";
+import { createBrowserClient } from "@/services/supabase/client";
 
 export function DonationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const supabase = createBrowserClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     setIsSuccess(false);
     setErrorMsg("");
 
-    const formData = new FormData(e.currentTarget);
-    const result = await submitDonation(formData);
+    try {
+      const formData = new FormData(form);
+      const donor_name = (formData.get("name") || formData.get("full_name") || "") as string;
+      const donation_type = (formData.get("type") || formData.get("donation_type") || "") as string;
+      const phone = (formData.get("phone") || "") as string;
+      const email = (formData.get("email") || "") as string;
+      const details = (formData.get("details") || formData.get("amount_or_description") || "") as string;
 
-    if (result.success) {
-      setIsSuccess(true);
-      e.currentTarget.reset();
-    } else {
-      setErrorMsg(result.error || "Ocurrió un error inesperado al enviar la solicitud.");
+      const { error } = await supabase.from("donations").insert([{
+        donor_name,
+        donation_type,
+        phone,
+        email,
+        details,
+      }]);
+
+      if (error) {
+        console.error("Error al registrar donación:", error);
+        setErrorMsg(`Error al enviar: ${error.message}`);
+      } else {
+        setIsSuccess(true);
+        form.reset();
+      }
+    } catch (err: any) {
+      console.error("Error inesperado en donación:", err);
+      setErrorMsg("Ocurrió un error inesperado al enviar la solicitud.");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
   };
 
   return (
@@ -45,7 +65,7 @@ export function DonationForm() {
             <div className="mb-8 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-4 animate-fade-in relative z-10 backdrop-blur-md">
               <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
               <p className="text-green-200">
-                ¡Gracias por tu intención de donación! Nos pondremos en contacto contigo pronto.
+                ¡Gracias! Tu solicitud ha sido enviada con éxito. Nos pondremos en contacto contigo pronto.
               </p>
             </div>
           )}
@@ -67,7 +87,7 @@ export function DonationForm() {
               <input
                 type="text"
                 id="name"
-                name="full_name"
+                name="name"
                 required
                 className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors"
                 placeholder="Ej. Empresa S.A.S o Juan Pérez"
@@ -80,7 +100,7 @@ export function DonationForm() {
               </label>
               <select
                 id="type"
-                name="donation_type"
+                name="type"
                 required
                 className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors appearance-none"
               >
@@ -126,7 +146,7 @@ export function DonationForm() {
               </label>
               <textarea
                 id="details"
-                name="amount_or_description"
+                name="details"
                 rows={4}
                 required
                 className="w-full bg-space-black border border-space-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-primary transition-colors resize-none"

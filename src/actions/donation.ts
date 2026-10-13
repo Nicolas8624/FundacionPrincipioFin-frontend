@@ -25,14 +25,11 @@ export async function submitDonation(formData: FormData) {
       .from("donations")
       .insert([
         {
-          full_name,
-          email,
-          phone,
+          donor_name: full_name,
           donation_type,
-          amount_or_description,
-          message,
-          data_consent,
-          created_at: new Date().toISOString(),
+          phone,
+          email,
+          details: amount_or_description,
         }
       ]);
 

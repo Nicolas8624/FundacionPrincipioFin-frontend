@@ -31,8 +31,6 @@ export async function submitContactForm(formData: FormData) {
           email,
           subject,
           message,
-          data_consent,
-          created_at: new Date().toISOString(),
         }
       ]);
 
