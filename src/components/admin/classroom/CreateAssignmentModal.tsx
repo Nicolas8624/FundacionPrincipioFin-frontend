@@ -1,21 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, Plus, Trash2, Upload, FileCheck, BookOpen, Sliders, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Plus, Trash2, Upload, FileCheck, BookOpen, Sliders, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { upsertAssignmentAction } from '@/app/(admin)/admin/cursos/[id]/actions';
+import type { ClassroomAssignment, RubricCriterion } from './types';
 
-interface RubricCriterion {
-  id: string;
-  number: number;
-  title: string;
-  weight: number;
-  description: string;
-}
+const DEFAULT_CRITERIA: RubricCriterion[] = [
+  {
+    id: 'crit-1',
+    number: 1,
+    title: 'Técnica de Modelado',
+    weight: 35,
+    description: 'Consistencia de grosor, simetría y estabilidad de base de la pieza.'
+  },
+  {
+    id: 'crit-2',
+    number: 2,
+    title: 'Acabado y Vidriado',
+    weight: 35,
+    description: 'Esmaltado homogéneo sin burbujas, cuarteaduras ni defectos térmicos.'
+  },
+  {
+    id: 'crit-3',
+    number: 3,
+    title: 'Creatividad & Relato',
+    weight: 30,
+    description: 'Aporte identitario, narrativa comunitaria e innovación en el oficio.'
+  }
+];
 
 interface CreateAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  courseId: string;
   courseTitle: string;
-  onAssignmentCreated: (assignment: {
+  modules?: { id: string; title: string }[];
+  assignmentToEdit?: ClassroomAssignment | null;
+  defaultModuleId?: string;
+  onAssignmentCreated?: (assignment: {
     title: string;
     moduleId: string;
     publishDate: string;
@@ -26,46 +49,75 @@ interface CreateAssignmentModalProps {
     criteria: RubricCriterion[];
     isDraft?: boolean;
   }) => void;
+  onAssignmentUpdated?: (assignment: {
+    id: string;
+    title: string;
+    moduleId: string;
+    dueDate: string;
+    weight: number;
+  }) => void;
 }
 
 export function CreateAssignmentModal({
   isOpen,
   onClose,
+  courseId,
   courseTitle,
-  onAssignmentCreated
+  modules = [],
+  assignmentToEdit = null,
+  defaultModuleId,
+  onAssignmentCreated,
+  onAssignmentUpdated
 }: CreateAssignmentModalProps) {
-  const [title, setTitle] = useState('Proyecto 3: Quema y Técnicas Ancestrales de Acabado');
-  const [moduleId, setModuleId] = useState('mod3');
-  const [publishDate, setPublishDate] = useState('2026-03-16T09:00');
-  const [dueDate, setDueDate] = useState('2026-03-23T23:59');
+  const router = useRouter();
+  const [title, setTitle] = useState('');
+  const [moduleId, setModuleId] = useState('');
+  const [publishDate, setPublishDate] = useState(() => new Date().toISOString().slice(0, 16));
+  const [dueDate, setDueDate] = useState('');
   const [weight, setWeight] = useState(25);
-  const [description, setDescription] = useState(
-    'El estudiante debe modelar y dar acabado a una vasija ceremonial aplicando bruñido y esmaltado por inmersión. Registrar curvas térmicas y memoria cultural.'
-  );
-  const [uploadedFile, setUploadedFile] = useState<string | null>('guia_tecnica_quema.pdf (2.4 MB)');
-  const [criteria, setCriteria] = useState<RubricCriterion[]>([
-    {
-      id: 'crit-1',
-      number: 1,
-      title: 'Técnica de Modelado',
-      weight: 35,
-      description: 'Consistencia de grosor, simetría y estabilidad de base de la pieza.'
-    },
-    {
-      id: 'crit-2',
-      number: 2,
-      title: 'Acabado y Vidriado',
-      weight: 35,
-      description: 'Esmaltado homogéneo sin burbujas, cuarteaduras ni defectos térmicos.'
-    },
-    {
-      id: 'crit-3',
-      number: 3,
-      title: 'Creatividad & Relato',
-      weight: 30,
-      description: 'Aporte identitario, narrativa comunitaria e innovación en el oficio.'
+  const [description, setDescription] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [criteria, setCriteria] = useState<RubricCriterion[]>(DEFAULT_CRITERIA);
+
+  // Sync state when opening or when assignmentToEdit changes
+  useEffect(() => {
+    if (isOpen) {
+      if (assignmentToEdit) {
+        setTitle(assignmentToEdit.title || '');
+        setModuleId(assignmentToEdit.module_id || defaultModuleId || (modules[0]?.id || ''));
+        setPublishDate(
+          assignmentToEdit.publish_at
+            ? assignmentToEdit.publish_at.slice(0, 16)
+            : new Date().toISOString().slice(0, 16)
+        );
+        setDueDate(assignmentToEdit.due_at ? assignmentToEdit.due_at.slice(0, 16) : '');
+        setWeight(assignmentToEdit.weight_percent ?? 25);
+        setDescription(assignmentToEdit.instructions || '');
+        setUploadedFile(assignmentToEdit.attachment_url || null);
+        if (
+          Array.isArray(assignmentToEdit.rubric_criteria) &&
+          assignmentToEdit.rubric_criteria.length > 0
+        ) {
+          setCriteria(assignmentToEdit.rubric_criteria);
+        } else {
+          setCriteria(DEFAULT_CRITERIA);
+        }
+      } else {
+        setTitle('');
+        setModuleId(defaultModuleId || modules[0]?.id || '');
+        setPublishDate(new Date().toISOString().slice(0, 16));
+        setDueDate('');
+        setWeight(25);
+        setDescription('');
+        setUploadedFile(null);
+        setCriteria(DEFAULT_CRITERIA);
+      }
+      setError(null);
+      setIsSubmitting(false);
     }
-  ]);
+  }, [isOpen, assignmentToEdit, modules, defaultModuleId]);
 
   if (!isOpen) return null;
 
@@ -95,60 +147,117 @@ export function CreateAssignmentModal({
     setCriteria(criteria.map((c) => (c.id === id ? { ...c, ...updates } : c)));
   };
 
-  const handleSubmit = (isDraft = false) => {
-    onAssignmentCreated({
-      title,
-      moduleId,
-      publishDate,
-      dueDate,
-      weight,
-      description,
-      fileName: uploadedFile || undefined,
-      criteria,
-      isDraft
-    });
-    onClose();
+  const handleSubmit = async (isDraft = false) => {
+    if (!title.trim()) {
+      setError('Por favor ingresa un título para la asignación.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const validModuleId = moduleId && moduleId.length > 10 ? moduleId : null;
+
+      const res = await upsertAssignmentAction({
+        id: assignmentToEdit?.id,
+        courseId,
+        moduleId: validModuleId,
+        title: title.trim(),
+        instructions: description.trim() || null,
+        weightPercent: Number(weight) || null,
+        dueAt: dueDate ? new Date(dueDate).toISOString() : null,
+        publishAt: publishDate ? new Date(publishDate).toISOString() : null,
+        rubricCriteria: criteria,
+        attachmentUrl: uploadedFile || null,
+        isPublished: !isDraft
+      });
+
+      if (!res.success) {
+        setError(res.error || 'Error al guardar la asignación');
+        return;
+      }
+
+      if (assignmentToEdit) {
+        onAssignmentUpdated?.({
+          id: assignmentToEdit.id,
+          title,
+          moduleId,
+          dueDate,
+          weight
+        });
+      } else {
+        onAssignmentCreated?.({
+          title,
+          moduleId,
+          publishDate,
+          dueDate,
+          weight,
+          description,
+          fileName: uploadedFile || undefined,
+          criteria,
+          isDraft
+        });
+      }
+
+      router.refresh();
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || 'Error al procesar la asignación');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-5xl bg-[#131317] border border-[#D4AF37]/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto"
+        className="relative w-full max-w-5xl max-h-[84vh] bg-[#131317] border border-[#D4AF37]/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-8 py-6 bg-[#1b1b1f] border-b border-[#262629] flex items-start justify-between relative">
-          <div className="space-y-2 pr-6">
+        <div className="px-8 py-5 bg-[#1b1b1f] border-b border-[#262629] flex items-start justify-between relative flex-shrink-0">
+          <div className="space-y-1.5 pr-6">
             <div className="flex items-center gap-3">
               <span className="px-3 py-1 rounded-full text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold tracking-wider">
                 AULA VIRTUAL & TALLER
               </span>
               <span className="text-[#99907c] text-xs">•</span>
               <span className="text-[10px] font-montserrat text-[#ffe082] uppercase tracking-wider font-semibold">
-                COHORTE 2026-I • {courseTitle}
+                {courseTitle}
               </span>
             </div>
-            <h2 className="font-montserrat text-2xl sm:text-[28px] font-semibold text-white tracking-wide flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-[#D4AF37]" />
-              Crear Nueva Asignación o Tarea
+            <h2 className="font-montserrat text-2xl sm:text-[26px] font-semibold text-white tracking-wide flex items-center gap-3">
+              <BookOpen className="w-6 h-6 text-[#D4AF37]" />
+              {assignmentToEdit ? 'Editar Asignación o Tarea' : 'Crear Nueva Asignación o Tarea'}
             </h2>
             <p className="text-xs sm:text-sm text-[#99907c] leading-relaxed">
-              Define los objetivos prácticos del proyecto, plazos de entrega y la ponderación evaluativa del curso.
+              {assignmentToEdit
+                ? 'Modifica los objetivos técnicos, fecha límite de entrega, ponderación o criterios de evaluación.'
+                : 'Define los objetivos prácticos del proyecto, plazos de entrega y la ponderación evaluativa del curso.'}
             </p>
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-lg bg-[#262629] hover:bg-[#353439] text-[#99907c] hover:text-white flex items-center justify-center transition-colors shrink-0"
+            className="w-9 h-9 rounded-lg bg-[#262629] hover:bg-[#353439] text-[#99907c] hover:text-white flex items-center justify-center transition-colors shrink-0"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
+        {error && (
+          <div className="mx-8 mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Scrollable Form Body */}
-        <div className="p-8 space-y-8 text-[#e4e1e7] overflow-y-auto max-h-[calc(90vh-160px)]">
+        <div className="p-6 sm:p-8 space-y-8 text-[#e4e1e7] overflow-y-auto flex-1 min-h-0">
           {/* Section 1: General Info */}
           <section className="space-y-4">
             <div className="flex items-center gap-2.5 pb-2 border-b border-[#262629]">
@@ -168,24 +277,28 @@ export function CreateAssignmentModal({
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ej. Proyecto 3: Vidriado en Torno y Técnicas Ancestrales"
+                  placeholder="Ej. Proyecto 1: Modelado inicial y técnicas de taller"
                   className="w-full px-4 py-3 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-sm focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
                 />
               </div>
 
               <div className="md:col-span-4 space-y-1.5">
                 <label className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c] font-medium">
-                  Módulo / Etapa *
+                  Módulo / Etapa
                 </label>
                 <select 
                   value={moduleId}
                   onChange={(e) => setModuleId(e.target.value)}
                   className="w-full px-4 py-3 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-sm focus:outline-none focus:border-[#D4AF37] cursor-pointer"
                 >
-                  <option value="mod1">Módulo 1: Arcilla y Modelado</option>
-                  <option value="mod2">Módulo 2: Técnicas de Esmaltado</option>
-                  <option value="mod3">Módulo 3: Quema y Acabados</option>
-                  <option value="grado">Proyecto de Certificación Final</option>
+                  <option value="" className="bg-[#1b1b1f]">
+                    Sin módulo específico (General)
+                  </option>
+                  {modules.map((m) => (
+                    <option key={m.id} value={m.id} className="bg-[#1b1b1f]">
+                      {m.title}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -380,9 +493,10 @@ export function CreateAssignmentModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-8 py-5 bg-[#0e0e12] border-t border-[#262629] flex flex-wrap items-center justify-between gap-4">
+        <div className="px-8 py-4 bg-[#0e0e12] border-t border-[#262629] flex flex-wrap items-center justify-between gap-4 flex-shrink-0">
           <button 
             type="button"
+            disabled={isSubmitting}
             onClick={() => handleSubmit(true)}
             className="px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#99907c] hover:text-white font-montserrat text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2"
           >
@@ -399,10 +513,17 @@ export function CreateAssignmentModal({
             </button>
             <button 
               type="button"
+              disabled={isSubmitting}
               onClick={() => handleSubmit(false)}
               className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] hover:brightness-110 active:scale-[0.98] text-[#0A0A0E] font-montserrat text-xs tracking-wider uppercase font-bold shadow-lg shadow-[#D4AF37]/20 flex items-center gap-2 transition-all"
             >
-              <span>Publicar Asignación para el Curso</span>
+              <span>
+                {isSubmitting
+                  ? 'Guardando...'
+                  : assignmentToEdit
+                  ? 'Guardar Cambios de la Asignación'
+                  : 'Publicar Asignación para el Curso'}
+              </span>
             </button>
           </div>
         </div>
