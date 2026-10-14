@@ -110,221 +110,248 @@ export default async function AdminDashboardPage() {
   };
 
   return (
-    <div className="pb-10">
+    <div className="pb-10 space-y-6 sm:space-y-8 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-        <div>
-          <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#D4AF37] mb-2 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+        <div className="space-y-1">
+          <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#D4AF37] flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse"></span>
             Consola central de operaciones
           </p>
-          <h1 className="text-4xl font-semibold font-montserrat tracking-wide text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-montserrat tracking-tight text-white">
             Resumen General
           </h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] px-4 py-2.5 rounded-lg text-[#d0c5af] text-sm">
-            <Calendar className="w-4 h-4" />
-            <span className="capitalize">Ciclo Actual: {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-3.5 py-2.5 rounded-xl text-[#d0c5af] text-xs font-montserrat font-medium shadow-sm">
+            <Calendar className="w-4 h-4 text-[#D4AF37]" />
+            <span className="capitalize">Ciclo: {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
           </div>
           <ExportDashboardButton />
         </div>
       </div>
       
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      {/* Metrics Grid (1 col mobile, 2 col tablet, 4 col desktop) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
         {/* Metric 1 */}
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/40 transition-all shadow-lg flex flex-col justify-between group">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] leading-tight">
+              Inscripciones del mes
+            </h3>
+            <div className="w-10 h-10 rounded-xl bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#D4AF37] shrink-0 group-hover:border-[#D4AF37]/40 transition-colors shadow-inner">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Inscripciones del mes
-          </h3>
-          <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">{currentMonthCount}</p>
-            <span className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md mb-1.5 ${porcentajeCrecimiento >= 0 ? 'text-[#D4AF37] bg-[#D4AF37]/10' : 'text-[#ffb4ab] bg-[#93000a]/20'}`}>
-              <TrendingUp className={`w-3 h-3 ${porcentajeCrecimiento < 0 ? 'rotate-180' : ''}`} /> 
-              {porcentajeCrecimiento > 0 ? '+' : ''}{porcentajeCrecimiento}%
-            </span>
+          <div>
+            <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+              <p className="text-4xl sm:text-5xl font-bold font-montserrat text-[#D4AF37] tracking-tight">{currentMonthCount}</p>
+              <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md ${porcentajeCrecimiento >= 0 ? 'text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/20' : 'text-[#ffb4ab] bg-[#93000a]/20 border border-[#ffb4ab]/20'}`}>
+                <TrendingUp className={`w-3 h-3 ${porcentajeCrecimiento < 0 ? 'rotate-180' : ''}`} /> 
+                {porcentajeCrecimiento > 0 ? '+' : ''}{porcentajeCrecimiento}%
+              </span>
+            </div>
+            <p className="text-xs text-[#99907c]">Respecto al mes anterior</p>
           </div>
-          <p className="text-xs text-[#99907c]">Respecto al mes anterior</p>
         </div>
 
         {/* Metric 2 */}
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/40 transition-all shadow-lg flex flex-col justify-between group">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] leading-tight">
+              Cursos activos
+            </h3>
+            <div className="w-10 h-10 rounded-xl bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#D4AF37] shrink-0 group-hover:border-[#D4AF37]/40 transition-colors shadow-inner">
               <BookOpen className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Cursos activos
-          </h3>
-          <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">{cursosActivos}</p>
-            <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">EN CURSO</span>
+          <div>
+            <div className="flex items-baseline gap-2.5 mb-2 flex-wrap">
+              <p className="text-4xl sm:text-5xl font-bold font-montserrat text-[#D4AF37] tracking-tight">{cursosActivos}</p>
+              <span className="text-[#e4e1e7] text-xs font-semibold uppercase px-2 py-0.5 rounded bg-[#1b1b1f] border border-[#262629]">En curso</span>
+            </div>
+            <p className="text-xs text-[#99907c]">{sedesActivas} sedes y salones comunales</p>
           </div>
-          <p className="text-xs text-[#99907c]">{sedesActivas} sedes y salones comunales</p>
         </div>
 
         {/* Metric 3 */}
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/40 transition-all shadow-lg flex flex-col justify-between group">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] leading-tight">
+              Solicitudes PH pendientes
+            </h3>
+            <div className="w-10 h-10 rounded-xl bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#D4AF37] shrink-0 group-hover:border-[#D4AF37]/40 transition-colors shadow-inner">
               <Building className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[150px]">
-            Solicitudes PH pendientes
-          </h3>
-          <div className="flex items-end gap-3 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">{phPendientes}</p>
-            {(phPendientes ?? 0) > 0 && (
-              <span className="flex items-center gap-1 text-[#ffb4ab] text-xs font-medium bg-[#93000a]/20 px-2 py-1 rounded-md mb-1.5">
-                Prioritarias
-              </span>
-            )}
+          <div>
+            <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+              <p className="text-4xl sm:text-5xl font-bold font-montserrat text-[#D4AF37] tracking-tight">{phPendientes}</p>
+              {(phPendientes ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-1 text-[#ffb4ab] text-xs font-semibold bg-[#93000a]/20 border border-[#ffb4ab]/20 px-2 py-0.5 rounded-md">
+                  Prioritarias
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#99907c]">Requieren revisión técnica</p>
           </div>
-          <p className="text-xs text-[#99907c]">Requieren revisión técnica</p>
         </div>
 
         {/* Metric 4 */}
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/40 transition-all shadow-lg flex flex-col justify-between group">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] leading-tight">
+              Donaciones recibidas
+            </h3>
+            <div className="w-10 h-10 rounded-xl bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#D4AF37] shrink-0 group-hover:border-[#D4AF37]/40 transition-colors shadow-inner">
               <HeartHandshake className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-4 max-w-[120px]">
-            Donaciones recibidas
-          </h3>
-          <div className="flex items-end gap-2 mb-2">
-            <p className="text-5xl font-semibold text-[#D4AF37]">{donacionesCount}</p>
-            <span className="text-[#e4e1e7] text-xs font-medium mb-1.5">Alianzas</span>
+          <div>
+            <div className="flex items-baseline gap-2.5 mb-2 flex-wrap">
+              <p className="text-4xl sm:text-5xl font-bold font-montserrat text-[#D4AF37] tracking-tight">{donacionesCount}</p>
+              <span className="text-[#e4e1e7] text-xs font-semibold uppercase px-2 py-0.5 rounded bg-[#1b1b1f] border border-[#262629]">Alianzas</span>
+            </div>
+            <p className="text-xs text-[#99907c] truncate" title={`${formatCurrency(totalDonacionesEsteMes)} captados este mes`}>
+              {formatCurrency(totalDonacionesEsteMes)} este mes
+            </p>
           </div>
-          <p className="text-xs text-[#99907c]">{formatCurrency(totalDonacionesEsteMes)} captados este mes</p>
         </div>
 
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      {/* Charts & Messages Grid (Stacked on mobile/tablet, 2-1 on desktop) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart Area */}
-        <div className="lg:col-span-2 p-8 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] relative min-h-[400px] flex flex-col shadow-2xl">
-          <div className="flex justify-between items-start mb-2">
+        <div className="lg:col-span-2 p-5 sm:p-6 lg:p-8 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] relative min-h-[380px] sm:min-h-[420px] flex flex-col justify-between shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-3 mb-4">
             <div>
-              <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">
+              <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-1.5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
                 Tendencia Semestral
               </p>
-              <h2 className="text-xl font-semibold text-white">Inscripciones por mes</h2>
+              <h2 className="text-lg sm:text-xl font-bold font-montserrat text-white">Inscripciones por mes</h2>
             </div>
-            <div className="flex items-center gap-2 text-[#99907c] text-sm">
+            <div className="flex items-center gap-2 text-xs font-montserrat text-[#99907c] bg-[#1b1b1f] px-3 py-1.5 rounded-lg border border-[#262629] self-start sm:self-auto">
               <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
               Ciclo {currentDate.getFullYear() - 1} - {currentDate.getFullYear()}
             </div>
           </div>
           
-          <div className="flex-1 w-full relative">
+          <div className="flex-1 w-full relative min-h-[220px]">
             <DashboardChart data={chartData} maxValue={maxValue} />
             {maxValue > 0 && (
-              <div className="absolute top-0 right-4 bg-[#0A0A0E]/80 border border-[#D4AF37] text-[#D4AF37] px-3 py-1.5 rounded-md text-xs font-semibold z-10">
+              <div className="hidden sm:inline-flex absolute top-0 right-4 bg-[#0A0A0E]/90 border border-[#D4AF37]/60 text-[#D4AF37] px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md">
                 Pico Histórico: {maxValue} Alumnos
               </div>
             )}
           </div>
           
-          <div className="flex justify-between items-center mt-6">
-            <div className="flex gap-6 text-sm text-[#99907c]">
-              <p>Promedio: <span className="text-[#e4e1e7] font-medium">{promedioMensual} inscripciones/mes</span></p>
-              <p>Tasa de retención: <span className="text-[#D4AF37] font-medium">100%</span></p>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mt-6 pt-4 border-t border-[#262629]">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-[#99907c]">
+              <p>Promedio: <strong className="text-[#e4e1e7] font-semibold">{promedioMensual} inscripciones/mes</strong></p>
+              <p>Tasa de retención: <strong className="text-[#D4AF37] font-semibold">100%</strong></p>
             </div>
-            <Link href="/admin/cursos" className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] transition-colors">
-              Ver cursos →
+            <Link 
+              href="/admin/cursos" 
+              className="text-[#D4AF37] text-xs font-montserrat font-bold tracking-wider uppercase hover:text-[#ffe082] transition-colors inline-flex items-center gap-1 self-start sm:self-auto"
+            >
+              <span>Ver cursos</span>
+              <span>→</span>
             </Link>
           </div>
         </div>
 
         {/* Messages Feed */}
-        <div className="p-8 rounded-2xl bg-[#17171a] border border-[#262629] flex flex-col">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">
-                Bandeja de entrada
-              </p>
-              <h2 className="text-xl font-semibold text-white">Últimos mensajes de contacto</h2>
-            </div>
-            {mensajesNuevos !== null && mensajesNuevos > 0 && (
-              <div className="bg-[#2a2417] text-[#D4AF37] text-[10px] px-2 py-1 rounded font-semibold border border-[#D4AF37]/30">
-                {mensajesNuevos} Nuevos
+        <div className="p-5 sm:p-6 lg:p-8 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] flex flex-col justify-between shadow-2xl">
+          <div>
+            <div className="flex items-start justify-between gap-3 mb-5">
+              <div>
+                <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-1.5">
+                  Bandeja de entrada
+                </p>
+                <h2 className="text-lg sm:text-xl font-bold font-montserrat text-white">Últimos mensajes</h2>
               </div>
-            )}
+              {mensajesNuevos !== null && mensajesNuevos > 0 && (
+                <div className="bg-[#D4AF37]/15 text-[#D4AF37] text-[10px] px-2.5 py-1 rounded-full font-bold font-montserrat uppercase border border-[#D4AF37]/30 shrink-0">
+                  {mensajesNuevos} Nuevos
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              {mensajes?.length ? mensajes.map(msg => {
+                const nameParts = (msg.name || '').trim().split(' ');
+                const initials = nameParts.length > 1 
+                  ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase() 
+                  : (msg.name || 'NN').substring(0, 2).toUpperCase();
+                
+                const date = new Date(msg.created_at);
+                const isToday = new Date().toDateString() === date.toDateString();
+                const timeString = isToday 
+                  ? `Hoy, ${date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`
+                  : date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+
+                return (
+                  <MessageItem 
+                    key={msg.id}
+                    initials={initials} 
+                    name={msg.name} 
+                    time={timeString} 
+                    subject={msg.subject || 'Contacto'} 
+                  />
+                );
+              }) : (
+                <p className="text-sm text-[#99907c] text-center py-8">No hay mensajes recientes.</p>
+              )}
+            </div>
           </div>
 
-          <div className="flex-1 space-y-4">
-            {mensajes?.length ? mensajes.map(msg => {
-              const nameParts = msg.name.split(' ');
-              const initials = nameParts.length > 1 ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase() : msg.name.substring(0, 2).toUpperCase();
-              
-              const date = new Date(msg.created_at);
-              const isToday = new Date().toDateString() === date.toDateString();
-              const timeString = isToday 
-                ? `Hoy, ${date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`
-                : date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
-
-              return (
-                <MessageItem 
-                  key={msg.id}
-                  initials={initials} 
-                  name={msg.name} 
-                  time={timeString} 
-                  subject={msg.subject || 'Contacto'} 
-                />
-              )
-            }) : (
-              <p className="text-sm text-[#99907c] text-center pt-8">No hay mensajes recientes.</p>
-            )}
-          </div>
-
-          <Link href="/admin/mensajes" className="w-full block mt-6 text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] text-center pt-4 border-t border-[#262629] transition-colors">
+          <Link 
+            href="/admin/mensajes" 
+            className="w-full block mt-6 text-[#D4AF37] text-xs font-montserrat font-bold tracking-wider uppercase hover:text-[#ffe082] text-center pt-4 border-t border-[#262629] transition-colors"
+          >
             Gestionar todos los mensajes →
           </Link>
         </div>
       </div>
 
-      {/* Tables Section */}
-      <div className="p-8 rounded-2xl bg-[#17171a] border border-[#262629]">
-        <div className="flex justify-between items-center mb-8">
+      {/* Tables Section: Solicitudes PH */}
+      <div className="p-5 sm:p-6 lg:p-8 rounded-2xl bg-[#0A0A0E]/70 backdrop-blur-xl border border-[#262629] shadow-2xl">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
           <div>
-            <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">
+            <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-1.5">
               Gestión de alianzas residenciales
             </p>
-            <h2 className="text-xl font-semibold text-white">Últimas solicitudes de propiedad horizontal</h2>
+            <h2 className="text-lg sm:text-xl font-bold font-montserrat text-white">
+              Últimas solicitudes de propiedad horizontal
+            </h2>
           </div>
-          <div className="flex gap-4">
-             <button className="bg-[#1b1b1f] border border-[#262629] px-4 py-2 rounded-lg text-[#d0c5af] text-sm hover:text-white transition-colors">
-                Filtrar estado
-             </button>
-             <Link href="/admin/solicitudes-ph" className="text-[#D4AF37] text-xs font-montserrat font-semibold tracking-wider uppercase hover:text-[#F5D77A] flex items-center transition-colors">
-                Ver Todas ({totalSolicitudesPh || 0})
-             </Link>
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/admin/solicitudes-ph" 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#D4AF37] hover:text-[#ffe082] border border-[#262629] text-xs font-montserrat font-semibold uppercase tracking-wider transition-all"
+            >
+              <span>Ver todas ({totalSolicitudesPh || 0})</span>
+              <Eye className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 
-        <div className="w-full overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        {/* Desktop & Tablet Table with Horizontal Scroll on small screens */}
+        <div className="w-full overflow-x-auto custom-scrollbar rounded-xl border border-[#262629]">
+          <table className="w-full text-left border-collapse min-w-[620px]">
             <thead>
-              <tr className="border-b border-[#262629] text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">
-                <th className="pb-4 font-semibold">Conjunto</th>
-                <th className="pb-4 font-semibold">Administrador</th>
-                <th className="pb-4 font-semibold">Fecha</th>
-                <th className="pb-4 font-semibold">Estado</th>
-                <th className="pb-4 font-semibold text-right">Acción</th>
+              <tr className="bg-[#1b1b1f]/60 border-b border-[#262629] text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">
+                <th className="px-5 py-3.5 font-semibold">Conjunto / Edificio</th>
+                <th className="px-4 py-3.5 font-semibold">Administrador(a)</th>
+                <th className="px-4 py-3.5 font-semibold">Fecha</th>
+                <th className="px-4 py-3.5 font-semibold">Estado</th>
+                <th className="px-5 py-3.5 font-semibold text-right">Acción</th>
               </tr>
             </thead>
-            <tbody className="text-sm">
+            <tbody className="text-sm divide-y divide-[#262629]/60">
               {solicitudesPh?.length ? solicitudesPh.map(req => {
                 const date = new Date(req.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
                 return (
@@ -337,7 +364,7 @@ export default async function AdminDashboardPage() {
                     date={date}
                     status={req.status.toUpperCase().replace('_', ' ')}
                   />
-                )
+                );
               }) : (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-sm text-[#99907c]">
@@ -354,38 +381,20 @@ export default async function AdminDashboardPage() {
 }
 
 // Helper components for the page
-function BookOpenIcon(props: React.SVGProps<SVGSVGElement>) {
+function MessageItem({ initials, name, time, subject }: { initials: string; name: string; time: string; subject: string }) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-    </svg>
-  )
-}
-
-function MessageItem({ initials, name, time, subject }: { initials: string, name: string, time: string, subject: string }) {
-  return (
-    <div className="bg-[#1b1b1f] p-4 rounded-xl border border-[#262629] flex gap-4">
-      <div className="w-8 h-8 rounded-full bg-[#262629] flex-shrink-0 flex items-center justify-center text-[#99907c] text-xs font-semibold">
+    <div className="bg-[#1b1b1f]/80 hover:bg-[#1b1b1f] p-3.5 rounded-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-all flex items-center gap-3.5">
+      <div className="w-9 h-9 rounded-xl bg-[#262629] border border-[#353439] flex-shrink-0 flex items-center justify-center text-[#D4AF37] text-xs font-bold font-montserrat">
         {initials}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-start mb-1">
-          <p className="text-[#e4e1e7] font-medium text-sm truncate pr-2">{name}</p>
-          <span className="text-[#99907c] text-[10px] whitespace-nowrap">{time}</span>
+        <div className="flex justify-between items-center mb-0.5 gap-2">
+          <p className="text-[#e4e1e7] font-semibold text-xs sm:text-sm truncate">{name}</p>
+          <span className="text-[#99907c] text-[10px] font-montserrat shrink-0">{time}</span>
         </div>
-        <p className="text-[#99907c] text-xs truncate">Asunto: &quot;{subject}&quot;</p>
+        <p className="text-[#99907c] text-xs truncate">
+          Asunto: <span className="text-[#d0c5af]">&quot;{subject}&quot;</span>
+        </p>
       </div>
     </div>
   );
@@ -402,36 +411,39 @@ interface TableRowProps {
 
 function TableRow({ icon, name, details, admin, date, status }: TableRowProps) {
   const getStatusStyle = (s: string) => {
-    if (s === 'PENDIENTE') return 'border-[#D4AF37] text-[#D4AF37]';
-    if (s === 'EN REVISIÓN') return 'border-[#e4e1e7] text-[#e4e1e7]';
-    if (s === 'APROBADA') return 'bg-[#D4AF37] text-[#0A0A0E] border-[#D4AF37]';
-    return '';
-  }
+    if (s === 'PENDIENTE') return 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10';
+    if (s === 'EN REVISIÓN') return 'border-[#e4e1e7] text-[#e4e1e7] bg-[#1b1b1f]';
+    if (s === 'APROBADA') return 'bg-[#D4AF37] text-[#0A0A0E] border-[#D4AF37] font-bold';
+    return 'border-[#262629] text-[#99907c]';
+  };
 
   return (
-    <tr className="border-b border-[#262629] hover:bg-[#1b1b1f] transition-colors group">
-      <td className="py-4">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-[#262629] flex items-center justify-center">
+    <tr className="hover:bg-[#1b1b1f]/50 transition-colors group">
+      <td className="px-5 py-3.5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-lg bg-[#262629] border border-[#262629] group-hover:border-[#D4AF37]/30 flex items-center justify-center shrink-0 transition-colors">
             {icon}
           </div>
-          <div>
-            <p className="text-[#e4e1e7] font-medium mb-1">{name}</p>
-            <p className="text-[#99907c] text-[10px] tracking-wide">{details}</p>
+          <div className="min-w-0">
+            <p className="text-[#e4e1e7] font-semibold text-sm mb-0.5 truncate max-w-[200px] sm:max-w-[280px]">{name}</p>
+            <p className="text-[#99907c] text-[10px] tracking-wide truncate">{details}</p>
           </div>
         </div>
       </td>
-      <td className="py-4 text-[#d0c5af]">{admin}</td>
-      <td className="py-4 text-[#d0c5af]">{date}</td>
-      <td className="py-4">
-        <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider border ${getStatusStyle(status)}`}>
+      <td className="px-4 py-3.5 text-[#d0c5af] text-xs font-medium truncate max-w-[150px]">{admin}</td>
+      <td className="px-4 py-3.5 text-[#99907c] text-xs whitespace-nowrap">{date}</td>
+      <td className="px-4 py-3.5">
+        <span className={`px-2.5 py-1 rounded-full text-[9px] font-montserrat uppercase tracking-wider border font-semibold ${getStatusStyle(status)}`}>
           {status}
         </span>
       </td>
-      <td className="py-4 text-right">
-        <button className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0A0A0E] px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors">
-          VER
-        </button>
+      <td className="px-5 py-3.5 text-right">
+        <Link 
+          href={`/admin/solicitudes-ph?q=${encodeURIComponent(name)}`}
+          className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0A0A0E] text-xs font-montserrat font-bold uppercase transition-all shadow-sm"
+        >
+          Ver
+        </Link>
       </td>
     </tr>
   );
