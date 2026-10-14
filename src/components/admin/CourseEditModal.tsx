@@ -35,6 +35,8 @@ export function CourseEditModal({ isOpen, onClose, categories, course }: CourseE
     const title = formData.get('title') as string;
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     
+    const imageUrl = (formData.get('image_url') as string)?.trim() || null;
+
     const courseData = {
       title,
       slug,
@@ -44,6 +46,7 @@ export function CourseEditModal({ isOpen, onClose, categories, course }: CourseE
       schedule_text: formData.get('schedule_text'),
       capacity: formData.get('capacity') ? parseInt(formData.get('capacity') as string) : null,
       status: formData.get('status'),
+      image_url: imageUrl,
     };
 
     const supabase = createBrowserClient(
@@ -106,6 +109,11 @@ export function CourseEditModal({ isOpen, onClose, categories, course }: CourseE
               <div className="space-y-2 md:col-span-2">
                 <label className="text-xs sm:text-sm font-medium text-[#d0c5af]">Descripción breve</label>
                 <input name="short_description" defaultValue={course.short_description || ''} type="text" className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-2.5 text-white focus:border-[#D4AF37] focus:outline-none transition-colors text-sm" />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs sm:text-sm font-medium text-[#d0c5af]">URL de Imagen de Portada (img_url / image_url)</label>
+                <input name="image_url" defaultValue={course.image_url || course.img_url || ''} type="text" className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-2.5 text-white focus:border-[#D4AF37] focus:outline-none transition-colors text-sm" placeholder="https://... o /images/taller-ejemplo.jpg" />
               </div>
 
               <div className="space-y-2">

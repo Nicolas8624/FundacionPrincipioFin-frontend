@@ -45,16 +45,31 @@ export function DirectEnrollmentModal({
 
     try {
       const supabase = createBrowserClient();
+      const emailTrimmed = email.trim() || null;
+
+      let matchedUserId: string | null = null;
+      if (emailTrimmed) {
+        const { data: matchedProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('email', emailTrimmed)
+          .maybeSingle();
+        if (matchedProfile?.id) {
+          matchedUserId = matchedProfile.id;
+        }
+      }
+
       const { data: insertedData, error: insertError } = await supabase
         .from('course_enrollments')
         .insert([
           {
             course_id: courseId,
+            user_id: matchedUserId,
             full_name: fullName.trim(),
             document_type: 'CC',
             document_number: documentNumber.trim(),
             phone: phone.trim() || null,
-            email: email.trim() || null,
+            email: emailTrimmed,
             cupo_type: cupoType,
             status: 'confirmada',
             accepted_data_policy: true,
