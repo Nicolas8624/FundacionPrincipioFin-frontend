@@ -85,14 +85,14 @@ export default async function AdminCursosPage({ searchParams }: { searchParams: 
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
             ADMINISTRACIÓN DE PROGRAMAS FORMATIVOS • PERIODO VIGENTE {new Date().getFullYear()}
           </p>
-          <h1 className="text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
             Gestión de Cursos y Talleres
           </h1>
         </div>
         
-        <div className="flex gap-4">
-          <div className="bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] rounded-xl p-4 flex items-center gap-4 min-w-[200px]">
-            <div className="w-10 h-10 rounded-full bg-[#262629] flex items-center justify-center text-[#d0c5af]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] rounded-xl p-4 flex items-center gap-4 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-[#262629] flex items-center justify-center text-[#d0c5af] shrink-0">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
@@ -101,8 +101,8 @@ export default async function AdminCursosPage({ searchParams }: { searchParams: 
             </div>
           </div>
           
-          <div className="bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] rounded-xl p-4 flex items-center gap-4 min-w-[200px]">
-            <div className="w-10 h-10 rounded-full bg-[#262629] flex items-center justify-center text-[#D4AF37]">
+          <div className="bg-[#1b1b1f]/80 backdrop-blur-md border border-[#262629] rounded-xl p-4 flex items-center gap-4 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-[#262629] flex items-center justify-center text-[#D4AF37] shrink-0">
               <Users className="w-5 h-5" />
             </div>
             <div>
@@ -117,7 +117,7 @@ export default async function AdminCursosPage({ searchParams }: { searchParams: 
 
       {/* Tabla de Cursos */}
       <div className="bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] rounded-2xl overflow-hidden shadow-2xl">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-[#1b1b1f]/50 border-b border-[#262629] text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">
@@ -216,37 +216,37 @@ export default async function AdminCursosPage({ searchParams }: { searchParams: 
         
         {/* Paginación */}
         {totalCourses > 0 && (
-          <div className="bg-[#1b1b1f]/50 border-t border-[#262629] px-6 py-4 flex items-center justify-between">
-            <p className="text-sm text-[#99907c]">
+          <div className="bg-[#1b1b1f]/50 border-t border-[#262629] p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs sm:text-sm text-[#99907c] text-center sm:text-left">
               Mostrando <span className="text-[#e4e1e7] font-medium">{from + 1}-{Math.min(to + 1, totalCourses)}</span> de <span className="text-[#e4e1e7] font-medium">{totalCourses}</span> programas
             </p>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {page > 1 ? (
                 <Link 
                   href={`?page=${page - 1}${q ? `&q=${q}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
-                  className="px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
+                  className="px-3 sm:px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-xs sm:text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
                 >
                   <ChevronLeft className="w-4 h-4" /> Anterior
                 </Link>
               ) : (
-                <button disabled className="px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
+                <button disabled className="px-3 sm:px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-xs sm:text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
                   <ChevronLeft className="w-4 h-4" /> Anterior
                 </button>
               )}
               
-              <button className="w-9 h-9 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-semibold text-sm flex items-center justify-center">
+              <button className="w-8 sm:w-9 h-8 sm:h-9 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-semibold text-xs sm:text-sm flex items-center justify-center">
                 {page}
               </button>
               
               {page < totalPages ? (
                 <Link 
                   href={`?page=${page + 1}${q ? `&q=${q}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
-                  className="px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
+                  className="px-3 sm:px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-xs sm:text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
                 >
                   Siguiente <ChevronRight className="w-4 h-4" />
                 </Link>
               ) : (
-                <button disabled className="px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
+                <button disabled className="px-3 sm:px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-xs sm:text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
                   Siguiente <ChevronRight className="w-4 h-4" />
                 </button>
               )}

@@ -365,10 +365,10 @@ export function CourseStudentsView({
               Gestión Académica • Datos en Tiempo Real
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
             Estudiantes y Solicitudes
           </h1>
-          <p className="text-sm text-[#99907c] max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#99907c] max-w-3xl leading-relaxed">
             Gestiona los participantes matriculados en este curso, valida postulaciones de cupo, registra el avance de asistencia y expide acreditaciones con folio institucional único.
           </p>
 
@@ -401,11 +401,11 @@ export function CourseStudentsView({
         </div>
 
         {/* Action CTAs */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full xl:w-auto">
           <button 
             type="button"
             onClick={handleExportCSV}
-            className="px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-white transition-all text-xs font-montserrat uppercase tracking-wider flex items-center gap-2 shadow-sm"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-white transition-all text-xs font-montserrat uppercase tracking-wider shadow-sm"
           >
             <Download className="w-4 h-4 text-[#D4AF37]" />
             <span>Descargar Lista</span>
@@ -413,7 +413,7 @@ export function CourseStudentsView({
           <button 
             type="button"
             onClick={() => setIsDirectEnrollOpen(true)}
-            className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-semibold flex items-center gap-2 shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-semibold shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
           >
             <UserPlus className="w-4 h-4" />
             <span>+ Inscribir Estudiante Directo</span>
@@ -519,8 +519,8 @@ export function CourseStudentsView({
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#262629]">
-        <div className="flex items-center gap-6 sm:gap-8">
+      <div className="border-b border-[#262629] overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-6 sm:gap-8 whitespace-nowrap min-w-max pb-0.5">
           <button
             type="button"
             onClick={() => setActiveTab('matriculados')}
@@ -577,8 +577,8 @@ export function CourseStudentsView({
       {activeTab === 'matriculados' && (
         <div className="space-y-4">
           {/* Search & Filters */}
-          <div className="p-4 rounded-xl bg-[#131317] border border-[#262629] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            <div className="flex-1 relative">
+          <div className="p-4 rounded-xl bg-[#131317] border border-[#262629] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex-1 relative w-full">
               <Search className="w-4 h-4 text-[#99907c] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -592,16 +592,16 @@ export function CourseStudentsView({
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-3 py-2 rounded-lg">
-                <Filter className="w-4 h-4 text-[#D4AF37]" />
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto">
+              <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-3 py-2 rounded-lg w-full sm:w-auto">
+                <Filter className="w-4 h-4 text-[#D4AF37] shrink-0" />
                 <select
                   value={statusFilter}
                   onChange={(e) => {
                     setStatusFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="bg-transparent text-white text-xs font-montserrat uppercase focus:outline-none cursor-pointer"
+                  className="bg-transparent text-white text-xs font-montserrat uppercase focus:outline-none cursor-pointer w-full sm:w-auto"
                 >
                   <option value="all" className="bg-[#1b1b1f]">Todos los estados</option>
                   <option value="certificados" className="bg-[#1b1b1f]">Aprobado / Certificado</option>
@@ -610,15 +610,15 @@ export function CourseStudentsView({
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-3 py-2 rounded-lg">
-                <Building2 className="w-4 h-4 text-[#D4AF37]" />
+              <div className="flex items-center gap-2 bg-[#1b1b1f] border border-[#262629] px-3 py-2 rounded-lg w-full sm:w-auto">
+                <Building2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
                 <select
                   value={cupoFilter}
                   onChange={(e) => {
                     setCupoFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="bg-transparent text-white text-xs font-montserrat uppercase focus:outline-none cursor-pointer"
+                  className="bg-transparent text-white text-xs font-montserrat uppercase focus:outline-none cursor-pointer w-full sm:w-auto"
                 >
                   <option value="all" className="bg-[#1b1b1f]">Todos los cupos</option>
                   <option value="Cupo Regular" className="bg-[#1b1b1f]">Cupo Regular</option>
@@ -635,17 +635,18 @@ export function CourseStudentsView({
                   setCupoFilter('all');
                   setCurrentPage(1);
                 }}
-                className="p-2.5 rounded-lg bg-[#1b1b1f] border border-[#262629] hover:bg-[#262629] text-[#99907c] hover:text-white transition-colors"
+                className="p-2.5 rounded-lg bg-[#1b1b1f] border border-[#262629] hover:bg-[#262629] text-[#99907c] hover:text-white transition-colors flex items-center justify-center gap-1"
                 title="Restablecer filtros"
               >
                 <RotateCcw className="w-4 h-4" />
+                <span className="sm:hidden text-xs font-montserrat uppercase">Restablecer</span>
               </button>
             </div>
           </div>
 
           {/* Students Table */}
-          <div className="overflow-x-auto rounded-xl bg-[#131317] border border-[#262629] shadow-lg">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto custom-scrollbar rounded-xl bg-[#131317] border border-[#262629] shadow-lg">
+            <table className="w-full text-left border-collapse min-w-[880px]">
               <thead>
                 <tr className="bg-[#1b1b1f]/80 text-[#99907c] text-[11px] font-montserrat uppercase tracking-widest border-b border-[#262629]">
                   <th className="py-4 px-6 font-semibold">Estudiante • Contacto</th>
