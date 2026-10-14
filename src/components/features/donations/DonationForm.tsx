@@ -11,16 +11,17 @@ export function DonationForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     setIsSuccess(false);
     setErrorMsg("");
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const result = await submitDonation(formData);
 
     if (result.success) {
       setIsSuccess(true);
-      e.currentTarget.reset();
+      form.reset();
     } else {
       setErrorMsg(result.error || "Ocurrió un error inesperado al enviar la solicitud.");
     }
