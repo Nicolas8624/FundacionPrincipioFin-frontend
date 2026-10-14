@@ -43,8 +43,8 @@ export function CourseControls({ categories, currentQuery, currentCategory }: Co
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="flex w-full sm:w-auto gap-4">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+        <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3 sm:gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99907c]" />
             <input 
@@ -52,15 +52,15 @@ export function CourseControls({ categories, currentQuery, currentCategory }: Co
               placeholder="Buscar programa..." 
               defaultValue={currentQuery}
               onChange={handleSearch}
-              className="w-full bg-[#0A0A0E]/80 border border-[#262629] text-[#e4e1e7] rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-[#D4AF37] transition-colors placeholder:text-[#42454a]"
+              className="w-full bg-[#0A0A0E]/80 border border-[#262629] text-[#e4e1e7] rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-[#D4AF37] transition-colors placeholder:text-[#42454a] text-sm"
             />
           </div>
           
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={currentCategory}
               onChange={handleCategoryChange}
-              className="appearance-none bg-[#0A0A0E]/80 border border-[#262629] text-[#d0c5af] px-6 py-3 pr-10 rounded-xl flex items-center gap-3 hover:text-white transition-colors focus:outline-none focus:border-[#D4AF37] cursor-pointer"
+              className="w-full sm:w-auto appearance-none bg-[#0A0A0E]/80 border border-[#262629] text-[#d0c5af] px-6 py-3 pr-10 rounded-xl flex items-center gap-3 hover:text-white transition-colors focus:outline-none focus:border-[#D4AF37] cursor-pointer text-sm"
             >
               <option value="">Todas las categorías</option>
               {categories.map(c => (
@@ -72,7 +72,7 @@ export function CourseControls({ categories, currentQuery, currentCategory }: Co
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-6 py-3 rounded-xl font-montserrat font-semibold tracking-wider text-sm flex items-center justify-center gap-2 transition-colors uppercase"
+          className="w-full md:w-auto bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-6 py-3 rounded-xl font-montserrat font-semibold tracking-wider text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors uppercase shrink-0 shadow-md shadow-[#D4AF37]/15"
         >
           <Plus className="w-4 h-4" />
           Nuevo Programa

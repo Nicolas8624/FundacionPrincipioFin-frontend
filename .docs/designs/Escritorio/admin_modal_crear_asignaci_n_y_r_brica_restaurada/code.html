@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-surface":"#e4e1e7","inverse-primary":"#735c00","primary-container":"#d4af37","on-surface-variant":"#d0c5af","on-primary-fixed-variant":"#574500","tertiary-fixed-dim":"#c4c7cc","on-secondary-fixed":"#231b00","error-container":"#93000a","primary-fixed":"#ffe088","on-error-container":"#ffdad6","on-error":"#690005","outline":"#99907c","surface-container-lowest":"#0e0e12","primary":"#f2ca50","surface-container-highest":"#353439","surface-container":"#1f1f24","on-secondary-container":"#eccf73","error":"#ffb4ab","primary-fixed-dim":"#e9c349","on-tertiary":"#2d3135","surface-variant":"#353439","background":"#131317","on-primary":"#3c2f00","tertiary-container":"#b0b3b8","tertiary":"#ccced3","secondary-container":"#6c5701","on-secondary-fixed-variant":"#564500","on-primary-fixed":"#241a00","inverse-on-surface":"#303034","on-tertiary-fixed":"#181c20","surface-container-high":"#2a292e","tertiary-fixed":"#e0e3e8","on-background":"#e4e1e7","outline-variant":"#4d4635","on-secondary":"#3c2f00","secondary":"#e1c469","secondary-fixed-dim":"#e1c469","on-tertiary-container":"#42454a","surface-tint":"#e9c349","inverse-surface":"#e4e1e7","surface-bright":"#39393d","surface-dim":"#131317","on-tertiary-fixed-variant":"#43474b","surface":"#131317","on-primary-container":"#554300","secondary-fixed":"#ffe082","surface-container-low":"#1b1b1f"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin-mobile":"1.25rem","space-xl":"3.5rem","space-lg":"2rem","margin":"4rem","gutter-mobile":"1rem","space-xs":"0.375rem","space-sm":"0.75rem","gutter":"1.5rem","space-md":"1.25rem"},"fontFamily":{"headline-md":["Montserrat"],"label-sm":["Montserrat"],"headline-lg-mobile":["Montserrat"],"body-lg":["Inter"],"display-hero":["Montserrat"],"display-hero-mobile":["Montserrat"],"headline-sm":["Montserrat"],"body-md":["Inter"],"body-sm":["Inter"],"headline-lg":["Montserrat"],"label-md":["Montserrat"]},"fontSize":{"headline-md":["28px",{"lineHeight":"36px","letterSpacing":"0.06em","fontWeight":"500"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.18em","fontWeight":"600"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"0.06em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"display-hero":["56px",{"lineHeight":"68px","letterSpacing":"0.12em","fontWeight":"600"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","letterSpacing":"0.04em","fontWeight":"500"}],"body-md":["16px",{"lineHeight":"26px","fontWeight":"400"}],"body-sm":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg":["40px",{"lineHeight":"48px","letterSpacing":"0.08em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.15em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen"><aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest border-r border-outline-variant/30 z-30 flex flex-col justify-between"><div class="flex flex-col"><div class="pt-6 pb-5 px-6 flex items-center gap-3 border-b border-outline-variant/20"><img alt="logo.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTPB7z2bizq2qP5L-ICnZXzZymMiCPyCT6YFCWs23hnnWRQJJIl4-iqYdlcA1Mz9MZncMTkM3mx7IHOT5gcRuSAPgChNKUlWaxtFbRqpZF5Nkm1IdIe-A6kwQIBEk7_IVlzJXBqm4PV4-nqd6KFVmN4Cb2n1Re91XBrfVkQAcyLUJC9jkmDDZKNjCkGe8x2r07f0Zo_JcysjWNjVJY-T873aQZCTjwu0NLfu8qIFxYFgAXTXH9isXjFuPbO0Lm4oeyszISDe2odA"/><span class="font-headline-sm text-[16px] font-semibold text-primary uppercase tracking-wider">Principio &amp; Fin</span></div><div class="px-4 py-4"><p class="px-3 mb-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">Administración</p><nav class="space-y-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold shadow-[0_0_15px_rgba(212,175,55,0.2)]"><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-resumen" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-sm text-body-sm">Resumen</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary-container text-on-primary-container font-semibold shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all duration-150" data-path="admin-cursos" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-body-sm text-body-sm">Cursos</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-inscripciones" href="#"><span class="material-symbols-outlined text-[20px]">assignment</span><span class="font-body-sm text-body-sm">Inscripciones</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-solicitudes-ph" href="#"><span class="material-symbols-outlined text-[20px]">apartment</span><span class="font-body-sm text-body-sm">Solicitudes PH</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-donaciones-y-alianzas" href="#"><span class="material-symbols-outlined text-[20px]">volunteer_activism</span><span class="font-body-sm text-body-sm">Donaciones y alianzas</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-150" data-path="admin-mensajes-de-contacto" href="#"><span class="material-symbols-outlined text-[20px]">mail</span><span class="font-body-sm text-body-sm">Mensajes de contacto</span></a></nav></div></div><div class="p-4 border-t border-outline-variant/20"><div class="flex items-center gap-3 px-3 py-3 mb-2 rounded-lg bg-surface-container-low/70 border border-outline-variant/20"><div class="w-9 h-9 rounded bg-primary-container text-on-primary-container font-headline-sm text-sm font-bold flex items-center justify-center tracking-wider shadow-[0_0_10px_rgba(212,175,55,0.3)]">AD</div><div class="flex flex-col text-left overflow-hidden"><span class="font-label-md text-label-md text-on-surface truncate">Administrador</span><span class="font-label-sm text-[9px] uppercase tracking-wider text-primary font-semibold">ADMINISTRADOR</span></div></div><a class="flex items-center gap-3 px-3 py-2.5 rounded text-error hover:bg-error-container hover:text-on-error-container transition-all duration-150" data-path="login" href="#"><span class="material-symbols-outlined text-[20px]">logout</span><span class="font-body-sm text-body-sm font-medium">Cerrar sesión</span></a></div></aside><div class="pl-[260px]"><main class="relative bg-surface min-h-screen"><div class="flex flex-col w-full bg-surface min-h-screen text-on-surface">
+<!-- Interactive Navigation & Context Bar -->
+<div class="px-8 pt-8 pb-6 bg-surface-container-low shadow-sm flex flex-col gap-6">
+<!-- Breadcrumb & Top Bar Actions -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary hover:text-primary-fixed-dim transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="">Volver a Gestión de Cursos</span>
+</a>
+<span class="text-on-surface-variant/40 font-body-sm">/</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pintura en Cerámica y Oficios</span>
+<span class="text-on-surface-variant/40 font-body-sm">/</span>
+<span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold">Aula Virtual &amp; Evidencias</span>
+</div>
+</div>
+<!-- Title & Course Metadata -->
+<div class="flex flex-col gap-5 pb-2"><div class="space-y-2"><h1 class="font-headline-lg text-headline-lg text-on-surface tracking-wide">Evaluación y Evidencias de Curso</h1><p class="font-body-md text-body-md text-on-surface-variant leading-relaxed max-w-4xl">Supervisa las entregas prácticas, fotografías de proyectos y asignaciones enviadas por los estudiantes inscritos. Califica con la rúbrica comunitaria, retroalimenta y certifica el avance formativo.</p></div><div class="flex flex-wrap items-center gap-2.5 pt-1"><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm tracking-wider uppercase"><span class="material-symbols-outlined text-[15px] text-primary">hub</span><span class="">Modalidad: Virtual &amp; Presencial</span></div><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm tracking-wider uppercase"><span class="material-symbols-outlined text-[15px] text-secondary">event</span><span class="">Cohorte: 2026-I</span></div><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-highest text-primary text-label-sm font-label-sm tracking-wider uppercase"><span class="material-symbols-outlined text-[15px] text-primary">person</span><span class="">Docente: Maestra Lucía Forero</span></div><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-label-sm tracking-wider uppercase"><span class="material-symbols-outlined text-[15px] text-primary">group</span><span class="">32 Estudiantes inscritos (Cupos: 32/35)</span></div><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-label-sm tracking-wider uppercase"><span class="material-symbols-outlined text-[15px] text-secondary">how_to_reg</span><span class="">Asistencia promedio: 94%</span></div></div></div>
+</div>
+<div class="p-8 space-y-8 max-w-[1600px] w-full mx-auto">
+<!-- 4 KPI Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="p-5 rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute right-0 top-0 translate-x-3 -translate-y-3 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Total Entregas</span>
+<span class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[20px]">folder_special</span>
+</span>
+</div>
+<div class="mt-4 flex items-baseline gap-3">
+<span class="font-display-hero-mobile text-display-hero-mobile text-on-surface font-semibold tracking-tight">64</span>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-primary uppercase font-semibold">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12 esta semana
+          </span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-5 rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute right-0 top-0 translate-x-3 -translate-y-3 w-24 h-24 bg-secondary/10 rounded-full blur-2xl group-hover:bg-secondary/20 transition-colors"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Pendientes de Calificar</span>
+<span class="w-9 h-9 rounded-lg bg-secondary-container/40 flex items-center justify-center text-secondary shadow-inner">
+<span class="material-symbols-outlined text-[20px]">pending_actions</span>
+</span>
+</div>
+<div class="mt-4 flex items-baseline gap-3">
+<span class="font-display-hero-mobile text-display-hero-mobile text-secondary font-semibold tracking-tight">11</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase font-medium">Revisión prioritaria</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 28%;"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-5 rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute right-0 top-0 translate-x-3 -translate-y-3 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Aprobadas</span>
+<span class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed-dim shadow-inner">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</span>
+</div>
+<div class="mt-4 flex items-baseline gap-3">
+<span class="font-display-hero-mobile text-display-hero-mobile text-on-surface font-semibold tracking-tight">49</span>
+<span class="text-label-sm font-label-sm text-primary uppercase font-semibold">Calificación alta</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
+<div class="bg-primary-fixed-dim h-full rounded-full" style="width: 76%;"></div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-5 rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute right-0 top-0 translate-x-3 -translate-y-3 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Tasa de Finalización</span>
+<span class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[20px]">donut_large</span>
+</span>
+</div>
+<div class="mt-4 flex items-baseline gap-3">
+<span class="font-display-hero-mobile text-display-hero-mobile text-on-surface font-semibold tracking-tight">82.5%</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase font-medium">Cumplimiento cohorte</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 82.5%;"></div>
+</div>
+</div>
+</div><div class="flex flex-wrap items-center justify-between gap-4 py-2"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[20px]">tune</span><span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Acciones Principales del Curso</span></div><div class="flex flex-wrap items-center gap-3"><a class="inline-flex items-center gap-2 px-4 py-2.5 rounded bg-surface-container hover:bg-surface-container-high text-primary border border-primary/20 hover:border-primary/40 font-label-md text-label-md tracking-wider uppercase transition-all shadow-sm" href="#"><span class="material-symbols-outlined text-[18px]">group</span><span class="">Ver Lista de Inscritos (32)</span></a><button class="inline-flex items-center gap-2 px-4 py-2.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md tracking-wider uppercase transition-all shadow-sm border border-outline-variant/30 hover:border-outline-variant/50" type="button"><span class="material-symbols-outlined text-[18px] text-primary">download</span><span class="">Descargar Consolidado (Excel)</span></button><button class="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-gradient-to-r from-primary-container to-secondary text-on-primary font-label-md text-label-md tracking-widest uppercase font-semibold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.99] transition-all" onclick="document.getElementById('modal-crear-asignacion').style.display='flex'" type="button"><span class="material-symbols-outlined text-[20px]">add_circle</span><span class="">Crear Asignación / Tarea</span></button></div></div>
+<!-- Module Selector Tabs -->
+<div class="p-2 rounded-xl bg-surface-container-low flex items-center gap-2 overflow-x-auto shadow-sm no-scrollbar">
+<button class="px-4 py-2.5 rounded bg-surface-container-high text-primary font-label-md text-label-md uppercase tracking-wider font-semibold whitespace-nowrap shadow-sm" type="button">
+        Todas las Asignaciones (64)
+      </button>
+<button class="px-4 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md uppercase tracking-wider whitespace-nowrap transition-colors" type="button">
+        Proyecto 1: Arcilla &amp; Modelado (15)
+      </button>
+<button class="px-4 py-2.5 rounded bg-surface-container text-secondary font-label-md text-label-md uppercase tracking-wider whitespace-nowrap transition-colors flex items-center gap-2" type="button">
+<span class="">Proyecto 2: Esmaltado &amp; Vidriado</span>
+<span class="px-1.5 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary/20 text-secondary">18</span>
+</button>
+<button class="px-4 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md uppercase tracking-wider whitespace-nowrap transition-colors" type="button">
+        Proyecto 3: Quema y Acabados (12)
+      </button>
+<button class="px-4 py-2.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md uppercase tracking-wider whitespace-nowrap transition-colors" type="button">
+        Bitácora Fotográfica (19)
+      </button>
+</div>
+<!-- Filters Strip -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+<div class="md:col-span-5 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low rounded-lg text-on-surface font-body-sm text-body-sm placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary shadow-sm" placeholder="Buscar estudiante por nombre, cédula o proyecto..." type="text"/>
+</div>
+<div class="md:col-span-3">
+<div class="relative">
+<select class="w-full px-4 py-3 bg-surface-container-low rounded-lg text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary shadow-sm cursor-pointer pr-10">
+<option value="todos">Estado: Todos los registros</option>
+<option selected="" value="pendiente">Estado: Pendiente de Calificar (11)</option>
+<option value="aprobado">Estado: Aprobado (49)</option>
+<option value="correccion">Estado: Requiere Corrección (4)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-3">
+<div class="relative">
+<select class="w-full px-4 py-3 bg-surface-container-low rounded-lg text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary shadow-sm cursor-pointer pr-10">
+<option value="todos">Horario: Todos los grupos</option>
+<option value="sabados">Sábados 9:00 a.m. (Presencial Taller)</option>
+<option value="martes">Martes 6:30 p.m. (Virtual Asincrónico)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-1 flex justify-end">
+<button class="w-full py-3 px-3 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm uppercase tracking-wider flex items-center justify-center gap-1 shadow-sm transition-colors" title="Restablecer filtros" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_alt_off</span>
+<span class="md:hidden">Limpiar</span>
+</button>
+</div>
+</div>
+<!-- Classroom Workspace Grid (2 Columns: Evidence Deck + Grading Studio) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Evidence List (7 cols) -->
+<div class="lg:col-span-7 space-y-4">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant font-semibold">
+            Entregas Registradas (6 seleccionadas)
+          </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+            Mostrando 1-6 de 64
+          </span>
+</div>
+<!-- Student Card 1: Selected & Under Evaluation -->
+<div class="p-6 rounded-xl bg-surface-container-high shadow-md relative overflow-hidden transition-all duration-200">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+<div class="flex items-start gap-3.5">
+<div class="w-11 h-11 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center font-bold tracking-tight shadow-md">
+                CM
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Camila Andrea Morales</h3>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-primary/20 text-primary uppercase font-semibold">Activa</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+<span class="">CC 1.014.289.430</span>
+<span class="">•</span>
+<span class="text-secondary font-medium">Proyecto 2: Jarrón con Esmaltado Azul Cobalto</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/50 text-secondary font-label-sm text-label-sm uppercase font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                Pendiente de Calificar
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant/80 text-[12px]">
+                14 Mar 2026, 10:45 a.m. (A tiempo)
+              </span>
+</div>
+</div>
+<!-- Submitted Photos & Gallery Preview -->
+<div class="space-y-2 mb-4">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span class="font-medium text-on-surface">3 Archivos Fotográficos Adjuntos (HD):</span>
+<span class="text-primary font-label-sm text-label-sm uppercase tracking-wider">Haga clic para ampliar</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div class="group relative rounded-lg overflow-hidden h-28 bg-surface-container-lowest shadow-inner cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up artisan ceramic vase with vivid cobalt blue glazed finish and traditional Colombian indigenous motifs, studio lighting on dark obsidian pedestal, rich gold reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTVL_HegGvBduQorXIX0VZpfwG9qzZAOtPnEoKa0nmsrk7jIe4o5M-9b586Ue2tBk4qY7Mm4dtj4zB2e7o3sLUk1fos3YjjyQEtWKB6bl9qWaYO8y-uBiTHcy_OrmroV49iGweKdLLZI8tSmp_Nlw2HW9foIQ6BHMusg0ouKhsKDLEhIwAqEyXOhr2B1ftujR6_SJ1_hKd9O-8jU-CoZ2X8DUnK4MX6UKhIFoYRiCv1mjabzaYb1O47g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent flex items-end p-2">
+<span class="font-label-sm text-label-sm text-on-surface truncate">1_Pieza_Final_Cobalto.jpg</span>
+</div>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-surface text-[24px]">zoom_in</span>
+</div>
+</div>
+<div class="group relative rounded-lg overflow-hidden h-28 bg-surface-container-lowest shadow-inner cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Handcrafted pottery process shot showing woman artisan hands applying glaze brushwork onto damp clay vessel inside ceramic workshop, warm cinematic illumination" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9MFnsTi9LM2qHj0Tx50LrDqj_Ci8G0VFXY9HusJaCmsQF-yb7RrD42oTsyW02s52KHuQ8Y9ndYQZ7MQHkiPFo65T-yczc7UUpk0kSmJFaMAbjV2CqNhmTHu1i43zLIYl6TSfBdiV5LypDIdYQn6bDZlcvwFEQ7el_tACWV2LZCjD71LIYsUX9l-p8HOonVk4ydxsBkQJfE0j9D5j93OWR922FCixqkc049YtY8_TG0fHoDjJ4xZADQQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent flex items-end p-2">
+<span class="font-label-sm text-label-sm text-on-surface truncate">2_Proceso_Pincel_Vidriado.jpg</span>
+</div>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-surface text-[24px]">zoom_in</span>
+</div>
+</div>
+<div class="group relative rounded-lg overflow-hidden h-28 bg-surface-container-lowest shadow-inner cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Ceramic kiln opening showing glowing fired clay craft vase cooling with rich glossy glaze texture, artisan ceramic studio background with warm embers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbWTZaIJlAaQ-2qlUrQyvGY0Q3jv3uuwU-uCoeG3aDDfkjMCP4VgJj6n7FJZHdqgbIGJ57V0df3dshx30J1MDGrUqB88mfujuFpG-KvZOpLW_TmGTa_KotXpkqJmEbZNODZknRXZ_QWrw0VMU9ac4_3tKcjowcc5egAfTpCREVjXLmniw5lLrGmZSwxJc8VrA8iZv2C6mDj46Tpjp16XK7VyQg6ijNJbsf2MyB4O0FYBryXXsmDRbzgA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent flex items-end p-2">
+<span class="font-label-sm text-label-sm text-on-surface truncate">3_Post_Horneado_Textura.jpg</span>
+</div>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-on-surface text-[24px]">zoom_in</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Student Narrative Notes -->
+<div class="p-3.5 rounded-lg bg-surface-container text-body-sm font-body-sm text-on-surface-variant flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">chat_bubble</span>
+<p class="">
+<strong class="text-on-surface font-medium">Nota del estudiante:</strong> "Profesora Lucía, apliqué dos capas de esmalte cobalto después de la primera cocción a 950°C. La pieza no presentó grietas y mantuve el patrón en espiral del taller."
+            </p>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Beneficiaria Beca de Inclusión Artesanal</span>
+</div>
+<div class="inline-flex items-center gap-1.5 text-primary font-label-md text-label-md uppercase font-semibold">
+<span class="">Seleccionado para Calificar</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Student Card 2: Andrés Felipe (Approved) -->
+<div class="p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm flex items-center justify-center font-bold">
+              AR
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">Andrés Felipe Rodríguez</h4>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container-highest text-on-surface-variant uppercase">Sábados</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CC 1.020.784.112 • Tarea: Escultura Cántaro Tradicional</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 text-[12px] mt-0.5">Entregado: 13 Mar 2026 • 2 archivos adjuntos</p>
+</div>
+</div>
+<div class="flex items-center gap-4 self-end md:self-center">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-primary font-semibold">4.5</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">/ 5.0</span>
+<div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm uppercase font-semibold mt-0.5">
+<span class="material-symbols-outlined text-[13px]">check_circle</span>
+                Aprobado
+              </div>
+</div>
+<button class="p-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Ver detalles" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Student Card 3: María Paula (Pending) -->
+<div class="p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm flex items-center justify-center font-bold">
+              MG
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">María Paula Gómez</h4>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-container/40 text-secondary uppercase font-semibold">Pendiente</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CC 52.849.201 • Tarea: Muestrario de Texturas</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 text-[12px] mt-0.5">Entregado: 14 Mar 2026, 09:12 a.m. • 2 imágenes adjuntas</p>
+</div>
+</div>
+<div class="flex items-center gap-3 self-end md:self-center">
+<button class="px-3 py-1.5 rounded bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary font-label-sm text-label-sm uppercase tracking-wider font-semibold transition-all" type="button">
+              Evaluar
+            </button>
+</div>
+</div>
+<!-- Student Card 4: Julián David (Requires Correction) -->
+<div class="p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm flex items-center justify-center font-bold">
+              JH
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">Julián David Herrera</h4>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-error-container/40 text-error uppercase font-semibold">Corrección</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CC 1.032.411.902 • Tarea: Esmalte y Cocción</p>
+<p class="font-body-sm text-body-sm text-error/90 text-[12px] mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span> Requiere ajustar registro de temperatura y re-enviar foto cenital
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-4 self-end md:self-center">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface-variant font-semibold">2.8</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">/ 5.0</span>
+</div>
+<button class="p-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Ver comentarios" type="button">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+</button>
+</div>
+</div>
+<!-- Student Card 5: Valentina Torres (Approved with Distinction) -->
+<div class="p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm flex items-center justify-center font-bold">
+              VT
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">Valentina Torres Castro</h4>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-primary/20 text-primary uppercase font-semibold">Distinción</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CC 1.018.992.304 • Tarea: Pieza Funcional Taza Artesanal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 text-[12px] mt-0.5">Calificado el 12 Mar 2026 • Maestra Lucía Forero</p>
+</div>
+</div>
+<div class="flex items-center gap-4 self-end md:self-center">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">5.0</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">/ 5.0</span>
+<div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm uppercase font-semibold mt-0.5">
+<span class="material-symbols-outlined text-[13px]">military_tech</span>
+                Mención de Honor
+              </div>
+</div>
+<button class="p-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Student Card 6: Carlos Eduardo (Pending) -->
+<div class="p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm flex items-center justify-center font-bold">
+              CQ
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">Carlos Eduardo Quintero</h4>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-container/40 text-secondary uppercase font-semibold">Pendiente</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CC 80.123.456 • Tarea: Cuenco Decorativo Bosa</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 text-[12px] mt-0.5">Entregado: 14 Mar 2026, 08:30 a.m. • 1 archivo PDF + 2 fotos</p>
+</div>
+</div>
+<div class="flex items-center gap-3 self-end md:self-center">
+<button class="px-3 py-1.5 rounded bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary font-label-sm text-label-sm uppercase tracking-wider font-semibold transition-all" type="button">
+              Evaluar
+            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Grading Studio / Panel (5 cols) -->
+<div class="lg:col-span-5 sticky top-20 space-y-6">
+<div class="p-6 rounded-2xl bg-surface-container-low shadow-xl relative overflow-hidden">
+<!-- Studio Header -->
+<div class="flex items-center justify-between pb-4 border-b border-surface-container-highest/60">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">fact_check</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[18px]">Panel de Calificación</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rúbrica Oficial Principio &amp; Fin</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-sm text-label-sm font-semibold uppercase">
+              En Calificación
+            </span>
+</div>
+<!-- Active Evaluating Target -->
+<div class="py-4 flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Estudiante en Mesa:</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[16px]">Camila Andrea Morales</p>
+<p class="font-body-sm text-body-sm text-primary text-[13px]">Proyecto 2: Jarrón con Esmaltado Azul Cobalto</p>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Puntaje Calculado:</span>
+<div class="flex items-baseline justify-end gap-1">
+<span class="font-display-hero-mobile text-display-hero-mobile text-primary font-bold" id="final-score-display">4.8</span>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">/ 5.0</span>
+</div>
+</div>
+</div>
+<!-- Evaluation Rubric Criteria Sliders/Inputs -->
+<form class="space-y-5" onsubmit="event.preventDefault();">
+<!-- Criterion 1 -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-semibold">1. Técnica de Modelado y Simetría</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Consistencia de grosor, unión de piezas y estabilidad.</p>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high font-headline-sm text-headline-sm text-primary font-bold text-[16px]">4.7</span>
+</div>
+<input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" max="5.0" min="1.0" step="0.1" type="range" value="4.7"/>
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60">
+<span class="">1.0 (Deficiente)</span>
+<span class="">3.0 (Aceptable)</span>
+<span class="">5.0 (Excelente)</span>
+</div>
+</div>
+<!-- Criterion 2 -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-semibold">2. Acabado y Uniformidad de Esmalte</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Vidriado homogéneo, sin burbujas ni cuarteaduras térmicas.</p>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high font-headline-sm text-headline-sm text-primary font-bold text-[16px]">4.9</span>
+</div>
+<input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" max="5.0" min="1.0" step="0.1" type="range" value="4.9"/>
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60">
+<span class="">1.0 (Deficiente)</span>
+<span class="">3.0 (Aceptable)</span>
+<span class="">5.0 (Excelente)</span>
+</div>
+</div>
+<!-- Criterion 3 -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-semibold">3. Creatividad &amp; Narrativa Comunitaria</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Aporte simbólico y relato identitario del oficio artesanal.</p>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container-high font-headline-sm text-headline-sm text-primary font-bold text-[16px]">4.8</span>
+</div>
+<input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" max="5.0" min="1.0" step="0.1" type="range" value="4.8"/>
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60">
+<span class="">1.0 (Deficiente)</span>
+<span class="">3.0 (Aceptable)</span>
+<span class="">5.0 (Excelente)</span>
+</div>
+</div>
+<!-- Definitive Direct Grade Override Input -->
+<div class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-semibold" for="nota-definitiva">
+                Nota Definitiva Ponderada:
+              </label>
+<div class="flex items-center gap-2">
+<input class="w-20 px-3 py-1.5 text-center font-headline-sm text-headline-sm font-bold bg-surface-container-highest rounded text-primary focus:outline-none focus:ring-1 focus:ring-primary" id="nota-definitiva" max="5.0" min="1.0" step="0.1" type="number" value="4.8"/>
+<span class="font-body-md text-body-md text-on-surface-variant font-medium">/ 5.0</span>
+</div>
+</div>
+<!-- Pedagogical Feedback Box -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-semibold" for="feedback-text">
+                  Retroalimentación Pedagógica y Orientación:
+                </label>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Visible al estudiante</span>
+</div>
+<textarea class="w-full p-3.5 bg-surface-container rounded-lg text-on-surface font-body-sm text-body-sm placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary shadow-inner" id="feedback-text" placeholder="Escribe comentarios constructivos para el estudiante..." rows="3">Excelente dominio de la técnica de vidriado. El acabado azul cobalto resalta las texturas en espiral logradas en el modelado. Felicitaciones por la dedicación y el cumplimiento de las temperaturas de cocción sugeridas.</textarea>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-2.5 pt-2">
+<button class="w-full py-3.5 px-4 rounded bg-gradient-to-r from-primary-container to-secondary text-on-primary font-label-md text-label-md uppercase tracking-widest font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span class="">Guardar Calificación y Notificar</span>
+</button>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="py-2.5 px-3 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px] text-error">assignment_return</span>
+<span class="">Solicitar Ajustes</span>
+</button>
+<button class="py-2.5 px-3 rounded bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+<span class="">Aprobar con Mención</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+<!-- Mini Notice on Notification -->
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[22px]">notifications_active</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">
+            Al guardar, se enviará una notificación por correo electrónico y el boletín de calificaciones se actualizará automáticamente en el perfil del estudiante.
+          </p>
+</div>
+</div>
+</div>
+<!-- Bottom Module: Pedagogical Support & Certification Criteria -->
+<div class="p-8 rounded-2xl bg-surface-container-low shadow-lg border border-outline-variant/30 relative overflow-hidden space-y-8"><div class="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div><div class="flex flex-col gap-3 relative z-10"><div class="flex items-center gap-2 mb-1"><span class="px-2.5 py-1 rounded text-label-sm font-label-sm bg-primary/20 text-primary uppercase font-semibold">Marco Académico 2026</span><span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">• Acreditación Comunitaria</span></div><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0 mt-1"><span class="material-symbols-outlined text-[28px]">verified</span></div><div class="space-y-1.5 max-w-4xl"><h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[22px]">Criterios de Aprobación y Certificación de la Fundación Principio &amp; Fin</h3><p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">Requisitos oficiales validados para la emisión del certificado de formación técnica y artística comunitaria. Conoce los lineamientos de calificación y seguimiento pedagógico vigentes.</p></div></div></div></div>
+</div>
+</div></main></div>
+<!-- Modal: Crear Asignación y Rúbrica (Abierto) -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md" id="modal-crear-asignacion" role="dialog" style="display: flex;"><div class="relative w-full max-w-5xl bg-surface-container-low rounded-2xl border border-primary-container/40 shadow-2xl flex flex-col overflow-hidden my-auto"><div class="px-8 py-6 bg-surface-container-low border-b border-outline-variant/30 flex items-start justify-between relative"><div class="space-y-2 pr-6"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-primary/20 text-primary uppercase font-semibold tracking-wider">AULA VIRTUAL &amp; TALLER</span><span class="text-on-surface-variant/40 font-body-sm">•</span><span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">COHORTE 2026-I • CERÁMICA Y OFICIOS</span></div><h2 class="font-headline-lg text-[28px] font-semibold text-on-surface tracking-wide flex items-center gap-3" id="modal-title"><span class="material-symbols-outlined text-primary text-[28px]">post_add</span><span class="">Crear Nueva Asignación o Tarea</span></h2><p class="font-body-md text-body-sm text-on-surface-variant leading-relaxed">Define los objetivos prácticos del proyecto, plazos de entrega y la ponderación evaluativa del curso.</p></div><button class="w-10 h-10 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border border-outline-variant/20 shadow-sm shrink-0" onclick="document.getElementById('modal-crear-asignacion').style.display='none'" title="Cerrar" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="p-8 space-y-8 text-on-surface overflow-y-auto max-h-[calc(90vh-140px)]"><section class="space-y-4"><div class="flex items-center gap-2.5 pb-2 border-b border-outline-variant/20"><span class="material-symbols-outlined text-primary text-[20px]">assignment</span><h3 class="font-headline-sm text-[16px] uppercase tracking-wider text-on-surface font-semibold">1. DATOS GENERALES DE LA ASIGNACIÓN</h3></div><div class="grid grid-cols-1 md:grid-cols-12 gap-5"><div class="md:col-span-8 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Título de la Asignación *</label><input class="w-full px-4 py-3 bg-surface-container rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner" placeholder="Ej. Proyecto 3: Vidriado en Torno y Técnicas Ancestrales" type="text" value="Proyecto 3: Quema y Técnicas Ancestrales de Acabado"/></div><div class="md:col-span-4 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Módulo / Etapa *</label><div class="relative"><select class="w-full px-4 py-3 bg-surface-container rounded-lg text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner pr-10 cursor-pointer"><option value="mod2">Módulo 2: Técnicas de Esmaltado</option><option value="mod1">Módulo 1: Arcilla y Modelado</option><option selected="" value="mod3">Módulo 3: Quema y Acabados</option><option value="grado">Proyecto de Certificación Final</option></select><span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span></div></div><div class="md:col-span-5 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Fecha de Publicación</label><input class="w-full px-4 py-3 bg-surface-container rounded-lg text-on-surface font-body-md text-body-md focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner" type="datetime-local" value="2026-03-16T09:00"/></div><div class="md:col-span-5 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Fecha Límite de Entrega</label><input class="w-full px-4 py-3 bg-surface-container rounded-lg text-on-surface font-body-md text-body-md focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner" type="datetime-local" value="2026-03-23T23:59"/></div><div class="md:col-span-2 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Ponderación</label><div class="relative"><input class="w-full px-3 py-3 bg-surface-container rounded-lg text-primary font-headline-sm text-[18px] font-bold text-center focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner" max="100" min="1" type="number" value="25"/><span class="absolute right-3.5 top-1/2 -translate-y-1/2 font-headline-sm text-sm font-bold text-on-surface-variant">%</span></div></div></div></section><section class="space-y-4"><div class="flex items-center gap-2.5 pb-2 border-b border-outline-variant/20"><span class="material-symbols-outlined text-primary text-[20px]">menu_book</span><h3 class="font-headline-sm text-[16px] uppercase tracking-wider text-on-surface font-semibold">2. INSTRUCCIONES Y GUÍA TÉCNICA</h3></div><div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch"><div class="md:col-span-7 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium">Consigna y Descripción Técnica *</label><textarea class="w-full p-4 bg-surface-container rounded-lg text-on-surface font-body-md text-body-sm leading-relaxed placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary border border-outline-variant/20 shadow-inner resize-none h-28" placeholder="Describe en detalle el objetivo formativo, las técnicas a implementar y los resultados esperados...">El estudiante debe modelar y dar acabado a una vasija ceremonial aplicando bruñido y esmaltado por inmersión. Registrar curvas térmicas y memoria cultural.</textarea></div><div class="md:col-span-5 space-y-2"><label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-medium flex items-center justify-between"><span class="">Material de Apoyo / Guía Adjunta</span><span class="text-[11px] text-on-surface-variant/70">PDF, DOCX, JPG</span></label><div class="p-4 h-28 rounded-xl border border-dashed border-outline-variant/40 hover:border-primary/50 bg-surface-container/60 transition-all flex items-center justify-center gap-3.5 group cursor-pointer"><span class="w-11 h-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[24px]">upload_file</span></span><div class="text-left"><p class="font-body-md text-body-sm text-on-surface font-medium leading-snug"><span class="text-primary hover:underline font-semibold">Examinar guías</span> o arrastrar archivo</p><p class="font-body-sm text-[12px] text-on-surface-variant/70 mt-0.5">guia_tecnica_quema.pdf (2.4 MB)</p></div></div></div></div></section><section class="space-y-4"><div class="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-outline-variant/20"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-primary text-[20px]">rule</span><h3 class="font-headline-sm text-[16px] uppercase tracking-wider text-on-surface font-semibold">3. RÚBRICA Y CRITERIOS DE EVALUACIÓN</h3></div><div class="flex items-center gap-3"><button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary/15 hover:bg-primary/25 border border-primary/30 text-primary font-label-md text-label-sm uppercase tracking-wider font-semibold transition-all shadow-sm group" type="button"><span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">add</span><span class="">Añadir Criterio</span></button><div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-label-md text-label-sm font-semibold"><span class="material-symbols-outlined text-[16px]">verified</span><span class="">Total Rúbrica: 100% Ponderado ✓</span></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col justify-between space-y-3"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-6 h-6 rounded bg-primary-container text-on-primary font-headline-sm text-[12px] font-bold flex items-center justify-center">1</span><span class="font-label-md text-label-md font-semibold text-on-surface">Técnica de Modelado</span></div><span class="px-2.5 py-1 rounded-md bg-surface-container-high text-primary font-headline-sm text-[13px] font-bold">35%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Consistencia de grosor, simetría y estabilidad de base de la pieza.</p><div class="pt-1"><input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" disabled="" max="100" min="0" type="range" value="35"/><div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60 mt-1"><span class="">Escala: 1.0 - 5.0</span><span class="">Pondera 35%</span></div></div></div><div class="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col justify-between space-y-3"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-6 h-6 rounded bg-primary-container text-on-primary font-headline-sm text-[12px] font-bold flex items-center justify-center">2</span><span class="font-label-md text-label-md font-semibold text-on-surface">Acabado y Vidriado</span></div><span class="px-2.5 py-1 rounded-md bg-surface-container-high text-primary font-headline-sm text-[13px] font-bold">35%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Esmaltado homogéneo sin burbujas, cuarteaduras ni defectos térmicos.</p><div class="pt-1"><input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" disabled="" max="100" min="0" type="range" value="35"/><div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60 mt-1"><span class="">Escala: 1.0 - 5.0</span><span class="">Pondera 35%</span></div></div></div><div class="p-4 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col justify-between space-y-3"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-6 h-6 rounded bg-primary-container text-on-primary font-headline-sm text-[12px] font-bold flex items-center justify-center">3</span><span class="font-label-md text-label-md font-semibold text-on-surface">Creatividad &amp; Relato</span></div><span class="px-2.5 py-1 rounded-md bg-surface-container-high text-primary font-headline-sm text-[13px] font-bold">30%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Aporte identitario, narrativa comunitaria e innovación en el oficio.</p><div class="pt-1"><input class="w-full accent-primary h-1.5 bg-surface-container-highest rounded-lg cursor-pointer" disabled="" max="100" min="0" type="range" value="30"/><div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant/60 mt-1"><span class="">Escala: 1.0 - 5.0</span><span class="">Pondera 30%</span></div></div></div></div></section></div><div class="px-8 py-5 bg-surface-container-lowest border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-4"><button class="px-4 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md uppercase tracking-wider font-semibold transition-colors flex items-center gap-2" onclick="document.getElementById('modal-crear-asignacion').style.display='none'" type="button"><span class="material-symbols-outlined text-[18px]">save_as</span><span class="">Guardar como borrador</span></button><div class="flex items-center gap-3.5"><button class="px-4 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md uppercase tracking-wider transition-colors" onclick="document.getElementById('modal-crear-asignacion').style.display='none'" type="button">Cancelar</button><button class="px-6 py-3 rounded-lg bg-gradient-to-r from-primary-container to-secondary hover:brightness-110 active:scale-[0.99] text-on-primary font-label-md text-label-md tracking-wider uppercase font-bold shadow-lg shadow-primary/20 flex items-center gap-2 transition-all" onclick="document.getElementById('modal-crear-asignacion').style.display='none'" type="button"><span class="">Publicar Asignación para el Curso</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button></div></div></div></div>
+</body></html>
