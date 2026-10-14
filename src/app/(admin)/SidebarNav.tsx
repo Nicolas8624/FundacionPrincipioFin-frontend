@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, BookOpen, Users, Building, HeartHandshake, MessageSquare, Settings, Images } from 'lucide-react';
 
-export function SidebarNav() {
+interface SidebarNavProps {
+  onLinkClick?: () => void;
+}
+
+export function SidebarNav({ onLinkClick }: SidebarNavProps) {
   const pathname = usePathname();
 
   const links = [
@@ -23,7 +27,7 @@ export function SidebarNav() {
     // Si la ruta exacta coincide o estamos dentro de subrutas
     const isActive = pathname === href || pathname.startsWith(`${href}/`);
     return isActive
-      ? "flex items-center gap-3 px-4 py-3 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-medium text-sm transition-colors"
+      ? "flex items-center gap-3 px-4 py-3 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-medium text-sm transition-colors shadow-sm"
       : "flex items-center gap-3 px-4 py-3 rounded-lg text-[#d0c5af] hover:bg-[#1b1b1f] hover:text-[#D4AF37] font-medium text-sm transition-colors";
   };
 
@@ -32,9 +36,14 @@ export function SidebarNav() {
       {links.map((link) => {
         const Icon = link.icon;
         return (
-          <Link key={link.href} href={link.href} className={getLinkClasses(link.href)}>
-            <Icon className="w-5 h-5" />
-            {link.label}
+          <Link 
+            key={link.href} 
+            href={link.href} 
+            className={getLinkClasses(link.href)}
+            onClick={onLinkClick}
+          >
+            <Icon className="w-5 h-5 flex-shrink-0" />
+            <span>{link.label}</span>
           </Link>
         );
       })}
@@ -43,9 +52,13 @@ export function SidebarNav() {
         <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">Ajustes</p>
       </div>
       
-      <Link href={settingsLink.href} className={getLinkClasses(settingsLink.href)}>
-        <settingsLink.icon className="w-5 h-5" />
-        {settingsLink.label}
+      <Link 
+        href={settingsLink.href} 
+        className={getLinkClasses(settingsLink.href)}
+        onClick={onLinkClick}
+      >
+        <settingsLink.icon className="w-5 h-5 flex-shrink-0" />
+        <span>{settingsLink.label}</span>
       </Link>
     </nav>
   );
