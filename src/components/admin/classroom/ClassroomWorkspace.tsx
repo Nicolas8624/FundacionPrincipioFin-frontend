@@ -80,20 +80,20 @@ export function ClassroomWorkspace({
       )}
 
       {/* Top Breadcrumb Context & View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262629] pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#262629] pb-4">
         {/* Breadcrumb */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-montserrat tracking-wider">
           <Link
             href="/admin/cursos"
-            className="inline-flex items-center gap-1.5 text-[#D4AF37] hover:text-[#f2ca50] transition-colors font-semibold"
+            className="inline-flex items-center gap-1.5 text-[#D4AF37] hover:text-[#f2ca50] transition-colors font-semibold shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Volver a Gestión de Cursos</span>
           </Link>
           <span className="text-[#99907c]">/</span>
-          <span className="text-white uppercase truncate max-w-xs">{course.title}</span>
+          <span className="text-white uppercase truncate max-w-[140px] sm:max-w-xs">{course.title}</span>
           <span className="text-[#99907c]">/</span>
-          <span className="text-[#D4AF37] font-bold uppercase tracking-widest bg-[#1b1b1f] border border-[#262629] px-2.5 py-0.5 rounded-md">
+          <span className="text-[#D4AF37] font-bold uppercase tracking-widest bg-[#1b1b1f] border border-[#262629] px-2.5 py-0.5 rounded-md truncate max-w-full">
             {activeTab === 'aula'
               ? 'Aula Virtual & Evidencias'
               : activeTab === 'actividades'
@@ -103,52 +103,54 @@ export function ClassroomWorkspace({
         </div>
 
         {/* Global Workspace Tab Switcher & Course Config CTA */}
-        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-          <div className="inline-flex items-center p-1 rounded-xl bg-[#131317] border border-[#262629] shadow-inner">
-            <button
-              type="button"
-              onClick={() => setActiveTab('aula')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
-                activeTab === 'aula'
-                  ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
-                  : 'text-[#99907c] hover:text-white'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Aula Virtual ({submissions.length})</span>
-            </button>
+        <div className="flex items-center gap-2 w-full lg:w-auto">
+          <div className="flex-1 lg:flex-initial overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+            <div className="inline-flex items-center p-1 rounded-xl bg-[#131317] border border-[#262629] shadow-inner whitespace-nowrap min-w-max">
+              <button
+                type="button"
+                onClick={() => setActiveTab('aula')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
+                  activeTab === 'aula'
+                    ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
+                    : 'text-[#99907c] hover:text-white'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Aula Virtual ({submissions.length})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('actividades')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
-                activeTab === 'actividades'
-                  ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
-                  : 'text-[#99907c] hover:text-white'
-              }`}
-            >
-              <ClipboardList className="w-3.5 h-3.5" />
-              <span>Actividades ({assignments.length})</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('actividades')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
+                  activeTab === 'actividades'
+                    ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
+                    : 'text-[#99907c] hover:text-white'
+                }`}
+              >
+                <ClipboardList className="w-3.5 h-3.5" />
+                <span>Actividades ({assignments.length})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('estudiantes')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
-                activeTab === 'estudiantes'
-                  ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
-                  : 'text-[#99907c] hover:text-white'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Estudiantes ({activeEnrolledCount})</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('estudiantes')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-montserrat uppercase tracking-wider font-semibold transition-all ${
+                  activeTab === 'estudiantes'
+                    ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/20'
+                    : 'text-[#99907c] hover:text-white'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>Estudiantes ({activeEnrolledCount})</span>
+              </button>
+            </div>
           </div>
 
           <button
             type="button"
             onClick={() => setIsSettingsModalOpen(true)}
-            className="p-2 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/40 text-[#99907c] hover:text-white transition-colors"
+            className="p-2.5 rounded-xl bg-[#131317] border border-[#262629] hover:border-[#D4AF37]/40 text-[#99907c] hover:text-white transition-colors shrink-0 shadow-sm"
             title="Ajustar parámetros del curso (cohorte, docente, cupos)"
           >
             <Settings2 className="w-4 h-4" />

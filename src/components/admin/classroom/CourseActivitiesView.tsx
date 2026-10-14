@@ -208,10 +208,10 @@ export function CourseActivitiesView({
               Plan Pedagógico • Estructura Curricular y Tareas
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
             Actividades y Módulos del Curso
           </h1>
-          <p className="text-sm text-[#99907c] max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#99907c] max-w-3xl leading-relaxed">
             Administra las unidades formativas, crea nuevas asignaciones prácticas, ajusta fechas de entrega, modifica consignas o ponderaciones y supervisa la distribución curricular.
           </p>
 
@@ -238,14 +238,14 @@ export function CourseActivitiesView({
         </div>
 
         {/* Global CTA Buttons */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => {
               setEditingModule(null);
               setIsModuleModalOpen(true);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider font-semibold transition-all shadow-sm"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider font-semibold transition-all shadow-sm"
           >
             <FolderPlus className="w-4 h-4 text-[#D4AF37]" />
             <span>Crear Módulo</span>
@@ -254,7 +254,7 @@ export function CourseActivitiesView({
           <button
             type="button"
             onClick={() => handleOpenCreateAssignment()}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.98] transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Crear Asignación / Tarea</span>
@@ -360,8 +360,8 @@ export function CourseActivitiesView({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-xl bg-[#131317] border border-[#262629] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="p-4 rounded-xl bg-[#131317] border border-[#262629] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="relative flex-1 w-full sm:max-w-md">
           <Search className="w-4 h-4 text-[#99907c] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -372,11 +372,11 @@ export function CourseActivitiesView({
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <select
             value={selectedModuleFilter}
             onChange={(e) => setSelectedModuleFilter(e.target.value)}
-            className="px-4 py-2.5 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-xs font-montserrat uppercase focus:outline-none focus:border-[#D4AF37] cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 bg-[#1b1b1f] border border-[#262629] rounded-lg text-white text-xs font-montserrat uppercase focus:outline-none focus:border-[#D4AF37] cursor-pointer"
           >
             <option value="all">Filtrar por: Todos los Módulos</option>
             {modules.map((m) => (
@@ -458,14 +458,14 @@ export function CourseActivitiesView({
                 className="rounded-2xl bg-[#131317] border border-[#262629] overflow-hidden shadow-lg transition-all"
               >
                 {/* Module Header Strip */}
-                <div className="p-5 bg-[#1b1b1f] border-b border-[#262629] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="p-4 sm:p-5 bg-[#1b1b1f] border-b border-[#262629] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] font-montserrat font-bold text-sm flex items-center justify-center shrink-0">
                       {index + 1}
                     </div>
                     <div>
                       <div className="flex items-center gap-2.5 flex-wrap">
-                        <h2 className="font-montserrat font-bold text-white text-lg">
+                        <h2 className="font-montserrat font-bold text-white text-base sm:text-lg">
                           {m.title}
                         </h2>
                         <span className="px-2 py-0.5 rounded text-[10px] font-montserrat uppercase tracking-wider bg-[#262629] text-[#99907c] font-semibold">
@@ -478,7 +478,7 @@ export function CourseActivitiesView({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end sm:self-center flex-wrap">
+                  <div className="flex items-center gap-2 self-stretch sm:self-center justify-end flex-wrap">
                     <button
                       type="button"
                       onClick={() => handleOpenCreateAssignment(m.id)}
@@ -511,7 +511,7 @@ export function CourseActivitiesView({
                 </div>
 
                 {/* Assignments in this Module */}
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   {moduleAssignments.length === 0 ? (
                     <div className="p-8 rounded-xl bg-[#1b1b1f]/40 border border-dashed border-[#262629] text-center space-y-3">
                       <div className="w-10 h-10 rounded-lg bg-[#262629] text-[#99907c] flex items-center justify-center mx-auto">

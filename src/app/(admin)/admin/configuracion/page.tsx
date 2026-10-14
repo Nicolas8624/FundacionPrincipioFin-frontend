@@ -36,26 +36,26 @@ export default async function AdminConfiguracionPage({ searchParams }: { searchP
     <div className="max-w-[1600px] mx-auto space-y-8 pb-10">
       
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6">
         <div>
           <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#D4AF37] mb-2 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
             Ajustes del Sistema
           </p>
-          <h1 className="text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
             Configuración y Usuarios
           </h1>
-          <p className="text-[#99907c] text-sm mt-3 max-w-2xl leading-relaxed">
+          <p className="text-[#99907c] text-xs sm:text-sm mt-2 sm:mt-3 max-w-2xl leading-relaxed">
             Gestiona tu información de perfil, preferencias del portal y administra los niveles de acceso de todos los usuarios registrados.
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-[#262629]">
+      <div className="flex gap-2 sm:gap-4 border-b border-[#262629] overflow-x-auto custom-scrollbar whitespace-nowrap">
         <Link 
           href="?tab=perfil"
-          className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-colors relative ${tab === 'perfil' ? 'text-[#D4AF37]' : 'text-[#99907c] hover:text-[#d0c5af]'}`}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors relative shrink-0 ${tab === 'perfil' ? 'text-[#D4AF37]' : 'text-[#99907c] hover:text-[#d0c5af]'}`}
         >
           <Settings className="w-4 h-4" />
           Ajustes y Perfil
@@ -63,7 +63,7 @@ export default async function AdminConfiguracionPage({ searchParams }: { searchP
         </Link>
         <Link 
           href="?tab=usuarios"
-          className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-colors relative ${tab === 'usuarios' ? 'text-[#D4AF37]' : 'text-[#99907c] hover:text-[#d0c5af]'}`}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors relative shrink-0 ${tab === 'usuarios' ? 'text-[#D4AF37]' : 'text-[#99907c] hover:text-[#d0c5af]'}`}
         >
           <Users className="w-4 h-4" />
           Usuarios del Sistema

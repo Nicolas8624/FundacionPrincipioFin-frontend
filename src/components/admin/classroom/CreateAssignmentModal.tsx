@@ -212,28 +212,28 @@ export function CreateAssignmentModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-5xl max-h-[84vh] bg-[#131317] border border-[#D4AF37]/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto"
+        className="relative w-full max-w-5xl max-h-[90vh] bg-[#131317] border border-[#D4AF37]/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-8 py-5 bg-[#1b1b1f] border-b border-[#262629] flex items-start justify-between relative flex-shrink-0">
-          <div className="space-y-1.5 pr-6">
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-full text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold tracking-wider">
+        <div className="px-4 sm:px-8 py-4 sm:py-5 bg-[#1b1b1f] border-b border-[#262629] flex items-start justify-between relative flex-shrink-0">
+          <div className="space-y-1.5 pr-4 sm:pr-6">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-montserrat bg-[#D4AF37]/20 text-[#D4AF37] uppercase font-semibold tracking-wider">
                 AULA VIRTUAL & TALLER
               </span>
               <span className="text-[#99907c] text-xs">•</span>
-              <span className="text-[10px] font-montserrat text-[#ffe082] uppercase tracking-wider font-semibold">
+              <span className="text-[10px] font-montserrat text-[#ffe082] uppercase tracking-wider font-semibold truncate max-w-[200px] sm:max-w-none">
                 {courseTitle}
               </span>
             </div>
-            <h2 className="font-montserrat text-2xl sm:text-[26px] font-semibold text-white tracking-wide flex items-center gap-3">
-              <BookOpen className="w-6 h-6 text-[#D4AF37]" />
-              {assignmentToEdit ? 'Editar Asignación o Tarea' : 'Crear Nueva Asignación o Tarea'}
+            <h2 className="font-montserrat text-lg sm:text-2xl font-semibold text-white tracking-wide flex items-center gap-2.5 sm:gap-3">
+              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#D4AF37] shrink-0" />
+              <span>{assignmentToEdit ? 'Editar Asignación o Tarea' : 'Crear Nueva Asignación o Tarea'}</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#99907c] leading-relaxed">
               {assignmentToEdit
@@ -243,21 +243,21 @@ export function CreateAssignmentModal({
           </div>
           <button 
             onClick={onClose}
-            className="w-9 h-9 rounded-lg bg-[#262629] hover:bg-[#353439] text-[#99907c] hover:text-white flex items-center justify-center transition-colors shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#262629] hover:bg-[#353439] text-[#99907c] hover:text-white flex items-center justify-center transition-colors shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {error && (
-          <div className="mx-8 mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+          <div className="mx-4 sm:mx-8 mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Scrollable Form Body */}
-        <div className="p-6 sm:p-8 space-y-8 text-[#e4e1e7] overflow-y-auto flex-1 min-h-0">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 text-[#e4e1e7] overflow-y-auto flex-1 min-h-0">
           {/* Section 1: General Info */}
           <section className="space-y-4">
             <div className="flex items-center gap-2.5 pb-2 border-b border-[#262629]">
@@ -493,21 +493,21 @@ export function CreateAssignmentModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-8 py-4 bg-[#0e0e12] border-t border-[#262629] flex flex-wrap items-center justify-between gap-4 flex-shrink-0">
+        <div className="px-4 sm:px-8 py-4 bg-[#0e0e12] border-t border-[#262629] flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 flex-shrink-0">
           <button 
             type="button"
             disabled={isSubmitting}
             onClick={() => handleSubmit(true)}
-            className="px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#99907c] hover:text-white font-montserrat text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-[#99907c] hover:text-white font-montserrat text-xs uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-2"
           >
             Guardar como borrador
           </button>
 
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
             <button 
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg text-[#99907c] hover:text-white font-montserrat text-xs uppercase tracking-wider transition-colors"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-lg text-[#99907c] hover:text-white font-montserrat text-xs uppercase tracking-wider transition-colors text-center"
             >
               Cancelar
             </button>
@@ -515,7 +515,7 @@ export function CreateAssignmentModal({
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit(false)}
-              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] hover:brightness-110 active:scale-[0.98] text-[#0A0A0E] font-montserrat text-xs tracking-wider uppercase font-bold shadow-lg shadow-[#D4AF37]/20 flex items-center gap-2 transition-all"
+              className="w-full sm:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] hover:brightness-110 active:scale-[0.98] text-[#0A0A0E] font-montserrat text-xs tracking-wider uppercase font-bold shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-2 transition-all"
             >
               <span>
                 {isSubmitting

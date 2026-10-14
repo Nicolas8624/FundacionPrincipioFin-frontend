@@ -396,10 +396,10 @@ export function CourseEvaluationView({
               Aula Virtual & Taller • Seguimiento Pedagógico Real
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-montserrat font-bold text-white tracking-tight">
             Evaluación y Evidencias de Curso
           </h1>
-          <p className="text-sm text-[#99907c] max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#99907c] max-w-3xl leading-relaxed">
             Supervisa las entregas prácticas, fotografías y asignaciones cargadas por los estudiantes inscritos. Califica mediante la rúbrica comunitaria, retroalimenta de forma pedagógica y consolida el boletín oficial.
           </p>
 
@@ -534,7 +534,7 @@ export function CourseEvaluationView({
       </div>
 
       {/* Main Course Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 py-2">
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-[#D4AF37]" />
           <span className="text-xs font-montserrat uppercase tracking-wider text-[#99907c] font-semibold">
@@ -542,11 +542,11 @@ export function CourseEvaluationView({
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
           <button 
             type="button"
             onClick={() => setIsCreateModuleModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
           >
             <FolderPlus className="w-4 h-4 text-[#D4AF37]" />
             <span>Crear Módulo</span>
@@ -555,7 +555,7 @@ export function CourseEvaluationView({
           <button 
             type="button"
             onClick={handleExportConsolidado}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#353439] text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#353439] text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
           >
             <Download className="w-4 h-4 text-[#D4AF37]" />
             <span>Descargar Consolidado (CSV)</span>
@@ -565,7 +565,7 @@ export function CourseEvaluationView({
             <button 
               type="button"
               onClick={onSwitchToActivitiesTab}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1b1b1f] hover:bg-[#262629] text-white border border-[#262629] hover:border-[#D4AF37]/40 text-xs font-montserrat uppercase tracking-wider transition-all shadow-sm"
               title="Ver currículo completo, editar y eliminar actividades o módulos"
             >
               <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
@@ -576,7 +576,7 @@ export function CourseEvaluationView({
           <button 
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#f2ca50] text-[#0A0A0E] text-xs font-montserrat uppercase tracking-wider font-bold shadow-lg shadow-[#D4AF37]/20 hover:brightness-110 active:scale-[0.98] transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Crear Asignación / Tarea</span>
@@ -585,7 +585,7 @@ export function CourseEvaluationView({
       </div>
 
       {/* Module Selector Tabs (Real Modules) */}
-      <div className="p-2 rounded-xl bg-[#131317] border border-[#262629] flex items-center gap-2 overflow-x-auto shadow-sm">
+      <div className="p-2 rounded-xl bg-[#131317] border border-[#262629] flex items-center gap-2 overflow-x-auto custom-scrollbar shadow-sm">
         <button
           type="button"
           onClick={() => setActiveModuleTab('all')}
@@ -673,10 +673,11 @@ export function CourseEvaluationView({
               setStatusFilter('todos');
               setActiveModuleTab('all');
             }}
-            className="w-full py-3 px-3 rounded-lg bg-[#131317] border border-[#262629] hover:bg-[#1b1b1f] text-[#99907c] hover:text-white text-xs font-montserrat uppercase tracking-wider flex items-center justify-center gap-1 transition-colors"
+            className="w-full py-3 px-3 rounded-lg bg-[#131317] border border-[#262629] hover:bg-[#1b1b1f] text-[#99907c] hover:text-white text-xs font-montserrat uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
             title="Restablecer filtros"
           >
             <RotateCcw className="w-4 h-4" />
+            <span className="md:hidden">Restablecer</span>
           </button>
         </div>
       </div>
@@ -755,7 +756,7 @@ export function CourseEvaluationView({
             <>
               {/* Active Selected Submission Card */}
               {activeSubmission && (
-                <div className="p-6 rounded-xl bg-[#1b1b1f] border-2 border-[#D4AF37] shadow-xl relative overflow-hidden transition-all duration-200">
+                <div className="p-4 sm:p-6 rounded-xl bg-[#1b1b1f] border-2 border-[#D4AF37] shadow-xl relative overflow-hidden transition-all duration-200">
                   <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#D4AF37]"></div>
 
                   <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
@@ -981,7 +982,7 @@ export function CourseEvaluationView({
         {/* Right Column: Sticky Grading Studio / Panel (5 cols) */}
         <div className="lg:col-span-5 sticky top-6 space-y-6">
           {activeSubmission ? (
-            <div className="p-6 rounded-2xl bg-[#131317] border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
+            <div className="p-4 sm:p-6 rounded-2xl bg-[#131317] border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
               {/* Studio Header */}
               <div className="flex items-center justify-between pb-4 border-b border-[#262629]">
                 <div className="flex items-center gap-2.5">

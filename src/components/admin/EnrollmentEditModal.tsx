@@ -58,21 +58,21 @@ export function EnrollmentEditModal({ isOpen, onClose, enrollment }: EnrollmentE
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0A0A0E]/80 backdrop-blur-sm">
-      <div className="bg-[#17171a] border border-[#262629] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-[#0A0A0E]/85 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#17171a] border border-[#262629] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden my-auto">
         {/* Modal Header */}
-        <div className="flex justify-between items-center p-6 border-b border-[#262629] bg-[#1b1b1f]">
-          <div>
-            <h2 className="text-xl font-semibold text-white font-montserrat">Gestionar Inscripción</h2>
-            <p className="text-sm text-[#99907c] mt-1">Estudiante: <span className="text-[#d0c5af]">{enrollment.full_name}</span></p>
+        <div className="flex justify-between items-center p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] shrink-0">
+          <div className="min-w-0 pr-2">
+            <h2 className="text-lg sm:text-xl font-semibold text-white font-montserrat truncate">Gestionar Inscripción</h2>
+            <p className="text-xs sm:text-sm text-[#99907c] mt-0.5 sm:mt-1 truncate">Estudiante: <span className="text-[#d0c5af]">{enrollment.full_name}</span></p>
           </div>
-          <button onClick={onClose} className="text-[#99907c] hover:text-white transition-colors">
-            <X className="w-6 h-6" />
+          <button onClick={onClose} className="w-8 h-8 rounded-lg bg-[#262629] text-[#99907c] hover:text-white flex items-center justify-center transition-colors shrink-0">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 custom-scrollbar min-h-0">
           {error && (
             <div className="bg-[#93000a]/20 border border-[#ffb4ab]/30 text-[#ffb4ab] p-3 rounded-lg mb-6 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -80,25 +80,25 @@ export function EnrollmentEditModal({ isOpen, onClose, enrollment }: EnrollmentE
             </div>
           )}
 
-          <div className="mb-6 bg-[#1b1b1f] border border-[#262629] rounded-xl p-4 flex flex-col gap-2">
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat">Curso Solicitado</span>
-              <span className="text-[#D4AF37] text-xs font-medium">{enrollment.course?.title}</span>
+          <div className="mb-4 sm:mb-6 bg-[#1b1b1f] border border-[#262629] rounded-xl p-3 sm:p-4 flex flex-col gap-2">
+            <div className="flex justify-between items-start gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat shrink-0">Curso Solicitado</span>
+              <span className="text-[#D4AF37] text-xs font-medium text-right">{enrollment.course?.title}</span>
             </div>
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat">Documento</span>
-              <span className="text-[#e4e1e7] text-sm">{enrollment.document_type} {enrollment.document_number}</span>
+            <div className="flex justify-between items-start gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat shrink-0">Documento</span>
+              <span className="text-[#e4e1e7] text-xs sm:text-sm text-right">{enrollment.document_type} {enrollment.document_number}</span>
             </div>
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat">Fecha Registro</span>
-              <span className="text-[#e4e1e7] text-sm">{new Date(enrollment.created_at).toLocaleDateString('es-CO')}</span>
+            <div className="flex justify-between items-start gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat shrink-0">Fecha Registro</span>
+              <span className="text-[#e4e1e7] text-xs sm:text-sm text-right">{new Date(enrollment.created_at).toLocaleDateString('es-CO')}</span>
             </div>
           </div>
 
-          <form id="edit-enrollment-form" onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#d0c5af]">Estado de Inscripción <span className="text-[#ffb4ab]">*</span></label>
-              <select required name="status" defaultValue={enrollment.status} className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none">
+          <form id="edit-enrollment-form" onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium text-[#d0c5af]">Estado de Inscripción <span className="text-[#ffb4ab]">*</span></label>
+              <select required name="status" defaultValue={enrollment.status} className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-white focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none">
                 <option value="pendiente">Pendiente (Documentación por revisar)</option>
                 <option value="confirmada">Confirmada / Aprobada Oficial (Cupo Asignado)</option>
                 <option value="lista_espera">Lista de Espera</option>
@@ -108,12 +108,12 @@ export function EnrollmentEditModal({ isOpen, onClose, enrollment }: EnrollmentE
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#d0c5af]">Notas Internas (Solo Administradores)</label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium text-[#d0c5af]">Notas Internas (Solo Administradores)</label>
               <textarea 
                 name="admin_notes" 
                 defaultValue={enrollment.admin_notes || ''} 
-                className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none transition-colors min-h-[100px] resize-y" 
+                className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-white focus:border-[#D4AF37] focus:outline-none transition-colors min-h-[100px] resize-y" 
                 placeholder="Ej. Entregó fotocopia de la cédula, falta recibo de servicios..."
               />
             </div>
@@ -121,12 +121,12 @@ export function EnrollmentEditModal({ isOpen, onClose, enrollment }: EnrollmentE
         </div>
 
         {/* Modal Footer */}
-        <div className="p-6 border-t border-[#262629] bg-[#1b1b1f] flex justify-end gap-4">
+        <div className="p-4 sm:px-6 sm:py-4 border-t border-[#262629] bg-[#1b1b1f] flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 shrink-0">
           <button 
             type="button" 
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2.5 rounded-lg text-sm font-medium text-[#d0c5af] hover:bg-[#262629] transition-colors"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs sm:text-sm font-medium text-[#d0c5af] hover:bg-[#262629] transition-colors text-center"
           >
             Cancelar
           </button>
@@ -134,7 +134,7 @@ export function EnrollmentEditModal({ isOpen, onClose, enrollment }: EnrollmentE
             type="submit" 
             form="edit-enrollment-form"
             disabled={loading}
-            className="px-6 py-2.5 rounded-lg text-sm font-semibold bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] transition-colors disabled:opacity-50 flex items-center gap-2 shadow-md shadow-[#D4AF37]/10"
           >
             {loading ? 'Guardando...' : <><CheckCircle2 className="w-4 h-4" /> Guardar Cambios</>}
           </button>

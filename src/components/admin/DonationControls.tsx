@@ -42,8 +42,8 @@ export function DonationControls({ currentQuery, currentType, currentStatus }: D
   return (
     <div className="space-y-4">
       {/* Barra superior de controles */}
-      <div className="flex flex-col md:flex-row gap-4 bg-[#17171a] p-4 rounded-xl border border-[#262629]">
-        <div className="flex-1 relative">
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 bg-[#17171a] p-3 sm:p-4 rounded-xl border border-[#262629]">
+        <div className="flex-1 relative w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99907c]" />
           <input 
             type="text" 
@@ -57,11 +57,11 @@ export function DonationControls({ currentQuery, currentType, currentStatus }: D
           />
         </div>
         
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full lg:w-auto">
           <select 
             value={currentType}
             onChange={(e) => handleFilter('type', e.target.value)}
-            className="bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-2.5 text-sm text-[#d0c5af] focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none min-w-[200px]"
+            className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-[#d0c5af] focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none"
           >
             <option value="">Cualquier tipo de aporte</option>
             <option value="economico">Económico</option>
@@ -73,7 +73,7 @@ export function DonationControls({ currentQuery, currentType, currentStatus }: D
           <select 
             value={currentStatus}
             onChange={(e) => handleFilter('status', e.target.value)}
-            className="bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-2.5 text-sm text-[#d0c5af] focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none min-w-[180px]"
+            className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-[#d0c5af] focus:border-[#D4AF37] focus:outline-none transition-colors appearance-none"
           >
             <option value="">Todos los estados</option>
             <option value="nueva">Nueva</option>
@@ -85,23 +85,23 @@ export function DonationControls({ currentQuery, currentType, currentStatus }: D
       </div>
 
       {/* Chips de filtros activos */}
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-3 text-[#99907c]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-[#99907c]">
           <span className="uppercase font-montserrat tracking-wider text-[10px]">Filtros Activos:</span>
           {(currentType || currentStatus || currentQuery) ? (
             <>
-              {currentQuery && <span className="px-3 py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full">Búsqueda</span>}
-              {currentType && <span className="px-3 py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full capitalize">Tipo: {currentType}</span>}
-              {currentStatus && <span className="px-3 py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full capitalize">Estado: {currentStatus.replace('_', ' ')}</span>}
+              {currentQuery && <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full text-[11px]">Búsqueda</span>}
+              {currentType && <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full capitalize text-[11px]">Tipo: {currentType}</span>}
+              {currentStatus && <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#1b1b1f] border border-[#D4AF37]/30 text-[#D4AF37] rounded-full capitalize text-[11px]">Estado: {currentStatus.replace('_', ' ')}</span>}
             </>
           ) : (
-            <span className="px-3 py-1 bg-[#1b1b1f] border border-[#262629] text-[#42454a] rounded-full">Ninguno</span>
+            <span className="px-2.5 py-0.5 bg-[#1b1b1f] border border-[#262629] text-[#42454a] rounded-full text-[11px]">Ninguno</span>
           )}
         </div>
         
         <button 
           onClick={clearFilters}
-          className="flex items-center gap-2 text-[#D4AF37] hover:text-[#F5D77A] font-medium transition-colors"
+          className="flex items-center gap-1.5 text-[#D4AF37] hover:text-[#F5D77A] font-medium transition-colors text-xs self-start sm:self-auto"
         >
           <RotateCcw className="w-3 h-3" />
           Restablecer Filtros

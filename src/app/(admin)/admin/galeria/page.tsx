@@ -145,34 +145,34 @@ export default function AdminGalleryPage() {
 
   return (
     <div className="pb-10 relative">
-      <div className="mb-10">
+      <div className="mb-6 sm:mb-10">
         <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#D4AF37] mb-2 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
           Gestión de Contenidos
         </p>
-        <h1 className="text-4xl font-semibold font-montserrat tracking-wide text-white">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
           Galería Multimedia
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         
         {/* Formulario */}
         <div className="lg:col-span-1">
-          <div className="bg-space-card/60 backdrop-blur-md border border-space-border/80 rounded-2xl p-6 shadow-xl sticky top-8">
-            <h2 className="text-xl font-semibold text-white mb-6 font-montserrat flex items-center gap-2">
-              <Upload className="w-5 h-5 text-gold-primary" />
+          <div className="bg-space-card/60 backdrop-blur-md border border-space-border/80 rounded-2xl p-4 sm:p-6 shadow-xl lg:sticky lg:top-8">
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 font-montserrat flex items-center gap-2">
+              <Upload className="w-5 h-5 text-gold-primary shrink-0" />
               Subir Nuevo Archivo
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Título Descriptivo</label>
                 <input 
                   type="text" 
                   name="title" 
                   required
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
+                  className="w-full bg-space-black border border-space-border rounded-lg px-3.5 sm:px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-xs sm:text-sm"
                   placeholder="Ej. Taller Comunitario"
                 />
               </div>
@@ -182,7 +182,7 @@ export default function AdminGalleryPage() {
                 <select 
                   name="section" 
                   required
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm appearance-none"
+                  className="w-full bg-space-black border border-space-border rounded-lg px-3.5 sm:px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-xs sm:text-sm appearance-none cursor-pointer"
                 >
                   <option value="quienes-somos">Quiénes Somos</option>
                   <option value="ph">Propiedad Horizontal</option>
@@ -192,16 +192,16 @@ export default function AdminGalleryPage() {
 
               <div>
                 <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Tipo de Archivo</label>
-                <div className="flex gap-4">
-                  <label className="flex-1 cursor-pointer">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <label className="cursor-pointer">
                     <input type="radio" name="type" value="image" className="peer sr-only" defaultChecked />
-                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-xs sm:text-sm font-medium">
                       <ImageIcon className="w-4 h-4" /> Imagen
                     </div>
                   </label>
-                  <label className="flex-1 cursor-pointer">
+                  <label className="cursor-pointer">
                     <input type="radio" name="type" value="video" className="peer sr-only" />
-                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-xs sm:text-sm font-medium">
                       <Video className="w-4 h-4" /> Video
                     </div>
                   </label>
@@ -210,7 +210,7 @@ export default function AdminGalleryPage() {
 
               <div>
                 <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Archivo Multimedia</label>
-                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-6 text-center cursor-pointer">
+                <div className="relative border-2 border-dashed border-space-border hover:border-gold-primary transition-colors rounded-xl p-4 sm:p-6 text-center cursor-pointer">
                   <input 
                     type="file" 
                     accept="image/*,video/*"
@@ -218,7 +218,7 @@ export default function AdminGalleryPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   {file ? (
-                    <div className="text-sm font-medium text-gold-primary truncate">
+                    <div className="text-xs sm:text-sm font-medium text-gold-primary truncate">
                       {file.name}
                     </div>
                   ) : (
@@ -233,7 +233,7 @@ export default function AdminGalleryPage() {
               <button 
                 disabled={isSubmitting}
                 type="submit" 
-                className="w-full bg-gold-primary hover:bg-gold-light text-space-dark font-bold py-3 rounded-lg transition-colors font-montserrat tracking-wider text-sm disabled:opacity-50 mt-4"
+                className="w-full bg-gold-primary hover:bg-gold-light text-space-dark font-bold py-2.5 sm:py-3 rounded-lg transition-colors font-montserrat tracking-wider text-xs sm:text-sm disabled:opacity-50 mt-2 sm:mt-4 shadow-sm"
               >
                 {isSubmitting ? 'PUBLICANDO...' : 'PUBLICAR ARCHIVO'}
               </button>
@@ -248,9 +248,9 @@ export default function AdminGalleryPage() {
                 <div className="w-8 h-8 border-2 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
              </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {items.length > 0 ? items.map(item => (
-                <div key={item.id} className="bg-space-card/40 border border-space-border rounded-xl overflow-hidden group relative">
+                <div key={item.id} className="bg-space-card/40 border border-space-border rounded-xl overflow-hidden group relative shadow-md">
                   <div className="aspect-video relative bg-space-black">
                     {item.type === 'image' ? (
                       <img src={item.url} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -265,32 +265,32 @@ export default function AdminGalleryPage() {
                     <div className="absolute top-3 right-3 flex gap-2">
                       <button 
                         onClick={() => setEditingItem(item)}
-                        className="w-8 h-8 bg-blue-500/80 hover:bg-blue-600 text-white rounded-lg flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100"
+                        className="w-8 h-8 bg-blue-500/90 hover:bg-blue-600 text-white rounded-lg flex items-center justify-center backdrop-blur-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all scale-100 sm:scale-90 sm:group-hover:scale-100 shadow-md"
                         title="Editar"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDelete(item.id)}
-                        className="w-8 h-8 bg-red-500/80 hover:bg-red-600 text-white rounded-lg flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100"
+                        className="w-8 h-8 bg-red-500/90 hover:bg-red-600 text-white rounded-lg flex items-center justify-center backdrop-blur-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all scale-100 sm:scale-90 sm:group-hover:scale-100 shadow-md"
                         title="Eliminar"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-gold-primary uppercase border border-gold-primary/30">
+                    <div className="absolute top-3 left-3 px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-gold-primary uppercase border border-gold-primary/30">
                       {item.section}
                     </div>
                   </div>
-                  <div className="p-4 border-t border-space-border/50">
-                    <p className="text-white font-medium truncate text-sm">{item.title}</p>
-                    <p className="text-gray-500 text-xs mt-1">
+                  <div className="p-3.5 sm:p-4 border-t border-space-border/50">
+                    <p className="text-white font-medium truncate text-xs sm:text-sm">{item.title}</p>
+                    <p className="text-gray-500 text-[11px] sm:text-xs mt-1">
                        Añadido: {new Date(item.created_at).toLocaleDateString('es-ES')}
                     </p>
                   </div>
                 </div>
               )) : (
-                <div className="col-span-full py-12 text-center text-gray-400 bg-space-card/30 rounded-xl border border-space-border border-dashed">
+                <div className="col-span-full py-12 text-center text-gray-400 bg-space-card/30 rounded-xl border border-space-border border-dashed text-xs sm:text-sm">
                   No hay archivos en la galería.
                 </div>
               )}
@@ -302,19 +302,19 @@ export default function AdminGalleryPage() {
 
       {/* Edit Modal */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#111114] border border-space-border rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6 md:p-8 animate-fade-in">
+          <div className="bg-[#111114] border border-space-border rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button 
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5"
               onClick={() => setEditingItem(null)}
             >
               <X className="w-5 h-5" />
             </button>
-            <h2 className="text-xl font-semibold text-white mb-6 font-montserrat flex items-center gap-2">
-              <Pencil className="w-5 h-5 text-gold-primary" />
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 font-montserrat flex items-center gap-2 pr-8">
+              <Pencil className="w-5 h-5 text-gold-primary shrink-0" />
               Editar Archivo
             </h2>
-            <form onSubmit={handleUpdate} className="space-y-5">
+            <form onSubmit={handleUpdate} className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Título Descriptivo</label>
                 <input 
@@ -322,7 +322,7 @@ export default function AdminGalleryPage() {
                   name="title" 
                   required
                   defaultValue={editingItem.title}
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm"
+                  className="w-full bg-space-black border border-space-border rounded-lg px-3.5 sm:px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-xs sm:text-sm"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export default function AdminGalleryPage() {
                   name="section" 
                   required
                   defaultValue={editingItem.section}
-                  className="w-full bg-space-black border border-space-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-sm appearance-none"
+                  className="w-full bg-space-black border border-space-border rounded-lg px-3.5 sm:px-4 py-2.5 text-white focus:outline-none focus:border-gold-primary transition-colors text-xs sm:text-sm appearance-none cursor-pointer"
                 >
                   <option value="quienes-somos">Quiénes Somos</option>
                   <option value="ph">Propiedad Horizontal</option>
@@ -342,16 +342,16 @@ export default function AdminGalleryPage() {
 
               <div>
                 <label className="block text-xs font-montserrat uppercase tracking-wider text-gray-400 mb-2">Tipo de Archivo</label>
-                <div className="flex gap-4">
-                  <label className="flex-1 cursor-pointer">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <label className="cursor-pointer">
                     <input type="radio" name="type" value="image" className="peer sr-only" defaultChecked={editingItem.type === 'image'} />
-                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-xs sm:text-sm font-medium">
                       <ImageIcon className="w-4 h-4" /> Imagen
                     </div>
                   </label>
-                  <label className="flex-1 cursor-pointer">
+                  <label className="cursor-pointer">
                     <input type="radio" name="type" value="video" className="peer sr-only" defaultChecked={editingItem.type === 'video'} />
-                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2 py-2.5 border border-space-border rounded-lg peer-checked:border-gold-primary peer-checked:text-gold-primary text-gray-400 transition-all text-xs sm:text-sm font-medium">
                       <Video className="w-4 h-4" /> Video
                     </div>
                   </label>
@@ -368,7 +368,7 @@ export default function AdminGalleryPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   {file ? (
-                    <div className="text-sm font-medium text-gold-primary truncate">
+                    <div className="text-xs sm:text-sm font-medium text-gold-primary truncate">
                       {file.name}
                     </div>
                   ) : (
@@ -380,18 +380,18 @@ export default function AdminGalleryPage() {
                 </div>
               </div>
 
-              <div className="pt-2 flex gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row gap-2.5 sm:gap-3">
                 <button 
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="flex-1 bg-space-black border border-space-border hover:bg-[#1b1b1f] text-white font-semibold py-3 rounded-lg transition-colors font-montserrat tracking-wider text-sm"
+                  className="w-full sm:flex-1 bg-space-black border border-space-border hover:bg-[#1b1b1f] text-white font-semibold py-2.5 sm:py-3 rounded-lg transition-colors font-montserrat tracking-wider text-xs sm:text-sm text-center"
                 >
                   CANCELAR
                 </button>
                 <button 
                   disabled={isSubmitting}
                   type="submit" 
-                  className="flex-1 bg-gold-primary hover:bg-gold-light text-space-dark font-bold py-3 rounded-lg transition-colors font-montserrat tracking-wider text-sm disabled:opacity-50"
+                  className="w-full sm:flex-1 bg-gold-primary hover:bg-gold-light text-space-dark font-bold py-2.5 sm:py-3 rounded-lg transition-colors font-montserrat tracking-wider text-xs sm:text-sm disabled:opacity-50 text-center shadow-sm"
                 >
                   {isSubmitting ? 'GUARDANDO...' : 'GUARDAR'}
                 </button>
