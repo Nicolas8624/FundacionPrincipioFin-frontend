@@ -6,7 +6,7 @@ Plataforma oficial para la Fundación Principio & Fin, desarrollada con Next.js,
 
 - **Node.js** (v18.17 o superior recomendado)
 - **npm**, **yarn** o **pnpm**
-- Proyecto en **Supabase** configurado con el esquema SQL provisto en `.docs/backend/schema_supabase_completo.sql`.
+- Proyecto en **Supabase** configurado con el esquema SQL provisto en `.docs/backend/01_esquema_completo.sql`.
 
 ## 1. Configuración Local
 
