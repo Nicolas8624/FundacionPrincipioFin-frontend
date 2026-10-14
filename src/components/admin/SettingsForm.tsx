@@ -60,24 +60,24 @@ export function SettingsForm({ profile }: { profile: any }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
       
       {/* Columna Izquierda: Perfil (Editable) */}
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {message && (
           <div className={`p-4 rounded-xl flex items-center gap-3 animate-fade-in ${message.type === 'success' ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37]' : 'bg-[#93000a]/10 border border-[#93000a]/30 text-[#ffb4ab]'}`}>
-            <CheckCircle2 className="w-5 h-5" />
-            <p className="text-sm font-medium">{message.text}</p>
+            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            <p className="text-xs sm:text-sm font-medium">{message.text}</p>
           </div>
         )}
 
         <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden shadow-xl">
-          <div className="p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
-            <User className="w-5 h-5 text-[#D4AF37]" />
-            <h2 className="text-lg font-semibold text-[#e4e1e7]">Perfil del Administrador</h2>
+          <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
+            <User className="w-5 h-5 text-[#D4AF37] shrink-0" />
+            <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Perfil del Administrador</h2>
           </div>
-          <form onSubmit={handleSubmitProfile} className="p-8 space-y-6">
-            <div className="space-y-6">
+          <form onSubmit={handleSubmitProfile} className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">Nombre Completo</label>
                 <input 
@@ -85,7 +85,7 @@ export function SettingsForm({ profile }: { profile: any }) {
                   type="text" 
                   defaultValue={profile?.full_name || ''} 
                   required
-                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#e4e1e7] text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#e4e1e7] text-xs sm:text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
                 />
               </div>
               <div>
@@ -94,7 +94,7 @@ export function SettingsForm({ profile }: { profile: any }) {
                   name="phone"
                   type="text" 
                   defaultValue={profile?.phone || ''} 
-                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#e4e1e7] text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#e4e1e7] text-xs sm:text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
                 />
               </div>
               <div>
@@ -103,16 +103,16 @@ export function SettingsForm({ profile }: { profile: any }) {
                   type="email" 
                   defaultValue={profile?.email || ''} 
                   disabled
-                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#99907c] text-sm opacity-60 cursor-not-allowed" 
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm opacity-60 cursor-not-allowed" 
                 />
               </div>
             </div>
             
-            <div className="flex justify-end pt-4 border-t border-[#262629]">
+            <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-[#262629]">
                <button 
                   type="submit"
                   disabled={loading}
-                  className="bg-[#D4AF37] text-[#0A0A0E] px-6 py-3 rounded-lg font-semibold tracking-wider uppercase text-xs font-montserrat hover:bg-[#F5D77A] transition-colors flex items-center gap-2 disabled:opacity-50"
+                  className="w-full sm:w-auto justify-center bg-[#D4AF37] text-[#0A0A0E] px-6 py-2.5 sm:py-3 rounded-lg font-semibold tracking-wider uppercase text-xs font-montserrat hover:bg-[#F5D77A] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm"
                 >
                  {loading ? 'Guardando...' : <><Save className="w-4 h-4" /> Guardar Perfil</>}
                </button>
@@ -122,14 +122,14 @@ export function SettingsForm({ profile }: { profile: any }) {
       </div>
 
       {/* Columna Derecha: Sistema y Notificaciones */}
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         
         <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden shadow-xl">
-          <div className="p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
-            <Bell className="w-5 h-5 text-[#D4AF37]" />
-            <h2 className="text-lg font-semibold text-[#e4e1e7]">Preferencias de Interfaz</h2>
+          <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
+            <Bell className="w-5 h-5 text-[#D4AF37] shrink-0" />
+            <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Preferencias de Interfaz</h2>
           </div>
-          <div className="p-8 space-y-4">
+          <div className="p-4 sm:p-6 md:p-8 space-y-4">
             <ToggleOption 
               title="Alertas de nuevas inscripciones" 
               description="Mostrar indicadores visuales cuando haya inscripciones pendientes en las tablas." 
@@ -152,24 +152,24 @@ export function SettingsForm({ profile }: { profile: any }) {
         </section>
 
         <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden opacity-80 shadow-xl">
-          <div className="p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
-            <Database className="w-5 h-5 text-[#99907c]" />
-            <h2 className="text-lg font-semibold text-[#e4e1e7]">Información Institucional</h2>
+          <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
+            <Database className="w-5 h-5 text-[#99907c] shrink-0" />
+            <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Información Institucional</h2>
           </div>
-          <div className="p-8 space-y-6">
-            <div className="space-y-6">
+          <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">Organización</label>
-                <input type="text" defaultValue="Fundación Principio & Fin" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#99907c] text-sm cursor-not-allowed" />
+                <input type="text" defaultValue="Fundación Principio & Fin" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">NIT</label>
-                  <input type="text" defaultValue="901.442.231-1" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#99907c] text-sm cursor-not-allowed" />
+                  <input type="text" defaultValue="901.442.231-1" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">Versión de Plataforma</label>
-                  <input type="text" defaultValue="v2.4.0 (Build 2026)" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-4 py-3 text-[#99907c] text-sm cursor-not-allowed" />
+                  <input type="text" defaultValue="v2.4.0 (Build 2026)" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
                 </div>
               </div>
             </div>
@@ -183,16 +183,16 @@ export function SettingsForm({ profile }: { profile: any }) {
 
 function ToggleOption({ title, description, active = false, onToggle }: { title: string, description: string, active?: boolean, onToggle: () => void }) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-[#262629] last:border-0 last:pb-0">
-      <div className="pr-4">
-        <p className="text-sm font-semibold text-[#e4e1e7] mb-1">{title}</p>
-        <p className="text-xs text-[#99907c] leading-relaxed">{description}</p>
+    <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 border-b border-[#262629] last:border-0 last:pb-0 gap-4">
+      <div className="pr-2 sm:pr-4">
+        <p className="text-xs sm:text-sm font-semibold text-[#e4e1e7] mb-1">{title}</p>
+        <p className="text-[11px] sm:text-xs text-[#99907c] leading-relaxed">{description}</p>
       </div>
       <div 
         onClick={onToggle}
-        className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shrink-0 ${active ? 'bg-[#D4AF37]' : 'bg-[#262629]'}`}
+        className={`w-11 sm:w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shrink-0 mt-1 sm:mt-0 ${active ? 'bg-[#D4AF37]' : 'bg-[#262629]'}`}
       >
-        <div className={`w-4 h-4 rounded-full bg-[#0A0A0E] transition-transform ${active ? 'translate-x-6' : 'translate-x-0'}`}></div>
+        <div className={`w-4 h-4 rounded-full bg-[#0A0A0E] transition-transform ${active ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0'}`}></div>
       </div>
     </div>
   )
