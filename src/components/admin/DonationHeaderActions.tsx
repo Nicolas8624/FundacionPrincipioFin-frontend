@@ -24,17 +24,17 @@ export function DonationHeaderActions() {
 
   return (
     <>
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:flex sm:items-center gap-3 w-full lg:w-auto">
         <button 
           onClick={handleDownloadExcel}
-          className="flex items-center gap-2 bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#d0c5af] hover:text-white px-5 py-2.5 rounded-lg text-xs font-semibold transition-colors uppercase tracking-wider font-montserrat"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#d0c5af] hover:text-white px-5 py-2.5 rounded-lg text-xs font-semibold transition-colors uppercase tracking-wider font-montserrat"
         >
           <Download className="w-4 h-4" />
           Descargar Excel
         </button>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-5 py-2.5 rounded-lg text-xs font-semibold transition-colors uppercase tracking-wider font-montserrat"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-5 py-2.5 rounded-lg text-xs font-semibold transition-colors uppercase tracking-wider font-montserrat shadow-md shadow-[#D4AF37]/10"
         >
           <Plus className="w-4 h-4" />
           Registrar Donación

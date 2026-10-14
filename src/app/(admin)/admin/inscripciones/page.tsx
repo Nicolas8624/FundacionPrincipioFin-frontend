@@ -70,7 +70,7 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
             ADMINISTRACIÓN DE PARTICIPANTES • CONVOCATORIA {new Date().getFullYear()}
           </p>
-          <h1 className="text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold font-montserrat tracking-wide text-white">
             Gestión de Inscripciones
           </h1>
           <p className="text-[#99907c] text-sm mt-3 max-w-2xl leading-relaxed">
@@ -82,8 +82,8 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between h-[140px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="p-4 sm:p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div className="flex justify-between items-start">
             <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">Total Inscritos</h3>
             <div className="w-8 h-8 rounded-lg bg-[#262629] flex items-center justify-center text-[#d0c5af]">
@@ -92,14 +92,14 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
           </div>
           <div>
             <div className="flex items-end gap-3 mb-1">
-              <p className="text-5xl font-semibold text-[#D4AF37]">{totalInscritos}</p>
+              <p className="text-4xl sm:text-5xl font-semibold text-[#D4AF37]">{totalInscritos}</p>
               <span className="text-[#D4AF37] text-[10px] font-medium bg-[#D4AF37]/10 px-2 py-1 rounded mb-1.5">+18% mes</span>
             </div>
             <p className="text-xs text-[#99907c]">Capacidad global cubierta al 82%</p>
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between h-[140px]">
+        <div className="p-4 sm:p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div className="flex justify-between items-start">
             <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] max-w-[80px]">Pendientes Revisión</h3>
             <div className="w-8 h-8 rounded-lg bg-[#262629] flex items-center justify-center text-[#D4AF37]">
@@ -108,14 +108,14 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
           </div>
           <div>
             <div className="flex items-end gap-3 mb-1">
-              <p className="text-5xl font-semibold text-[#D4AF37]">{pendientes}</p>
+              <p className="text-4xl sm:text-5xl font-semibold text-[#D4AF37]">{pendientes}</p>
               {pendientes > 0 && <span className="text-[#D4AF37] text-[10px] font-medium border border-[#D4AF37]/30 px-2 py-1 rounded-full mb-1.5">Atención prioritaria</span>}
             </div>
             <p className="text-xs text-[#99907c]">Documentación por cotejar</p>
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between h-[140px]">
+        <div className="p-4 sm:p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div className="flex justify-between items-start">
             <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] max-w-[80px]">Aprobadas Oficial</h3>
             <div className="w-8 h-8 rounded-lg bg-[#262629] flex items-center justify-center text-[#e4e1e7]">
@@ -124,14 +124,14 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
           </div>
           <div>
             <div className="flex items-end gap-3 mb-1">
-              <p className="text-5xl font-semibold text-white">{aprobadas}</p>
+              <p className="text-4xl sm:text-5xl font-semibold text-white">{aprobadas}</p>
               <span className="text-[#99907c] text-[10px] font-medium border border-[#262629] px-2 py-1 rounded-full mb-1.5">Activos</span>
             </div>
             <p className="text-xs text-[#99907c]">Cupos asignados con ficha lista</p>
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between h-[140px]">
+        <div className="p-4 sm:p-6 rounded-2xl bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] hover:border-[#D4AF37]/30 transition-colors relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div className="flex justify-between items-start">
             <h3 className="text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">Lista de Espera</h3>
             <div className="w-8 h-8 rounded-lg bg-[#262629] flex items-center justify-center text-[#e4e1e7]">
@@ -140,7 +140,7 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
           </div>
           <div>
             <div className="flex items-end gap-3 mb-1">
-              <p className="text-5xl font-semibold text-white">{listaEspera}</p>
+              <p className="text-4xl sm:text-5xl font-semibold text-white">{listaEspera}</p>
               <span className="text-[#99907c] text-[10px] font-medium border border-[#262629] px-2 py-1 rounded-full mb-1.5">En reserva</span>
             </div>
             <p className="text-xs text-[#99907c]">Para apertura de cohortes</p>
@@ -159,8 +159,8 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
 
       {/* Tabla de Inscripciones */}
       <div className="bg-[#0A0A0E]/60 backdrop-blur-xl border border-[#262629] rounded-2xl overflow-hidden shadow-2xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[950px]">
             <thead>
               <tr className="bg-[#1b1b1f]/50 border-b border-[#262629] text-[10px] font-montserrat uppercase tracking-widest text-[#99907c]">
                 <th className="px-6 py-5 font-semibold">Participante</th>
@@ -252,38 +252,38 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
         
         {/* Paginación */}
         {totalEnrollments > 0 && (
-          <div className="bg-[#1b1b1f]/50 border-t border-[#262629] px-6 py-4 flex items-center justify-between">
-            <p className="text-sm text-[#99907c]">
+          <div className="bg-[#1b1b1f]/50 border-t border-[#262629] p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs sm:text-sm text-[#99907c] text-center sm:text-left">
               Mostrando <span className="text-[#e4e1e7] font-medium">{from + 1}-{Math.min(to + 1, totalEnrollments)}</span> de <span className="text-[#e4e1e7] font-medium">{totalEnrollments}</span> inscritos
             </p>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {page > 1 ? (
                 <Link 
                   href={`?page=${page - 1}${q ? `&q=${q}` : ''}${courseFilter ? `&course=${courseFilter}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}${modalityFilter ? `&modality=${modalityFilter}` : ''}`}
-                  className="px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
+                  className="px-3 sm:px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-xs sm:text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
                 >
-                  <ChevronLeft className="w-4 h-4" /> Anterior
+                  <ChevronLeft className="w-4 h-4" /> <span className="hidden xs:inline">Anterior</span>
                 </Link>
               ) : (
-                <button disabled className="px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
-                  <ChevronLeft className="w-4 h-4" /> Anterior
+                <button disabled className="px-3 sm:px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-xs sm:text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
+                  <ChevronLeft className="w-4 h-4" /> <span className="hidden xs:inline">Anterior</span>
                 </button>
               )}
               
-              <button className="w-9 h-9 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-semibold text-sm flex items-center justify-center">
+              <button className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#D4AF37] text-[#0A0A0E] font-semibold text-xs sm:text-sm flex items-center justify-center">
                 {page}
               </button>
               
               {page < totalPages ? (
                 <Link 
                   href={`?page=${page + 1}${q ? `&q=${q}` : ''}${courseFilter ? `&course=${courseFilter}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}${modalityFilter ? `&modality=${modalityFilter}` : ''}`}
-                  className="px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
+                  className="px-3 sm:px-4 py-2 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/50 rounded-lg text-xs sm:text-sm text-[#d0c5af] hover:text-white transition-colors flex items-center gap-1"
                 >
-                  Siguiente <ChevronRight className="w-4 h-4" />
+                  <span className="hidden xs:inline">Siguiente</span> <ChevronRight className="w-4 h-4" />
                 </Link>
               ) : (
-                <button disabled className="px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
-                  Siguiente <ChevronRight className="w-4 h-4" />
+                <button disabled className="px-3 sm:px-4 py-2 bg-[#0A0A0E] border border-[#262629] rounded-lg text-xs sm:text-sm text-[#42454a] flex items-center gap-1 cursor-not-allowed">
+                  <span className="hidden xs:inline">Siguiente</span> <ChevronRight className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -292,19 +292,19 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
       </div>
 
       {/* Tarjeta de Protocolo */}
-      <div className="bg-[#17171a] border border-[#262629] rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37] flex-shrink-0">
-            <Info className="w-6 h-6" />
+      <div className="bg-[#17171a] border border-[#262629] rounded-2xl p-5 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
+        <div className="flex items-start gap-3.5 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#262629] flex items-center justify-center text-[#D4AF37] flex-shrink-0">
+            <Info className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-white mb-2">Cupos y Verificación de Requisitos</h3>
-            <p className="text-[#99907c] text-sm max-w-3xl leading-relaxed">
+            <h3 className="text-lg sm:text-xl font-semibold text-white mb-1.5 sm:mb-2">Cupos y Verificación de Requisitos</h3>
+            <p className="text-[#99907c] text-xs sm:text-sm max-w-3xl leading-relaxed">
               Los inscritos con <strong className="text-[#d0c5af]">Beca Comunitaria</strong> requieren validación obligatoria de copia de documento de identidad y recibo de servicios públicos (estratos 1, 2 y 3) antes de emitir la confirmación final de matrícula al taller.
             </p>
           </div>
         </div>
-        <button className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0A0A0E] px-6 py-3 rounded-xl text-xs font-montserrat font-semibold tracking-wider uppercase transition-colors shrink-0 whitespace-nowrap">
+        <button className="w-full md:w-auto text-center justify-center border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0A0A0E] px-6 py-3 rounded-xl text-xs font-montserrat font-semibold tracking-wider uppercase transition-colors shrink-0 whitespace-nowrap">
           Ver Protocolo
         </button>
       </div>
