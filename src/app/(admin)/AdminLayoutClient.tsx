@@ -78,15 +78,20 @@ export function AdminLayoutClient({
       >
         {/* Cabecera del Sidebar con Logo y botón cerrar en móvil */}
         <div className="p-6 pb-4 lg:p-8 lg:pb-6 flex items-center justify-between flex-shrink-0">
-          <img
-            src="/images/logo-admin.png"
-            alt="Fundación Principio & Fin"
-            className="h-9 lg:h-10 object-contain"
-          />
+          <div className="flex items-center gap-3">
+            <img
+              src="/images/logo-admin.png"
+              alt="Fundación Principio & Fin"
+              className="h-9 lg:h-10 object-contain shrink-0"
+            />
+            <span className="text-sm font-bold tracking-widest text-[#D4AF37] font-montserrat uppercase leading-tight">
+              Principio & Fin
+            </span>
+          </div>
           <button
             type="button"
             onClick={() => setIsMobileOpen(false)}
-            className="lg:hidden p-2 rounded-xl bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#99907c] hover:text-white transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-xl bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#99907c] hover:text-white transition-colors cursor-pointer ml-2"
             aria-label="Cerrar menú de navegación"
           >
             <X className="w-5 h-5" />
@@ -142,12 +147,15 @@ export function AdminLayoutClient({
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <img
                 src="/images/logo-admin.png"
                 alt="Fundación Principio & Fin"
-                className="h-7 w-auto object-contain"
+                className="h-7 w-auto object-contain shrink-0"
               />
+              <span className="text-xs font-bold tracking-wider text-[#D4AF37] font-montserrat uppercase">
+                Principio & Fin
+              </span>
             </div>
           </div>
 

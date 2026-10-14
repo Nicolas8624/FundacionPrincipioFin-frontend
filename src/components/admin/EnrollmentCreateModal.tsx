@@ -31,22 +31,37 @@ export function EnrollmentCreateModal({ isOpen, onClose, courses }: EnrollmentCr
     
     const formData = new FormData(e.currentTarget);
     
-    const enrollmentData = {
-      course_id: formData.get('course_id'),
-      full_name: formData.get('full_name'),
-      document_type: formData.get('document_type'),
-      document_number: formData.get('document_number'),
-      phone: formData.get('phone'),
-      email: formData.get('email'),
-      status: formData.get('status'),
-      admin_notes: formData.get('admin_notes'),
-      accepted_data_policy: true, // as it's an admin bypass
-    };
+    const emailVal = (formData.get('email') as string)?.trim() || null;
 
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+
+    let matchedUserId: string | null = null;
+    if (emailVal) {
+      const { data: matchedProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('email', emailVal)
+        .maybeSingle();
+      if (matchedProfile?.id) {
+        matchedUserId = matchedProfile.id;
+      }
+    }
+
+    const enrollmentData = {
+      course_id: formData.get('course_id'),
+      user_id: matchedUserId,
+      full_name: formData.get('full_name'),
+      document_type: formData.get('document_type'),
+      document_number: formData.get('document_number'),
+      phone: formData.get('phone'),
+      email: emailVal,
+      status: formData.get('status'),
+      admin_notes: formData.get('admin_notes'),
+      accepted_data_policy: true, // as it's an admin bypass
+    };
 
     const { error: insertError } = await supabase
       .from('course_enrollments')
