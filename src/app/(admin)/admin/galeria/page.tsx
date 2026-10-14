@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getGalleryItems } from '@/actions/gallery';
 import { createBrowserClient } from '@/services/supabase/client';
 import { Upload, Trash2, Image as ImageIcon, Video, Play, Pencil, X, FileUp } from 'lucide-react';
 
@@ -15,8 +14,10 @@ export default function AdminGalleryPage() {
 
   const loadItems = async () => {
     setLoading(true);
-    const data = await getGalleryItems();
-    setItems(data || []);
+    const { data, error } = await supabase.from('gallery_items').select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      setItems(data);
+    }
     setLoading(false);
   };
 
@@ -135,11 +136,19 @@ export default function AdminGalleryPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Deseas eliminar este archivo?")) return;
+
+    if (id.startsWith('fallback-')) {
+      // Si es un item mock/fallback local, removerlo directamente del estado UI
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      return;
+    }
+
+    // Para items reales con UUID de Supabase:
     const { error } = await supabase.from('gallery_items').delete().eq('id', id);
     if (error) {
       alert(`Error al eliminar: ${error.message}`);
     } else {
-      await loadItems();
+      setItems((prev) => prev.filter((item) => item.id !== id));
     }
   };
 
