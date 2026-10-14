@@ -56,7 +56,7 @@ export default async function AdminMensajesPage() {
                   <TableRow 
                     key={msg.id}
                     icon={<MessageSquare className="w-4 h-4 text-gold-primary" />}
-                    name={msg.full_name || 'Desconocido'}
+                    name={msg.name || msg.full_name || 'Desconocido'}
                     phone={msg.phone || ''}
                     email={msg.email || ''}
                     subject={msg.subject || 'Sin Asunto'}

@@ -265,7 +265,7 @@ export default async function AdminDashboardPage() {
 
           <div className="flex-1 space-y-4">
             {mensajes?.length ? mensajes.map(msg => {
-              const displayName = msg.full_name || msg.name || 'Desconocido';
+              const displayName = msg.name || msg.full_name || 'Desconocido';
               const nameParts = displayName.split(' ');
               const initials = nameParts.length > 1 ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase() : displayName.substring(0, 2).toUpperCase();
               

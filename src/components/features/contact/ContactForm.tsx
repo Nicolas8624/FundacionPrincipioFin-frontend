@@ -2,50 +2,30 @@
 
 import { useState } from "react";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
-import { createBrowserClient } from "@/services/supabase/client";
+import { submitContactForm } from "@/actions/contact";
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const supabase = createBrowserClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget;
     setIsSubmitting(true);
     setIsSuccess(false);
     setErrorMsg("");
 
-    try {
-      const formData = new FormData(form);
-      const full_name = (formData.get("name") || formData.get("full_name") || "") as string;
-      const phone = (formData.get("phone") || "") as string;
-      const email = (formData.get("email") || "") as string;
-      const subject = (formData.get("subject") || "") as string;
-      const message = (formData.get("message") || "") as string;
+    const formData = new FormData(e.currentTarget);
+    const result = await submitContactForm(formData);
 
-      const { error } = await supabase.from("contact_messages").insert([{
-        full_name,
-        email,
-        phone,
-        subject,
-        message,
-      }]);
-
-      if (error) {
-        console.error("Error al enviar mensaje de contacto:", error);
-        setErrorMsg(`Error al enviar: ${error.message}`);
-      } else {
-        setIsSuccess(true);
-        form.reset();
-      }
-    } catch (err: any) {
-      console.error("Error inesperado en contacto:", err);
-      setErrorMsg("Ocurrió un error inesperado al enviar el mensaje.");
-    } finally {
-      setIsSubmitting(false);
+    if (result.success) {
+      setIsSuccess(true);
+      e.currentTarget.reset();
+    } else {
+      setErrorMsg(result.error || "Ocurrió un error inesperado al enviar el mensaje.");
     }
+    
+    setIsSubmitting(false);
   };
 
   return (

@@ -11,7 +11,7 @@ export default async function AdminDonacionesPage() {
   const supabase = await createClient();
 
   const { data: donations } = await supabase
-    .from('donations')
+    .from('donation_requests')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -59,7 +59,7 @@ export default async function AdminDonacionesPage() {
                     name={don.donor_name || don.full_name || 'Anónimo'}
                     email={don.email || ''}
                     type={don.donation_type || 'Desconocido'}
-                    amount={don.details || don.amount_or_description || 'No especificado'}
+                    amount={don.message || don.amount_or_description || don.details || (don.amount_cop ? `$${don.amount_cop} COP` : 'No especificado')}
                     date={formatDateSpanish(don.created_at)}
                     status={don.status || 'PENDIENTE'}
                   />
