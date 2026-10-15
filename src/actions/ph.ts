@@ -43,9 +43,28 @@ export async function submitPhRequest(formData: FormData) {
       formData.get("additional_info")?.toString().trim() ||
       "";
 
-    const role_title =
+    const raw_role =
       formData.get("role_title")?.toString().trim() ||
-      "Administrador / Consejero";
+      formData.get("role")?.toString().trim() ||
+      "";
+
+    // Normalizar para cumplir con la restricción CHECK ('administrador', 'consejero', 'residente', 'otro')
+    let role_title = "administrador";
+    const lowerRole = raw_role.toLowerCase();
+
+    if (lowerRole.includes("admin")) {
+      role_title = "administrador";
+    } else if (lowerRole.includes("consej")) {
+      role_title = "consejero";
+    } else if (lowerRole.includes("resid") || lowerRole.includes("copropietari") || lowerRole.includes("lider")) {
+      role_title = "residente";
+    } else if (["administrador", "consejero", "residente", "otro"].includes(lowerRole)) {
+      role_title = lowerRole;
+    } else if (lowerRole === "otro") {
+      role_title = "otro";
+    } else {
+      role_title = "administrador";
+    }
 
     const rawResidents =
       formData.get("residents_count") ||
