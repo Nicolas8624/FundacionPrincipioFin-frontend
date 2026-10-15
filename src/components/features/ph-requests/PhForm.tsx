@@ -34,7 +34,7 @@ export function PhForm() {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-space-card/50 border border-space-border/60 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-2xl">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white uppercase tracking-wider mb-2">
+            <h2 className="text-2xl font-bold text-white uppercase tracking-wider mb-2 font-montserrat">
               Solicitud de Alianza
             </h2>
             <p className="text-gray-400">
@@ -61,30 +61,31 @@ export function PhForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <input type="hidden" name="role_title" value="Administrador" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="ph_name" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="complex_name" className="block text-sm font-medium text-gray-300">
                   Nombre del Conjunto / Unidad
                 </label>
                 <input
                   type="text"
-                  id="ph_name"
+                  id="complex_name"
                   name="complex_name"
                   required
-                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                   placeholder="Ej. Conjunto Residencial Los Pinos"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="admin_name" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="administrator_name" className="block text-sm font-medium text-gray-300">
                   Nombre del Administrador / Consejero
                 </label>
                 <input
                   type="text"
-                  id="admin_name"
-                  name="applicant_name"
+                  id="administrator_name"
+                  name="administrator_name"
                   required
-                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                   placeholder="Ej. Juan Pérez"
                 />
               </div>
@@ -100,7 +101,7 @@ export function PhForm() {
                   id="email"
                   name="email"
                   required
-                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                   placeholder="administracion@conjunto.com"
                 />
               </div>
@@ -113,24 +114,39 @@ export function PhForm() {
                   id="phone"
                   name="phone"
                   required
-                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all"
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
                   placeholder="300 000 0000"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="location" className="block text-sm font-medium text-gray-300">
-                Localidad y Barrio
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                required
-                className="w-full bg-space-black border border-space-border rounded-md px-4 py-2 text-white focus:outline-none focus:border-gold-primary transition-colors"
-                placeholder="Ej. Ciudad Bolívar, Barrio Madelena"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label htmlFor="locality" className="block text-sm font-medium text-gray-300">
+                  Localidad
+                </label>
+                <input
+                  type="text"
+                  id="locality"
+                  name="locality"
+                  required
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
+                  placeholder="Ej. Kennedy, Suba, Usaquén"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="address" className="block text-sm font-medium text-gray-300">
+                  Dirección o Barrio
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  required
+                  className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner"
+                  placeholder="Ej. Calle 45 Sur # 78-12"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -142,7 +158,7 @@ export function PhForm() {
                 name="message"
                 rows={4}
                 required
-                className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all resize-none"
+                className="w-full bg-space-black/60 border border-space-border text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 transition-all shadow-inner resize-none"
                 placeholder="Cuéntanos un poco sobre tu comunidad..."
               ></textarea>
             </div>
@@ -150,12 +166,12 @@ export function PhForm() {
             <div className="flex items-start gap-3">
               <input
                 type="checkbox"
-                id="data_policy"
-                name="data_consent"
+                id="accepted_data_policy"
+                name="accepted_data_policy"
                 required
                 className="mt-1 shrink-0 accent-gold-primary"
               />
-              <label htmlFor="data_policy" className="text-sm text-gray-400 leading-tight">
+              <label htmlFor="accepted_data_policy" className="text-sm text-gray-400 leading-tight">
                 Acepto la política de tratamiento de datos personales. Autorizo a la Fundación Principio & Fin a 
                 contactarme para dar respuesta a esta solicitud.
               </label>
@@ -164,7 +180,7 @@ export function PhForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold-primary to-gold-light text-space-dark font-bold py-4 px-8 rounded-xl hover:shadow-gold-glow transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold-primary to-gold-light text-space-dark font-bold py-4 px-8 rounded-xl hover:shadow-gold-glow transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
             >
               {isSubmitting ? (
                 "Enviando..."

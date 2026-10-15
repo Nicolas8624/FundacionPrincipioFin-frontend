@@ -1,5 +1,5 @@
 import { FOUNDATION } from "@/constants/foundation";
-import { Mail, MapPin, Phone, Clock, Plus } from "lucide-react";
+import { Mail, MapPin, Phone, Clock } from "lucide-react";
 
 export function ContactInfoGrid() {
   const infos = [
@@ -49,43 +49,44 @@ export function ContactInfoGrid() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {infos.map((info, i) => (
-            <div
-              key={i}
-              className="flex flex-col items-center text-center p-8 bg-space-card/70 border border-space-border backdrop-blur-md rounded-2xl transition-all duration-300 hover:border-gold-primary/60 hover:shadow-gold-glow hover:-translate-y-1 relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gold-glow/20 blur-3xl rounded-full pointer-events-none -z-10"></div>
-              <div className="bg-gold-primary/10 text-gold-primary p-3 rounded-full mb-3">
-                {info.icon}
-              </div>
-              <h3 className="text-white font-semibold mb-2">{info.title}</h3>
-              {info.action ? (
-                <a
-                  href={info.action.href}
-                  target={info.action.target}
-                  rel={info.action.rel}
-                  className="text-gray-400 hover:text-gold-primary text-sm transition-colors cursor-pointer"
-                >
+          {infos.map((info, i) => {
+            const cardInner = (
+              <>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gold-glow/20 blur-3xl rounded-full pointer-events-none -z-10"></div>
+                <div className="bg-gold-primary/10 text-gold-primary p-3 rounded-full mb-3 transition-transform duration-300 group-hover:scale-110">
+                  {info.icon}
+                </div>
+                <h3 className="text-white font-semibold mb-2 group-hover:text-gold-primary transition-colors">{info.title}</h3>
+                <span className="text-gray-400 group-hover:text-gold-light text-sm transition-colors">
                   {info.detail}
-                </a>
-              ) : (
-                <p className="text-gray-400 text-sm">{info.detail}</p>
-              )}
+                </span>
+              </>
+            );
 
-              {info.action && (
+            if (info.action) {
+              return (
                 <a
+                  key={i}
                   href={info.action.href}
                   target={info.action.target}
                   rel={info.action.rel}
-                  aria-label={info.action.title}
                   title={info.action.title}
-                  className="absolute bottom-3.5 right-3.5 w-8 h-8 rounded-full bg-gold-primary/20 text-gold-primary hover:bg-gold-primary hover:text-space-dark border border-gold-primary/40 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg group/btn"
+                  className="flex flex-col items-center text-center p-8 bg-space-card/70 border border-space-border backdrop-blur-md rounded-2xl transition-all duration-300 hover:border-gold-primary/60 hover:shadow-gold-glow hover:-translate-y-1 relative overflow-hidden group cursor-pointer"
                 >
-                  <Plus className="w-4 h-4 transition-transform duration-300 group-hover/btn:rotate-90" />
+                  {cardInner}
                 </a>
-              )}
-            </div>
-          ))}
+              );
+            }
+
+            return (
+              <div
+                key={i}
+                className="flex flex-col items-center text-center p-8 bg-space-card/70 border border-space-border backdrop-blur-md rounded-2xl transition-all duration-300 hover:border-gold-primary/60 hover:shadow-gold-glow hover:-translate-y-1 relative overflow-hidden group"
+              >
+                {cardInner}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
