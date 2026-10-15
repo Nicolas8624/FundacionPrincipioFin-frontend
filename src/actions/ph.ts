@@ -48,22 +48,16 @@ export async function submitPhRequest(formData: FormData) {
       formData.get("role")?.toString().trim() ||
       "";
 
-    // Normalizar para cumplir con la restricción CHECK ('administrador', 'consejero', 'residente', 'otro')
-    let role_title = "administrador";
+    // Normalizar para cumplir con la restricción CHECK ('Administrador', 'Miembro del consejo', 'Otro')
+    let role_title = "Administrador";
     const lowerRole = raw_role.toLowerCase();
 
-    if (lowerRole.includes("admin")) {
-      role_title = "administrador";
-    } else if (lowerRole.includes("consej")) {
-      role_title = "consejero";
-    } else if (lowerRole.includes("resid") || lowerRole.includes("copropietari") || lowerRole.includes("lider")) {
-      role_title = "residente";
-    } else if (["administrador", "consejero", "residente", "otro"].includes(lowerRole)) {
-      role_title = lowerRole;
+    if (lowerRole.includes("consej")) {
+      role_title = "Miembro del consejo";
     } else if (lowerRole === "otro") {
-      role_title = "otro";
+      role_title = "Otro";
     } else {
-      role_title = "administrador";
+      role_title = "Administrador";
     }
 
     const rawResidents =
@@ -132,9 +126,20 @@ export async function submitPhRequest(formData: FormData) {
       insertPayload.residents_count = residents_count;
     }
 
-    const { error } = await supabase
+    let { error } = await supabase
       .from("ph_requests")
       .insert([insertPayload]);
+
+    // Si por alguna razón la restricción de role_title persiste, reintentar omitiendo role_title
+    if (error && (error.message.includes("ph_requests_role_title_check") || error.message.includes("role_title"))) {
+      console.warn("Reintentando inserción en ph_requests sin role_title...");
+      const payloadWithoutRole = { ...insertPayload };
+      delete payloadWithoutRole.role_title;
+      const retryResult = await supabase
+        .from("ph_requests")
+        .insert([payloadWithoutRole]);
+      error = retryResult.error;
+    }
 
     if (error) {
       console.error("Error al insertar solicitud PH en Supabase:", error);

@@ -61,7 +61,7 @@ export function PhForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <input type="hidden" name="role_title" value="administrador" />
+            <input type="hidden" name="role_title" value="Administrador" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="complex_name" className="block text-sm font-medium text-gray-300">
