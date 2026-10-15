@@ -123,14 +123,26 @@ export default async function ActividadPage({
   // 3. Consultar la matrícula del estudiante a este curso
   const courseId = assignmentRow.course_id;
   let enrollmentId: string | null = null;
+  let enrollmentStatus: string | null = null;
   if (courseId) {
     const { data: enrollRow } = await supabase
       .from('course_enrollments')
-      .select('id')
+      .select('id, status')
       .eq('course_id', courseId)
       .or(`user_id.eq.${user.id},email.ilike.${user.email || ''}`)
       .maybeSingle();
     enrollmentId = enrollRow?.id || null;
+    enrollmentStatus = enrollRow?.status || null;
+  }
+
+  // Si la matrícula está pendiente, redirigir a la vista de curso en revisión
+  if (enrollmentStatus === 'pendiente') {
+    redirect(`/portal/cursos/${courseId}`);
+  }
+
+  // Si no tiene matrícula, redirigir al catálogo
+  if (!enrollmentStatus || !enrollmentId) {
+    redirect('/portal/catalogo');
   }
 
   // 4. Consultar materiales didácticos del módulo o curso

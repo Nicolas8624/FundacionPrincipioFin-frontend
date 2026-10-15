@@ -50,7 +50,9 @@ export interface CatalogCourse {
 interface StudentCatalogClientProps {
   initialCourses: CatalogCourse[];
   categories: { id: string; name: string; slug: string }[];
-  userEnrolledCourseIds: string[];
+  userEnrolledCourseIds?: string[];
+  confirmedCourseIds?: string[];
+  pendingCourseIds?: string[];
   currentUser: {
     id: string;
     fullName: string;
@@ -64,7 +66,9 @@ interface StudentCatalogClientProps {
 export function StudentCatalogClient({
   initialCourses,
   categories,
-  userEnrolledCourseIds,
+  userEnrolledCourseIds = [],
+  confirmedCourseIds,
+  pendingCourseIds = [],
   currentUser,
 }: StudentCatalogClientProps) {
   // Estados de Filtros y Búsqueda
@@ -93,8 +97,11 @@ export function StudentCatalogClient({
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Lista local de cursos a los que el usuario está inscrito
-  const [enrolledIds, setEnrolledIds] = useState<string[]>(userEnrolledCourseIds);
+  // Listas locales: Cursos matriculados formalmente vs Solicitudes pendientes
+  const [confirmedIds, setConfirmedIds] = useState<string[]>(
+    confirmedCourseIds || userEnrolledCourseIds
+  );
+  const [pendingIds, setPendingIds] = useState<string[]>(pendingCourseIds);
 
   // Filtrado de Cursos
   const filteredCourses = useMemo(() => {
@@ -216,7 +223,7 @@ export function StudentCatalogClient({
         setSubmitError(insertError.message || 'Error al procesar la inscripción.');
         setIsSubmitting(false);
       } else {
-        setEnrolledIds((prev) => [...prev, enrollingCourse.id]);
+        setPendingIds((prev) => [...prev, enrollingCourse.id]);
         setSubmitSuccess(true);
         setIsSubmitting(false);
       }
@@ -433,7 +440,8 @@ export function StudentCatalogClient({
         {currentCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
             {currentCourses.map((course) => {
-              const isEnrolled = enrolledIds.includes(course.id);
+              const isConfirmed = confirmedIds.includes(course.id);
+              const isPending = pendingIds.includes(course.id);
               const availableSeats = Math.max(0, course.capacity - course.enrolledCount);
               const fillPercent = Math.min(100, Math.round((course.enrolledCount / course.capacity) * 100));
               const categoryBadge = course.category?.name?.toUpperCase() || 'ARTE & OFICIOS';
@@ -519,7 +527,7 @@ export function StudentCatalogClient({
 
                   {/* Botones de Acción */}
                   <div className="p-5 pt-0 space-y-2">
-                    {isEnrolled ? (
+                    {isConfirmed ? (
                       <Link
                         href="/portal/cursos"
                         className="w-full flex items-center justify-center gap-2 bg-[#1b1b1f] border border-emerald-500/40 text-emerald-400 py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all"
@@ -527,10 +535,19 @@ export function StudentCatalogClient({
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Ya estás Matriculado</span>
                       </Link>
+                    ) : isPending ? (
+                      <Link
+                        href="/portal/cursos?tab=pendientes"
+                        className="w-full flex items-center justify-center gap-2 bg-[#262013] border border-[#D4AF37]/50 text-[#F5D77A] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all hover:bg-[#332b1a]"
+                      >
+                        <Clock className="w-4 h-4 text-[#D4AF37] animate-pulse" />
+                        <span>Solicitud en Revisión</span>
+                      </Link>
                     ) : availableSeats > 0 ? (
                       <button
                         onClick={() => {
                           setEnrollingCourse(course);
+                          setCupoType('Cupo Regular');
                           setSubmitSuccess(false);
                           setSubmitError(null);
                         }}
@@ -544,6 +561,8 @@ export function StudentCatalogClient({
                         onClick={() => {
                           setEnrollingCourse(course);
                           setCupoType('Lista de Espera');
+                          setSubmitSuccess(false);
+                          setSubmitError(null);
                         }}
                         className="w-full flex items-center justify-center gap-2 bg-[#262629] text-[#99907c] hover:text-white py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all cursor-pointer"
                       >
@@ -768,27 +787,27 @@ export function StudentCatalogClient({
               
               {submitSuccess ? (
                 <div className="py-8 text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-lg">
-                    <CheckCircle2 className="w-8 h-8" />
+                  <div className="w-16 h-16 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] flex items-center justify-center mx-auto shadow-lg">
+                    <Clock className="w-8 h-8 animate-pulse text-[#D4AF37]" />
                   </div>
                   <h3 className="text-xl font-bold text-white font-montserrat">
-                    ¡Inscripción Registrada con Éxito!
+                    ¡Solicitud de Inscripción Radicada!
                   </h3>
                   <p className="text-xs text-[#d0c5af] max-w-md mx-auto leading-relaxed">
-                    Tu postulación para <strong>{enrollingCourse.title}</strong> ha sido radicada correctamente. La coordinación académica confirmará tu cupo oficial y te notificará vía correo electrónico.
+                    Tu postulación para <strong>{enrollingCourse.title}</strong> ha sido radicada correctamente con estado <strong>Pendiente de Revisión</strong>. La coordinación académica confirmará la disponibilidad de cupo y te notificará una vez sea aprobada.
                   </p>
                   <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
                     <Link
-                      href="/portal/cursos"
+                      href="/portal/cursos?tab=pendientes"
                       className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all"
                     >
-                      <span>Ir a Mis Cursos Matriculados</span>
+                      <span>Ver Mis Solicitudes</span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                     <button
                       type="button"
                       onClick={() => setEnrollingCourse(null)}
-                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider font-montserrat text-[#d0c5af] hover:bg-[#262629] transition-colors"
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider font-montserrat text-[#d0c5af] hover:bg-[#262629] transition-colors cursor-pointer"
                     >
                       Seguir explorando
                     </button>
@@ -806,6 +825,14 @@ export function StudentCatalogClient({
                     <div className="text-[#99907c]">
                       Docente: <strong className="text-white">{enrollingCourse.instructor_name}</strong>
                     </div>
+                  </div>
+
+                  {/* Aviso informativo de proceso de validación */}
+                  <div className="bg-[#1b1b1f] border border-[#262629] rounded-xl p-3.5 flex items-start gap-3 text-xs text-[#99907c]">
+                    <Clock className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                    <p className="leading-relaxed">
+                      Esta solicitud será revisada por la coordinación académica para validar disponibilidad de cupo institucional. Una vez aprobada tu matrícula, se habilitará tu acceso al aula virtual.
+                    </p>
                   </div>
 
                   {submitError && (
@@ -887,22 +914,6 @@ export function StudentCatalogClient({
                     />
                   </div>
 
-                  {/* Tipo de Cupo */}
-                  <div>
-                    <label className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c] font-semibold block mb-1">
-                      Modalidad de Cupo Solicitada
-                    </label>
-                    <select
-                      value={cupoType}
-                      onChange={(e) => setCupoType(e.target.value)}
-                      className="w-full bg-[#1b1b1f] border border-[#262629] focus:border-[#D4AF37] rounded-xl px-3.5 py-2 text-xs text-white outline-none font-montserrat cursor-pointer"
-                    >
-                      <option value="Cupo Regular">Cupo Regular Gratuito</option>
-                      <option value="Beca Inclusión Artesanal">Beca de Inclusión Artesanal (Población Vulnerable)</option>
-                      <option value="Convenio Propiedad Horizontal">Convenio Copropiedad / Salón Comunal</option>
-                    </select>
-                  </div>
-
                   {/* Motivación Opcional */}
                   <div>
                     <label className="text-[11px] font-montserrat uppercase tracking-wider text-[#99907c] font-semibold block mb-1">
@@ -943,7 +954,7 @@ export function StudentCatalogClient({
                       disabled={isSubmitting}
                       className="inline-flex items-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all shadow-md cursor-pointer disabled:opacity-50"
                     >
-                      {isSubmitting ? 'Procesando...' : 'Confirmar Inscripción Oficial'}
+                      {isSubmitting ? 'Enviando Solicitud...' : 'Enviar Solicitud de Inscripción'}
                     </button>
                   </div>
 
@@ -1058,13 +1069,30 @@ export function StudentCatalogClient({
                 Cerrar
               </button>
 
-              {!enrolledIds.includes(detailsCourse.id) && (
+              {confirmedIds.includes(detailsCourse.id) ? (
+                <Link
+                  href="/portal/cursos"
+                  className="inline-flex items-center gap-2 bg-[#1b1b1f] border border-emerald-500/40 text-emerald-400 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Ya estás Matriculado</span>
+                </Link>
+              ) : pendingIds.includes(detailsCourse.id) ? (
+                <Link
+                  href="/portal/cursos?tab=pendientes"
+                  className="inline-flex items-center gap-2 bg-[#262013] border border-[#D4AF37]/50 text-[#F5D77A] px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all"
+                >
+                  <Clock className="w-4 h-4 text-[#D4AF37] animate-pulse" />
+                  <span>Solicitud en Revisión</span>
+                </Link>
+              ) : (
                 <button
                   type="button"
                   onClick={() => {
                     const toEnroll = detailsCourse;
                     setDetailsCourse(null);
                     setEnrollingCourse(toEnroll);
+                    setCupoType('Cupo Regular');
                     setSubmitSuccess(false);
                     setSubmitError(null);
                   }}

@@ -21,7 +21,8 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
-  FileCheck
+  FileCheck,
+  Lock
 } from 'lucide-react';
 
 export interface ClassroomAssignment {
@@ -135,6 +136,123 @@ export function StudentCourseClassroomClient({ course }: StudentCourseClassroomC
     if (diffDays === 1) return { text: 'Vence mañana', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' };
     return { text: `Quedan ${diffDays} días`, color: 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/30' };
   };
+
+  // 1. Si la matrícula se encuentra en estado pendiente
+  if (course.enrollment?.status === 'pendiente') {
+    return (
+      <div className="space-y-8 pb-16 max-w-4xl mx-auto">
+        <div className="flex items-center gap-2.5 text-xs text-[#99907c] border-b border-[#262629] pb-4">
+          <Link
+            href="/portal/cursos?tab=pendientes"
+            className="inline-flex items-center gap-1.5 text-white hover:text-[#D4AF37] font-semibold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Mis Solicitudes en Revisión</span>
+          </Link>
+          <span>/</span>
+          <span className="text-[#D4AF37] font-medium truncate">{course.title}</span>
+        </div>
+
+        <div className="bg-[#17171a] border border-[#D4AF37]/40 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-[#262013] border border-[#D4AF37]/50 text-[#D4AF37] flex items-center justify-center shrink-0">
+              <Clock className="w-6 h-6 text-[#D4AF37] animate-pulse" />
+            </div>
+            <div>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#262013] border border-[#D4AF37]/40 text-[#F5D77A] text-[10px] font-bold font-montserrat uppercase tracking-wider">
+                Solicitud en Proceso de Revisión
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white font-montserrat mt-1">
+                {course.title}
+              </h1>
+            </div>
+          </div>
+
+          <div className="bg-[#1b1b1f] border border-[#262629] rounded-xl p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-white font-montserrat flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[#D4AF37]" />
+              Tu cupo aún no ha sido confirmado oficialmente
+            </h3>
+            <p className="text-xs text-[#99907c] leading-relaxed">
+              Recibimos tu postulación y los datos registrados. La coordinación académica de la Fundación Principio y Fin está validando los cupos disponibles para esta cohorte. Por motivos de seguridad académica, el aula virtual, los módulos temáticos y la entrega de asignaciones se desbloquearán automáticamente cuando el administrador confirme tu plaza.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#99907c]">
+            <div className="bg-[#131317] border border-[#262629] p-3 rounded-xl space-y-1">
+              <span className="text-[10px] uppercase font-montserrat font-bold text-[#D4AF37]">Docente Formador</span>
+              <p className="text-white font-medium truncate">{course.instructorName || 'Docente Asignado'}</p>
+            </div>
+            <div className="bg-[#131317] border border-[#262629] p-3 rounded-xl space-y-1">
+              <span className="text-[10px] uppercase font-montserrat font-bold text-[#D4AF37]">Horario</span>
+              <p className="text-white font-medium truncate">{course.scheduleText || 'Horario por coordinar'}</p>
+            </div>
+            <div className="bg-[#131317] border border-[#262629] p-3 rounded-xl space-y-1">
+              <span className="text-[10px] uppercase font-montserrat font-bold text-[#D4AF37]">Sede</span>
+              <p className="text-white font-medium truncate">{course.location || 'Sede Principal'}</p>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-[#262629] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs text-[#99907c]">
+              <Lock className="w-4 h-4 text-[#D4AF37]" />
+              <span>Acceso al aula virtual bloqueado temporalmente</span>
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Link
+                href="/portal/cursos?tab=pendientes"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all shadow-md"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Volver a Mis Solicitudes</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Si el usuario no tiene ninguna matrícula registrada
+  if (!course.enrollment) {
+    return (
+      <div className="space-y-8 pb-16 max-w-4xl mx-auto">
+        <div className="flex items-center gap-2.5 text-xs text-[#99907c] border-b border-[#262629] pb-4">
+          <Link
+            href="/portal/catalogo"
+            className="inline-flex items-center gap-1.5 text-white hover:text-[#D4AF37] font-semibold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Catálogo de Talleres</span>
+          </Link>
+          <span>/</span>
+          <span className="text-[#D4AF37] font-medium truncate">{course.title}</span>
+        </div>
+
+        <div className="bg-[#17171a] border border-[#262629] rounded-2xl p-6 sm:p-10 shadow-2xl text-center space-y-4">
+          <div className="w-14 h-14 rounded-full bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#99907c] mx-auto">
+            <Lock className="w-7 h-7 text-[#D4AF37]" />
+          </div>
+          <h2 className="text-2xl font-bold text-white font-montserrat">
+            No estás matriculado en este taller
+          </h2>
+          <p className="text-xs text-[#99907c] max-w-md mx-auto leading-relaxed">
+            Para acceder al contenido formativo, materiales didácticos y actividades de <strong>{course.title}</strong>, debes enviar una solicitud de inscripción desde nuestro catálogo oficial.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/portal/catalogo"
+              className="inline-flex items-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all shadow-md"
+            >
+              <span>Explorar Catálogo y Postularme</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-16 max-w-7xl mx-auto">
