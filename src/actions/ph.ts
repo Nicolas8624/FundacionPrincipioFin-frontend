@@ -5,47 +5,137 @@ import { createClient } from "@/lib/supabase/server";
 export async function submitPhRequest(formData: FormData) {
   try {
     const supabase = await createClient();
-    
-    // Extract data
-    const complex_name = formData.get("complex_name") as string;
-    const applicant_name = formData.get("applicant_name") as string;
-    const email = formData.get("email") as string;
-    const phone = formData.get("phone") as string;
-    const location = formData.get("location") as string;
-    const message = formData.get("message") as string;
-    const data_policy = formData.get("data_consent");
-    
-    const data_consent = data_policy === "on" || data_policy === "true";
 
-    // Validate required fields
-    if (!complex_name || !applicant_name || !email || !phone || !location || !message || !data_consent) {
-      return { success: false, error: "Todos los campos obligatorios deben ser completados y debes aceptar la política de datos." };
+    // 1. Extraer datos con soporte para múltiples variantes de nombres de campos
+    const administrator_name =
+      formData.get("administrator_name")?.toString().trim() ||
+      formData.get("admin_name")?.toString().trim() ||
+      formData.get("applicant_name")?.toString().trim() ||
+      formData.get("name")?.toString().trim() ||
+      "";
+
+    const complex_name =
+      formData.get("complex_name")?.toString().trim() ||
+      formData.get("residence_name")?.toString().trim() ||
+      formData.get("ph_name")?.toString().trim() ||
+      "";
+
+    const email = formData.get("email")?.toString().trim() || "";
+    const phone = formData.get("phone")?.toString().trim() || "";
+
+    const rawLocality =
+      formData.get("locality")?.toString().trim() ||
+      formData.get("location")?.toString().trim() ||
+      formData.get("neighborhood")?.toString().trim() ||
+      "";
+
+    const rawAddress =
+      formData.get("address")?.toString().trim() ||
+      formData.get("location")?.toString().trim() ||
+      formData.get("neighborhood")?.toString().trim() ||
+      "";
+
+    const locality = rawLocality || rawAddress || "Bogotá";
+    const address = rawAddress || rawLocality || "Dirección no especificada";
+
+    const message =
+      formData.get("message")?.toString().trim() ||
+      formData.get("additional_info")?.toString().trim() ||
+      "";
+
+    const role_title =
+      formData.get("role_title")?.toString().trim() ||
+      "Administrador / Consejero";
+
+    const rawResidents =
+      formData.get("residents_count") ||
+      formData.get("approximate_residents");
+    const residents_count = rawResidents
+      ? parseInt(rawResidents.toString(), 10) || null
+      : null;
+
+    const dataPolicyField =
+      formData.get("accepted_data_policy") ||
+      formData.get("data_consent") ||
+      formData.get("data_policy");
+    const accepted_data_policy =
+      dataPolicyField === "on" ||
+      dataPolicyField === "true";
+
+    // 2. Validar campos obligatorios NOT NULL en Supabase
+    if (
+      !complex_name ||
+      !administrator_name ||
+      !email ||
+      !phone ||
+      !locality ||
+      !address ||
+      !message ||
+      !accepted_data_policy
+    ) {
+      return {
+        success: false,
+        error:
+          "Todos los campos obligatorios deben ser completados y debes aceptar la política de tratamiento de datos.",
+      };
     }
 
-    // Insert into Supabase
+    // 3. Vincular user_id si el usuario está autenticado en Supabase
+    let user_id: string | null = null;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.id) {
+        user_id = user.id;
+      }
+    } catch {
+      // Ignorar si no hay sesión activa
+    }
+
+    // 4. Inserción con columnas exactas de la tabla 'ph_requests'
+    const insertPayload: Record<string, any> = {
+      administrator_name,
+      role_title,
+      complex_name,
+      address,
+      locality,
+      phone,
+      email,
+      message,
+      accepted_data_policy,
+      status: "pendiente",
+      created_at: new Date().toISOString(),
+    };
+
+    if (user_id) {
+      insertPayload.user_id = user_id;
+    }
+    if (residents_count !== null) {
+      insertPayload.residents_count = residents_count;
+    }
+
     const { error } = await supabase
       .from("ph_requests")
-      .insert([
-        {
-          complex_name,
-          applicant_name,
-          email,
-          phone,
-          location,
-          message,
-          data_consent,
-          created_at: new Date().toISOString(),
-        }
-      ]);
+      .insert([insertPayload]);
 
     if (error) {
-      console.error("Error inserting PH request:", error);
-      return { success: false, error: "Hubo un error al enviar tu solicitud. Por favor intenta de nuevo más tarde." };
+      console.error("Error al insertar solicitud PH en Supabase:", error);
+      return {
+        success: false,
+        error: `Error en Supabase: ${error.message}`,
+      };
     }
 
     return { success: true };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Unexpected error in PH request submission:", err);
-    return { success: false, error: "Hubo un error inesperado. Por favor intenta de nuevo más tarde." };
+    return {
+      success: false,
+      error: err?.message
+        ? `Error inesperado: ${err.message}`
+        : "Hubo un error inesperado al procesar tu solicitud. Por favor intenta de nuevo más tarde.",
+    };
   }
 }
+
+// Alias para compatibilidad de importaciones
+export const submitPhForm = submitPhRequest;
