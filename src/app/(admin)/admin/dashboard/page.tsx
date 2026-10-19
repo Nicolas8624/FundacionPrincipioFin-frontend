@@ -282,10 +282,11 @@ export default async function AdminDashboardPage() {
 
             <div className="space-y-3">
               {mensajes?.length ? mensajes.map(msg => {
-                const nameParts = (msg.name || '').trim().split(' ');
+                const displayName = (msg.name || msg.full_name || 'Desconocido').trim();
+                const nameParts = displayName.split(' ');
                 const initials = nameParts.length > 1 
                   ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase() 
-                  : (msg.name || 'NN').substring(0, 2).toUpperCase();
+                  : (displayName || 'NN').substring(0, 2).toUpperCase();
                 
                 const date = new Date(msg.created_at);
                 const isToday = new Date().toDateString() === date.toDateString();
@@ -297,7 +298,7 @@ export default async function AdminDashboardPage() {
                   <MessageItem 
                     key={msg.id}
                     initials={initials} 
-                    name={msg.name} 
+                    name={displayName} 
                     time={timeString} 
                     subject={msg.subject || 'Contacto'} 
                   />
