@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { DonationEditModal } from './DonationEditModal';
+import { DonationDetailModal } from './DonationDetailModal';
 
 interface DonationActionsProps {
   request: any;
@@ -12,6 +13,7 @@ interface DonationActionsProps {
 
 export function DonationActions({ request }: DonationActionsProps) {
   const router = useRouter();
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -41,8 +43,9 @@ export function DonationActions({ request }: DonationActionsProps) {
     <>
       <div className="flex justify-end gap-2">
         <button 
+          onClick={() => setIsDetailModalOpen(true)}
           className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A0A0E] hover:border-[#D4AF37] transition-all"
-          title="Ver detalles"
+          title="Ver detalles completos"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -62,6 +65,16 @@ export function DonationActions({ request }: DonationActionsProps) {
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
+
+      <DonationDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onEdit={() => {
+          setIsDetailModalOpen(false);
+          setIsEditModalOpen(true);
+        }}
+        request={request}
+      />
 
       <DonationEditModal
         isOpen={isEditModalOpen}

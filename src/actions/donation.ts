@@ -22,16 +22,17 @@ export async function submitDonation(formData: FormData) {
     }
 
     const { error } = await supabase
-      .from("donations")
+      .from("donation_requests")
       .insert([
         {
-          full_name,
-          email,
-          phone,
+          donor_name: full_name,
+          email: email.trim().toLowerCase(),
+          phone: phone.trim(),
           donation_type,
-          amount_or_description,
-          message,
-          data_consent,
+          amount_cop: !isNaN(parseFloat(amount_or_description)) ? parseFloat(amount_or_description) : null,
+          message: amount_or_description ? `${amount_or_description} - ${message || ''}`.trim() : message,
+          accepted_data_policy: data_consent,
+          status: 'nueva',
           created_at: new Date().toISOString(),
         }
       ]);

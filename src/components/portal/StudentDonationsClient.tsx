@@ -21,6 +21,7 @@ import {
   Building
 } from 'lucide-react';
 import { createBrowserClient } from '@/services/supabase/client';
+import { submitPortalDonationAction } from '@/app/(portal)/portal/donaciones/actions';
 
 export interface DonationItem {
   id: string;
@@ -54,10 +55,14 @@ export function StudentDonationsClient({ initialDonations, userProfile }: Studen
   // Form selections
   const [selectedCause, setSelectedCause] = useState<string>('Fondo Materiales y Arcilla');
   const [selectedModality, setSelectedModality] = useState<'economico' | 'insumos' | 'patrocinio'>('economico');
+  const [selectedAmountPreset, setSelectedAmountPreset] = useState<number | 'custom'>(100000);
+  const [customAmount, setCustomAmount] = useState<string>('100000');
+  const [itemsDetail, setItemsDetail] = useState<string>('');
   const [donorName, setDonorName] = useState(userProfile.full_name || '');
   const [donorPhone, setDonorPhone] = useState(userProfile.phone || '');
   const [donorEmail, setDonorEmail] = useState(userProfile.email || '');
   const [notes, setNotes] = useState('');
+  const [acceptPolicy, setAcceptPolicy] = useState(true);
 
   // States
   const [submitting, setSubmitting] = useState(false);
@@ -92,50 +97,76 @@ export function StudentDonationsClient({ initialDonations, userProfile }: Studen
   ];
 
   const modalities = [
-    { id: 'economico' as const, label: 'Aporte Económico', icon: Coins },
-    { id: 'insumos' as const, label: 'En Especie / Insumos', icon: Package },
-    { id: 'patrocinio' as const, label: 'Voluntariado / Taller', icon: HandHeart },
+    { id: 'economico' as const, label: 'Aporte Económico (Dinero)', icon: Coins },
+    { id: 'insumos' as const, label: 'En Especie / Materiales', icon: Package },
+    { id: 'patrocinio' as const, label: 'Alianza / Voluntariado', icon: HandHeart },
   ];
+
+  const amountPresets = [50000, 100000, 250000, 500000];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptPolicy) {
+      setErrorMsg('Debes autorizar el tratamiento de datos personales para procesar la solicitud.');
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg(null);
 
-    const fullMessage = `[Causa: ${selectedCause}] ${notes}`.trim();
+    let calculatedAmount: number | null = null;
+    if (selectedModality === 'economico') {
+      const parsed = parseFloat(customAmount);
+      if (!isNaN(parsed) && parsed > 0) {
+        calculatedAmount = parsed;
+      }
+    }
+
+    let detailParts: string[] = [`[Causa: ${selectedCause}]`];
+    if (selectedModality === 'insumos' && itemsDetail.trim()) {
+      detailParts.push(`[Detalle Insumos: ${itemsDetail.trim()}]`);
+    } else if (selectedModality === 'patrocinio' && itemsDetail.trim()) {
+      detailParts.push(`[Propuesta Alianza: ${itemsDetail.trim()}]`);
+    }
+    if (notes.trim()) {
+      detailParts.push(notes.trim());
+    }
+    const fullMessage = detailParts.join(' ').trim();
 
     const payload = {
       user_id: userProfile.id,
       donor_name: donorName.trim(),
       donation_type: selectedModality,
+      amount_cop: calculatedAmount,
       email: donorEmail.trim().toLowerCase(),
       phone: donorPhone.trim(),
       message: fullMessage,
-      accepted_data_policy: true,
+      accepted_data_policy: acceptPolicy,
       status: 'nueva',
     };
 
-    const supabase = createBrowserClient();
-    const { data, error } = await supabase
-      .from('donation_requests')
-      .insert([payload])
-      .select();
+    const result = await submitPortalDonationAction({
+      donor_name: donorName.trim(),
+      donation_type: selectedModality,
+      amount_cop: calculatedAmount,
+      email: donorEmail.trim().toLowerCase(),
+      phone: donorPhone.trim(),
+      message: fullMessage,
+      accepted_data_policy: acceptPolicy,
+    });
 
     setSubmitting(false);
 
-    if (error) {
-      console.error('Error al enviar solicitud de donación:', error);
-      setErrorMsg(error.message || 'Error al enviar la solicitud');
+    if (!result.success || !result.data) {
+      console.error('Error al enviar solicitud de donación:', result.error);
+      setErrorMsg(result.error || 'Error al enviar la solicitud');
     } else {
-      const inserted = data && data[0] ? (data[0] as DonationItem) : null;
-      if (inserted) {
-        setDonations(prev => [inserted, ...prev]);
-        const radicadoCode = `DON-${new Date().getFullYear()}-${inserted.id.slice(0, 4).toUpperCase()}`;
-        setSuccessRadicado(radicadoCode);
-      } else {
-        setSuccessRadicado(`DON-${new Date().getFullYear()}-001`);
-      }
+      const inserted = result.data as DonationItem;
+      setDonations(prev => [inserted, ...prev]);
+      const radicadoCode = `DON-${new Date().getFullYear()}-${inserted.id.slice(0, 4).toUpperCase()}`;
+      setSuccessRadicado(radicadoCode);
       setNotes('');
+      setItemsDetail('');
       router.refresh();
     }
   };
@@ -425,6 +456,84 @@ export function StudentDonationsClient({ initialDonations, userProfile }: Studen
                   </div>
                 </div>
 
+                {/* Campos Específicos según la Modalidad Seleccionada */}
+                {selectedModality === 'economico' && (
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#141417] border border-[#262629] space-y-3.5 animate-fadeIn">
+                    <label className="text-xs font-montserrat uppercase tracking-wider text-[#D4AF37] font-semibold block">
+                      Monto Estimado a Donar (COP)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {amountPresets.map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAmountPreset(preset);
+                            setCustomAmount(preset.toString());
+                          }}
+                          className={`py-2 px-3 rounded-lg border text-xs font-montserrat font-bold transition-all ${
+                            customAmount === preset.toString()
+                              ? 'bg-[#D4AF37] text-[#0A0A0E] border-[#D4AF37]'
+                              : 'bg-[#1b1b1f] border-[#262629] text-[#d0c5af] hover:border-[#D4AF37]/50'
+                          }`}
+                        >
+                          ${preset.toLocaleString('es-CO')}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="space-y-1 pt-1">
+                      <span className="text-[11px] text-[#99907c] block">O ingresa un valor personalizado (COP):</span>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#99907c] font-mono text-sm">$</span>
+                        <input
+                          type="number"
+                          min="1000"
+                          step="1000"
+                          value={customAmount}
+                          onChange={(e) => setCustomAmount(e.target.value)}
+                          placeholder="Ej. 150000"
+                          className="w-full bg-[#0A0A0E] border border-[#262629] rounded-xl pl-8 pr-4 py-2.5 text-sm text-white font-mono focus:border-[#D4AF37] focus:outline-none transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {selectedModality === 'insumos' && (
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#141417] border border-[#262629] space-y-2 animate-fadeIn">
+                    <label className="text-xs font-montserrat uppercase tracking-wider text-[#D4AF37] font-semibold block">
+                      Detalle de los Materiales o Insumos a Aportar <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={itemsDetail}
+                      onChange={(e) => setItemsDetail(e.target.value)}
+                      placeholder="Ej. 5 bultos de arcilla de modelado, pinceles número 6 y 10, esmaltes cerámicos..."
+                      className="w-full bg-[#0A0A0E] border border-[#262629] rounded-xl px-4 py-3 text-sm text-white placeholder-[#5a564d] focus:border-[#D4AF37] focus:outline-none transition-colors"
+                    />
+                    <p className="text-[11px] text-[#99907c]">
+                      La Coordinación te contactará para coordinar la entrega o recepción en nuestra sede de Bogotá.
+                    </p>
+                  </div>
+                )}
+
+                {selectedModality === 'patrocinio' && (
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#141417] border border-[#262629] space-y-2 animate-fadeIn">
+                    <label className="text-xs font-montserrat uppercase tracking-wider text-[#D4AF37] font-semibold block">
+                      Propuesta de Alianza o Voluntariado <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={itemsDetail}
+                      onChange={(e) => setItemsDetail(e.target.value)}
+                      placeholder="Ej. Tallerista voluntario de arte, empresa aliada para patrocinios o eventos..."
+                      className="w-full bg-[#0A0A0E] border border-[#262629] rounded-xl px-4 py-3 text-sm text-white placeholder-[#5a564d] focus:border-[#D4AF37] focus:outline-none transition-colors"
+                    />
+                  </div>
+                )}
+
                 {/* 3. Datos de Contacto */}
                 <div className="space-y-4 pt-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -476,13 +585,28 @@ export function StudentDonationsClient({ initialDonations, userProfile }: Studen
                       Mensaje u Observación Opcional
                     </label>
                     <textarea
-                      rows={4}
+                      rows={3}
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Cuéntanos sobre tu iniciativa, monto estimado o detalle de los materiales que deseas aportar..."
+                      placeholder="Cuéntanos detalles adicionales sobre tu intención de apoyo..."
                       className="w-full bg-[#0A0A0E] border border-[#262629] rounded-xl p-4 text-sm text-white placeholder-[#5a564d] focus:border-[#D4AF37] focus:outline-none transition-colors resize-none"
                     />
                   </div>
+                </div>
+
+                {/* Aceptación de Política de Tratamiento de Datos */}
+                <div className="pt-2">
+                  <label className="flex items-start gap-3 cursor-pointer text-xs text-[#d0c5af] p-3 rounded-xl bg-[#141417] border border-[#262629]">
+                    <input
+                      type="checkbox"
+                      checked={acceptPolicy}
+                      onChange={(e) => setAcceptPolicy(e.target.checked)}
+                      className="mt-0.5 rounded border-[#262629] bg-[#0A0A0E] text-[#D4AF37] focus:ring-0"
+                    />
+                    <span className="leading-relaxed">
+                      Autorizo a la <strong className="text-white">Fundación Principio & Fin</strong> el tratamiento de mis datos personales para ser contactado, gestionar esta donación y expedir el correspondiente certificado tributario conforme a la Ley 1581 de 2012 y el Estatuto Tributario.
+                    </span>
+                  </label>
                 </div>
 
                 {/* Botón de Envío */}
@@ -499,7 +623,7 @@ export function StudentDonationsClient({ initialDonations, userProfile }: Studen
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Enviar Solicitud de Contacto y Coordinación</span>
+                      <span>Enviar Solicitud de Donación y Coordinación</span>
                     </>
                   )}
                 </button>
