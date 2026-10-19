@@ -1,8 +1,9 @@
 import { createServerClient } from '@/services/supabase/server';
-import { Building, Building2, Calendar, ClipboardCheck, ClipboardList, Info, UsersRound } from 'lucide-react';
+import { Building, Building2, Calendar, ClipboardCheck, ClipboardList, Info, UsersRound, FileCheck, Download } from 'lucide-react';
 import { PhControls } from '@/components/admin/PhControls';
 import { PhHeaderActions } from '@/components/admin/PhHeaderActions';
 import { PhActions } from '@/components/admin/PhActions';
+import { extractActaInfo } from '@/lib/ph-utils';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -173,6 +174,7 @@ export default async function AdminSolicitudesPhPage({ searchParams }: { searchP
             </thead>
             <tbody className="divide-y divide-[#262629]">
               {requests.map(req => {
+                const actaInfo = extractActaInfo(req.admin_notes);
                 
                 const getStatusStyle = (status: string) => {
                   if (status === 'aprobada') return 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10';
@@ -194,6 +196,19 @@ export default async function AdminSolicitudesPhPage({ searchParams }: { searchP
                             <span>{req.residents_count || 'N/A'} APTOS</span>
                             <span>REGISTRADO: {new Date(req.created_at).toLocaleDateString('es-CO')}</span>
                           </div>
+                          {actaInfo && (
+                            <a 
+                              href={actaInfo.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-300 hover:text-white text-[11px] font-medium transition-colors"
+                              title={`Descargar Acta de Consejo: ${actaInfo.fileName}`}
+                            >
+                              <FileCheck className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                              <span className="truncate max-w-[170px]">{actaInfo.fileName}</span>
+                              <Download className="w-3 h-3 ml-0.5 shrink-0" />
+                            </a>
+                          )}
                         </div>
                       </div>
                     </td>

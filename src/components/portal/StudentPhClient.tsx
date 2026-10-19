@@ -20,12 +20,17 @@ import {
   Info,
   Upload,
   X,
-  FileCheck,
+  FileCheck2,
+  FileUp,
+  Download,
+  AlertCircle,
   Send,
   Loader2,
   Check
 } from 'lucide-react';
 import { createBrowserClient } from '@/services/supabase/client';
+import { getRadicadoCode, extractActaInfo, cleanAdminNotes } from '@/lib/ph-utils';
+import { uploadPhActaAction } from '@/app/(portal)/portal/solicitudes-ph/actions';
 
 export interface PhRequestItem {
   id: string;
@@ -66,6 +71,8 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
   const [selectedDetail, setSelectedDetail] = useState<PhRequestItem | null>(null);
   const [uploadActaModal, setUploadActaModal] = useState<PhRequestItem | null>(null);
   const [selectedActaFile, setSelectedActaFile] = useState<File | null>(null);
+  const [uploadingActa, setUploadingActa] = useState(false);
+  const [uploadActaError, setUploadActaError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   // Form submission state
@@ -94,10 +101,34 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
   const firstPending = requests.find(r => r.status === 'en_revision' || r.status === 'pendiente');
   const firstApproved = requests.find(r => r.status === 'aprobada');
 
-  const getRadicadoCode = (req: PhRequestItem) => {
-    const year = req.created_at ? new Date(req.created_at).getFullYear() : '2026';
-    const short = req.id ? req.id.slice(0, 4).toUpperCase() : '001';
-    return `PH-${year}-${short}`;
+  const handleUploadActaSubmit = async () => {
+    if (!uploadActaModal || !selectedActaFile) return;
+    setUploadingActa(true);
+    setUploadActaError(null);
+
+    const formData = new FormData();
+    formData.append('requestId', uploadActaModal.id);
+    formData.append('file', selectedActaFile);
+
+    const res = await uploadPhActaAction(formData);
+    setUploadingActa(false);
+
+    if (!res.success) {
+      setUploadActaError(res.error || 'Error al subir el acta.');
+    } else {
+      setUploadSuccess(true);
+      // Actualizar localmente la solicitud
+      setRequests(prev => prev.map(r => {
+        if (r.id === uploadActaModal.id) {
+          return {
+            ...r,
+            admin_notes: res.updatedNotes || r.admin_notes,
+          };
+        }
+        return r;
+      }));
+      router.refresh();
+    }
   };
 
   const handleCreateRequest = async (e: React.FormEvent) => {
@@ -300,16 +331,21 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
           {requests.length > 0 ? (
             requests.map((req) => {
               const radicado = getRadicadoCode(req);
+              const actaInfo = extractActaInfo(req.admin_notes);
+              const cleanedNotes = cleanAdminNotes(req.admin_notes);
+
               const dateStr = req.created_at
                 ? new Date(req.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })
                 : 'Reciente';
 
               const isAprobada = req.status === 'aprobada';
               const isRevision = req.status === 'en_revision';
+              const isRechazada = req.status === 'rechazada';
+              const isPendiente = req.status === 'pendiente' || (!isAprobada && !isRevision && !isRechazada);
 
-              // Extraer título del taller y mensaje
+              // Extraer título del taller y mensaje real
               let displayTaller = 'Taller Artístico y de Oficios para la Comunidad';
-              let displayDesc = req.message || 'Postulación de formación comunitaria en áreas comunes.';
+              let displayDesc = req.message || 'Postulación de formación comunitaria en salón común.';
               if (req.message && req.message.includes('Taller Solicitado:')) {
                 const parts = req.message.split('Taller Solicitado:')[1].split('.');
                 displayTaller = parts[0]?.trim() || displayTaller;
@@ -332,14 +368,14 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                           <h3 className="text-lg sm:text-xl font-bold font-montserrat text-white">
                             {req.complex_name}
                           </h3>
-                          <span className="bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] px-2.5 py-0.5 rounded text-[10px] font-mono font-bold">
+                          <span className="bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
                             RADICADO: {radicado}
                           </span>
                         </div>
                         <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-[#99907c]">
                           <span className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
-                            {isAprobada ? `Vigencia: 15 Ene - 15 Dic, 2026` : `Fecha: ${dateStr}`}
+                            Radicada: {dateStr}
                           </span>
                           <span className="flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -347,160 +383,229 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                           </span>
                           <span className="flex items-center gap-1.5">
                             <Users className="w-3.5 h-3.5 text-[#D4AF37]" />
-                            {isAprobada 
-                              ? `${req.residents_count || 38} participantes activos`
-                              : `Salón comunal: ${req.residents_count || 45} personas`}
+                            Capacidad: {req.residents_count ? `${req.residents_count} personas` : 'Por definir'}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Estado Pill */}
+                    {/* Estado Pill Real */}
                     <div>
                       {isAprobada ? (
-                        <div className="inline-flex items-center gap-2 bg-[#1b1b1f] border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
+                        <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
                           <CheckCircle2 className="w-4 h-4" />
-                          Convenio Activo y en Ejecución
+                          Convenio Aprobado
                         </div>
                       ) : isRevision ? (
                         <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
                           <Clock className="w-4 h-4" />
                           En Evaluación Técnica y Visita
                         </div>
+                      ) : isRechazada ? (
+                        <div className="inline-flex items-center gap-2 bg-red-500/15 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
+                          <AlertCircle className="w-4 h-4" />
+                          Solicitud No Viable / Rechazada
+                        </div>
                       ) : (
-                        <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
+                        <div className="inline-flex items-center gap-2 bg-sky-500/10 border border-sky-500/30 text-sky-400 px-4 py-2 rounded-xl text-xs font-montserrat font-bold uppercase tracking-wider">
                           <FileText className="w-4 h-4" />
-                          Radicación Inicial Recibida
+                          Radicación Inicial (Pendiente)
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Cuerpo 2 Columnas */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    {/* Columna Izquierda: Información del Taller */}
-                    <div className="lg:col-span-7 space-y-3">
-                      <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] font-semibold">
-                        {isAprobada ? 'Programa Activo' : 'Taller Solicitado'}
-                      </p>
-                      <h4 className="text-base sm:text-lg font-bold font-montserrat text-[#D4AF37]">
-                        {displayTaller}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-[#d0c5af] leading-relaxed">
-                        {displayDesc}
-                      </p>
+                  {/* Banner de rechazo si aplica */}
+                  {isRechazada && (
+                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-200 flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                      <div className="space-y-1">
+                        <strong className="block text-red-300 font-montserrat uppercase tracking-wider text-[11px]">
+                          La solicitud no fue aprobada por la administración de la Fundación
+                        </strong>
+                        <p className="text-red-200/90 leading-relaxed">
+                          {cleanedNotes || 'El espacio postulado o las condiciones técnicas no cumplen con los requisitos mínimos institucionales para esta convocatoria.'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-                      {isAprobada ? (
-                        <div className="grid grid-cols-3 gap-2 pt-2">
-                          <div className="bg-[#1b1b1f] border border-[#262629] p-3 rounded-xl">
-                            <span className="text-[9px] uppercase tracking-wider text-[#99907c] block font-montserrat font-semibold">Frecuencia</span>
-                            <span className="text-xs text-white font-medium">Sábados mañanas</span>
-                          </div>
-                          <div className="bg-[#1b1b1f] border border-[#262629] p-3 rounded-xl">
-                            <span className="text-[9px] uppercase tracking-wider text-[#99907c] block font-montserrat font-semibold">Docente</span>
-                            <span className="text-xs text-white font-medium">Ing. Sonia Rivas</span>
-                          </div>
-                          <div className="bg-[#1b1b1f] border border-[#262629] p-3 rounded-xl">
-                            <span className="text-[9px] uppercase tracking-wider text-[#99907c] block font-montserrat font-semibold">Ciclo Actual</span>
-                            <span className="text-xs text-[#D4AF37] font-semibold">Módulo 2 de 4</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-[#1b1b1f] border border-[#262629] p-3.5 rounded-xl flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                            <span className="text-[#d0c5af]">
-                              Coordinador Asignado: <strong className="text-white">Lic. Álvaro Mendoza</strong>
-                            </span>
-                          </div>
-                          <span className="text-[#D4AF37] font-mono text-[11px] font-bold">
-                            VISITA: 18 MAR
+                  {/* Cuerpo: Información de la Postulación y Línea de Tiempo de 3 Pasos */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Columna Izquierda: Información Real de la Solicitud */}
+                    <div className="lg:col-span-7 space-y-4">
+                      <div>
+                        <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] font-semibold">
+                          Taller o Programa Solicitado
+                        </p>
+                        <h4 className="text-base sm:text-lg font-bold font-montserrat text-[#D4AF37] mt-0.5">
+                          {displayTaller}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[#d0c5af] leading-relaxed mt-1">
+                          {displayDesc}
+                        </p>
+                      </div>
+
+                      {/* Datos de contacto y sede */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div className="bg-[#1b1b1f] border border-[#262629] p-3 rounded-xl">
+                          <span className="text-[9px] uppercase tracking-wider text-[#99907c] block font-montserrat font-semibold">
+                            Solicitante y Rol
+                          </span>
+                          <span className="text-white font-medium">
+                            {req.administrator_name} ({req.role_title || 'Administración'})
                           </span>
                         </div>
+                        <div className="bg-[#1b1b1f] border border-[#262629] p-3 rounded-xl">
+                          <span className="text-[9px] uppercase tracking-wider text-[#99907c] block font-montserrat font-semibold">
+                            Dirección de la Copropiedad
+                          </span>
+                          <span className="text-white font-medium truncate block">
+                            {req.address || req.locality || 'Bogotá D.C.'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Observaciones de Coordinación si existen */}
+                      {cleanedNotes && !isRechazada && (
+                        <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 p-3.5 rounded-xl text-xs space-y-1">
+                          <span className="text-[10px] uppercase tracking-wider text-[#D4AF37] font-semibold font-montserrat flex items-center gap-1.5">
+                            <Info className="w-3.5 h-3.5" />
+                            Observaciones de la Coordinación:
+                          </span>
+                          <p className="text-[#F5D77A] leading-relaxed">
+                            {cleanedNotes}
+                          </p>
+                        </div>
                       )}
                     </div>
 
-                    {/* Columna Derecha: Indicador de Progreso / Asistencia */}
-                    <div className="lg:col-span-5 bg-[#1b1b1f] border border-[#262629] p-5 rounded-xl space-y-4">
-                      {isAprobada ? (
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between text-xs font-montserrat">
-                            <span className="uppercase tracking-wider text-[#99907c] font-semibold">Compromiso Asistencia</span>
-                            <span className="text-emerald-400 font-bold">94% EJEMPLAR</span>
-                          </div>
-                          <div className="grid grid-cols-4 gap-2">
-                            <div className="h-10 bg-emerald-500/20 border border-emerald-500/40 rounded flex items-center justify-center text-[10px] text-emerald-300 font-mono">S1</div>
-                            <div className="h-10 bg-emerald-500/20 border border-emerald-500/40 rounded flex items-center justify-center text-[10px] text-emerald-300 font-mono">S2</div>
-                            <div className="h-10 bg-emerald-500/30 border border-emerald-500/50 rounded flex items-center justify-center text-[10px] text-emerald-300 font-mono">S3</div>
-                            <div className="h-10 bg-[#D4AF37]/40 border border-[#D4AF37] rounded flex items-center justify-center text-[10px] text-[#F5D77A] font-mono font-bold">S4</div>
-                          </div>
-                          <p className="text-[11px] text-[#99907c] text-center">
-                            4 sesiones ejecutadas en el mes de Marzo.
-                          </p>
+                    {/* Columna Derecha: Línea de Tiempo Real (3 Pasos) y Estado del Acta */}
+                    <div className="lg:col-span-5 flex flex-col justify-between gap-4 bg-[#1b1b1f] border border-[#262629] p-5 rounded-xl">
+                      {/* Progreso del Trámite de 3 Pasos */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-xs font-montserrat">
+                          <span className="uppercase tracking-wider text-[#99907c] font-semibold">
+                            Progreso del Trámite
+                          </span>
+                          <span className="text-[#D4AF37] font-bold">
+                            {isAprobada ? 'PASO 3 DE 3 (COMPLETADO)' : isRevision ? 'PASO 2 DE 3' : isRechazada ? 'FINALIZADO' : 'PASO 1 DE 3'}
+                          </span>
                         </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between text-xs font-montserrat">
-                            <span className="uppercase tracking-wider text-[#99907c] font-semibold">Progreso del Trámite</span>
-                            <span className="text-[#D4AF37] font-bold">
-                              {isRevision ? 'PASO 2 DE 4' : 'PASO 1 DE 4'}
+
+                        {/* 3 Pasos Reales */}
+                        <div className="grid grid-cols-3 gap-2 relative">
+                          {/* Paso 1: Radicación */}
+                          <div className="text-center space-y-1.5">
+                            <div className="w-8 h-8 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 flex items-center justify-center text-xs">
+                              <Check className="w-4 h-4 stroke-[2.5]" />
+                            </div>
+                            <span className="text-[10px] text-white font-medium block">1. Radicación</span>
+                            <span className="text-[9px] text-emerald-400 font-mono">Recibida</span>
+                          </div>
+
+                          {/* Paso 2: Evaluación Técnica */}
+                          <div className="text-center space-y-1.5">
+                            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold ${
+                              isAprobada
+                                ? 'bg-emerald-500/20 border border-emerald-500 text-emerald-400'
+                                : isRevision
+                                ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/30 ring-2 ring-[#D4AF37]/40'
+                                : isRechazada
+                                ? 'bg-red-500/20 border border-red-500 text-red-400'
+                                : 'bg-[#262629] text-[#99907c]'
+                            }`}>
+                              {isAprobada ? <Check className="w-4 h-4 stroke-[2.5]" /> : 2}
+                            </div>
+                            <span className="text-[10px] text-white font-medium block">2. Visita Técnica</span>
+                            <span className={`text-[9px] font-mono ${
+                              isAprobada ? 'text-emerald-400' : isRevision ? 'text-[#D4AF37]' : isRechazada ? 'text-red-400' : 'text-[#99907c]'
+                            }`}>
+                              {isAprobada ? 'Evaluada' : isRevision ? 'En Curso' : isRechazada ? 'No viable' : 'Pendiente'}
                             </span>
                           </div>
 
-                          {/* 4 Pasos Visuales */}
-                          <div className="grid grid-cols-4 gap-2 relative">
-                            {/* Paso 1: Radicación */}
-                            <div className="text-center space-y-1.5">
-                              <div className="w-8 h-8 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 flex items-center justify-center text-xs">
-                                <Check className="w-4 h-4 stroke-[2.5]" />
-                              </div>
-                              <span className="text-[10px] text-white font-medium block">1. Radicación</span>
-                              <span className="text-[9px] text-emerald-400 font-mono">Completada</span>
+                          {/* Paso 3: Convenio Aprobado */}
+                          <div className="text-center space-y-1.5">
+                            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold ${
+                              isAprobada
+                                ? 'bg-emerald-500/20 border border-emerald-500 text-emerald-400'
+                                : 'bg-[#262629] text-[#99907c]'
+                            }`}>
+                              {isAprobada ? <Check className="w-4 h-4 stroke-[2.5]" /> : 3}
                             </div>
-
-                            {/* Paso 2: Visita Técnica */}
-                            <div className="text-center space-y-1.5">
-                              <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold ${
-                                isRevision 
-                                  ? 'bg-[#D4AF37] text-[#0A0A0E] shadow-md shadow-[#D4AF37]/30 ring-2 ring-[#D4AF37]/40'
-                                  : 'bg-[#262629] text-[#99907c]'
-                              }`}>
-                                2
-                              </div>
-                              <span className="text-[10px] text-white font-medium block">2. Visita Técnica</span>
-                              <span className="text-[9px] text-[#D4AF37] font-mono">{isRevision ? 'En Curso' : 'Próxima'}</span>
-                            </div>
-
-                            {/* Paso 3: Convenio */}
-                            <div className="text-center space-y-1.5">
-                              <div className="w-8 h-8 mx-auto rounded-full bg-[#262629] text-[#99907c] flex items-center justify-center text-xs font-bold">
-                                3
-                              </div>
-                              <span className="text-[10px] text-[#99907c] font-medium block">3. Convenio</span>
-                              <span className="text-[9px] text-[#99907c] font-mono">Pendiente</span>
-                            </div>
-
-                            {/* Paso 4: Inicio Clases */}
-                            <div className="text-center space-y-1.5">
-                              <div className="w-8 h-8 mx-auto rounded-full bg-[#262629] text-[#99907c] flex items-center justify-center text-xs font-bold">
-                                4
-                              </div>
-                              <span className="text-[10px] text-[#99907c] font-medium block">4. Inicio Clases</span>
-                              <span className="text-[9px] text-[#99907c] font-mono">Por Programar</span>
-                            </div>
+                            <span className="text-[10px] text-white font-medium block">3. Convenio</span>
+                            <span className={`text-[9px] font-mono ${isAprobada ? 'text-emerald-400' : 'text-[#99907c]'}`}>
+                              {isAprobada ? 'Aprobado' : 'Por formalizar'}
+                            </span>
                           </div>
                         </div>
-                      )}
+                      </div>
+
+                      {/* Tarjeta del Acta de Consejo Adjunta */}
+                      <div className="pt-3 border-t border-[#262629]">
+                        {actaInfo ? (
+                          <div className="p-3 rounded-xl bg-[#17171a] border border-emerald-500/30 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <FileCheck2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                              <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-montserrat text-emerald-400 font-semibold block">
+                                  Acta de Consejo Adjunta
+                                </span>
+                                <p className="text-xs text-white truncate font-medium">
+                                  {actaInfo.fileName}
+                                </p>
+                              </div>
+                            </div>
+                            <a
+                              href={actaInfo.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2.5 py-1.5 bg-[#262629] hover:bg-[#333338] text-white text-[11px] font-montserrat font-semibold rounded-lg flex items-center gap-1 shrink-0 transition-colors"
+                            >
+                              <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
+                              Descargar
+                            </a>
+                          </div>
+                        ) : isRechazada ? (
+                          <div className="p-3 rounded-xl bg-[#17171a] border border-red-500/20 flex items-center gap-2 text-xs text-red-300">
+                            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                            <span className="text-[11px]">Trámite finalizado (no admite documentos)</span>
+                          </div>
+                        ) : (
+                          <div className="p-3 rounded-xl bg-[#17171a] border border-[#262629] flex items-center justify-between gap-3 text-xs">
+                            <div className="flex items-center gap-2">
+                              <FileUp className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                              <span className="text-[#99907c] text-[11px]">
+                                Acta de consejo pendiente de adjuntar
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setUploadActaModal(req);
+                                setSelectedActaFile(null);
+                                setUploadActaError(null);
+                                setUploadSuccess(false);
+                              }}
+                              className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 text-[#D4AF37] text-[10px] font-montserrat font-bold uppercase tracking-wider shrink-0 transition-colors"
+                            >
+                              Adjuntar
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Fila de Acciones y Notas */}
+                  {/* Fila Inferior de Acciones */}
                   <div className="pt-3 border-t border-[#262629] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
                     <p className="text-[#99907c] flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
                       {isAprobada 
-                        ? 'Póliza de áreas comunes aprobada y vigente.'
-                        : 'Acta de consejo de administración requerida para paso 3.'}
+                        ? 'Convenio institucional formalizado con la Fundación Principio & Fin.'
+                        : isRechazada
+                        ? 'Solicitud evaluada y cerrada.'
+                        : 'El equipo de enlace programará la visita técnica al salón social.'}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -508,52 +613,33 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                         onClick={() => setSelectedDetail(req)}
                         className="px-3.5 py-2 rounded-xl bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-white font-montserrat text-xs font-medium transition-colors"
                       >
-                        Ver Detalle del Trámite
+                        Ver Detalle Completo
                       </button>
 
-                      {!isAprobada && (
+                      {!isRechazada && (
                         <button
                           onClick={() => {
                             setUploadActaModal(req);
                             setSelectedActaFile(null);
+                            setUploadActaError(null);
                             setUploadSuccess(false);
                           }}
                           className="px-3.5 py-2 rounded-xl bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#d0c5af] hover:text-white font-montserrat text-xs font-medium transition-colors flex items-center gap-1.5"
                         >
                           <Upload className="w-3.5 h-3.5 text-[#D4AF37]" />
-                          Adjuntar Acta de Consejo
+                          {actaInfo ? 'Actualizar Acta de Consejo' : 'Adjuntar Acta de Consejo'}
                         </button>
                       )}
 
-                      {isAprobada ? (
-                        <>
-                          <button
-                            onClick={() => setSelectedDetail(req)}
-                            className="px-3.5 py-2 rounded-xl bg-[#1b1b1f] hover:bg-[#262629] border border-[#262629] text-[#d0c5af] hover:text-white font-montserrat text-xs font-medium transition-colors flex items-center gap-1.5"
-                          >
-                            <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
-                            Ver Asistencias de la Comunidad
-                          </button>
-                          <a
-                            href={`https://wa.me/573000000000?text=Hola,%20solicito%20renovación%20del%20convenio%20para%20${encodeURIComponent(req.complex_name)}%20(Radicado%20${radicado})`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A0A0E] hover:bg-[#F5D77A] font-montserrat text-xs font-bold uppercase tracking-wider transition-colors"
-                          >
-                            Solicitar Renovación
-                          </a>
-                        </>
-                      ) : (
-                        <a
-                          href={`https://wa.me/573000000000?text=Hola%20Álvaro,%20te%20contacto%20sobre%20la%20solicitud%20PH%20${radicado}%20de%20${encodeURIComponent(req.complex_name)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A0A0E] hover:bg-[#F5D77A] font-montserrat text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
-                        >
-                          <PhoneCall className="w-3.5 h-3.5" />
-                          Contactar Coordinador PH
-                        </a>
-                      )}
+                      <a
+                        href={`https://wa.me/573000000000?text=Hola,%20solicito%20información%20sobre%20la%20solicitud%20PH%20${radicado}%20del%20conjunto%20${encodeURIComponent(req.complex_name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A0A0E] hover:bg-[#F5D77A] font-montserrat text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5" />
+                        Contactar Fundación
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -939,95 +1025,123 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
       </div>
 
       {/* Modal: Detalle del Trámite */}
-      {selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A0A0E]/80 backdrop-blur-sm">
-          <div className="bg-[#17171a] border border-[#262629] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl relative">
-            <div className="flex items-start justify-between border-b border-[#262629] pb-3">
-              <div>
-                <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#D4AF37] font-semibold">
-                  Dossier de Radicación
-                </span>
-                <h3 className="text-lg font-bold font-montserrat text-white">
-                  {selectedDetail.complex_name}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedDetail(null)}
-                className="p-1 rounded-lg hover:bg-[#262629] text-[#99907c] hover:text-white transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {selectedDetail && (() => {
+        const detailActa = extractActaInfo(selectedDetail.admin_notes);
+        const detailCleanNotes = cleanAdminNotes(selectedDetail.admin_notes);
 
-            <div className="space-y-3 text-xs text-[#d0c5af]">
-              <div className="grid grid-cols-2 gap-3 bg-[#1b1b1f] p-3 rounded-xl border border-[#262629]">
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A0A0E]/80 backdrop-blur-sm">
+            <div className="bg-[#17171a] border border-[#262629] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl relative">
+              <div className="flex items-start justify-between border-b border-[#262629] pb-3">
                 <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Número de Radicado</span>
-                  <strong className="text-white font-mono">{getRadicadoCode(selectedDetail)}</strong>
-                </div>
-                <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Estado Actual</span>
-                  <span className="text-[#D4AF37] font-bold uppercase">{selectedDetail.status}</span>
-                </div>
-                <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Solicitante</span>
-                  <span className="text-white">{selectedDetail.administrator_name}</span>
-                </div>
-                <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Rol</span>
-                  <span className="text-white">{selectedDetail.role_title || 'Administración'}</span>
-                </div>
-                <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Teléfono</span>
-                  <span className="text-white">{selectedDetail.phone || 'No registrado'}</span>
-                </div>
-                <div>
-                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Localidad</span>
-                  <span className="text-white">{selectedDetail.locality || 'Bogotá D.C.'}</span>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[#99907c] block text-[10px] uppercase font-montserrat font-semibold mb-1">
-                  Dirección
-                </span>
-                <p className="bg-[#1b1b1f] p-2.5 rounded-lg border border-[#262629] text-white">
-                  {selectedDetail.address || 'Sin dirección especificada'}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[#99907c] block text-[10px] uppercase font-montserrat font-semibold mb-1">
-                  Detalle del Programa / Mensaje
-                </span>
-                <p className="bg-[#1b1b1f] p-2.5 rounded-lg border border-[#262629] text-white leading-relaxed">
-                  {selectedDetail.message || 'Sin mensaje adicional'}
-                </p>
-              </div>
-
-              {selectedDetail.admin_notes && (
-                <div>
-                  <span className="text-[#D4AF37] block text-[10px] uppercase font-montserrat font-semibold mb-1">
-                    Notas de Coordinación Fundación
+                  <span className="text-[10px] font-montserrat uppercase tracking-wider text-[#D4AF37] font-semibold">
+                    Dossier de Radicación
                   </span>
-                  <p className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 p-2.5 rounded-lg text-[#F5D77A] leading-relaxed">
-                    {selectedDetail.admin_notes}
+                  <h3 className="text-lg font-bold font-montserrat text-white">
+                    {selectedDetail.complex_name}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedDetail(null)}
+                  className="p-1 rounded-lg hover:bg-[#262629] text-[#99907c] hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs text-[#d0c5af]">
+                <div className="grid grid-cols-2 gap-3 bg-[#1b1b1f] p-3 rounded-xl border border-[#262629]">
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Número de Radicado</span>
+                    <strong className="text-white font-mono">{getRadicadoCode(selectedDetail)}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Estado Actual</span>
+                    <span className="text-[#D4AF37] font-bold uppercase">{selectedDetail.status}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Solicitante</span>
+                    <span className="text-white">{selectedDetail.administrator_name}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Rol</span>
+                    <span className="text-white">{selectedDetail.role_title || 'Administración'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Teléfono</span>
+                    <span className="text-white">{selectedDetail.phone || 'No registrado'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#99907c] block text-[10px] uppercase font-montserrat">Localidad</span>
+                    <span className="text-white">{selectedDetail.locality || 'Bogotá D.C.'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat font-semibold mb-1">
+                    Dirección
+                  </span>
+                  <p className="bg-[#1b1b1f] p-2.5 rounded-lg border border-[#262629] text-white">
+                    {selectedDetail.address || 'Sin dirección especificada'}
                   </p>
                 </div>
-              )}
-            </div>
 
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setSelectedDetail(null)}
-                className="px-5 py-2 rounded-xl bg-[#262629] text-white text-xs font-montserrat font-semibold hover:bg-[#333338] transition-colors"
-              >
-                Cerrar
-              </button>
+                <div>
+                  <span className="text-[#99907c] block text-[10px] uppercase font-montserrat font-semibold mb-1">
+                    Detalle del Programa / Mensaje
+                  </span>
+                  <p className="bg-[#1b1b1f] p-2.5 rounded-lg border border-[#262629] text-white leading-relaxed">
+                    {selectedDetail.message || 'Sin mensaje adicional'}
+                  </p>
+                </div>
+
+                {detailActa && (
+                  <div>
+                    <span className="text-emerald-400 block text-[10px] uppercase font-montserrat font-semibold mb-1">
+                      Acta de Consejo Adjunta
+                    </span>
+                    <div className="bg-[#1b1b1f] p-2.5 rounded-lg border border-emerald-500/30 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 truncate">
+                        <FileCheck2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span className="text-white text-xs truncate">{detailActa.fileName}</span>
+                      </div>
+                      <a
+                        href={detailActa.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 rounded text-[11px] font-semibold shrink-0 flex items-center gap-1"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Descargar
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {detailCleanNotes && (
+                  <div>
+                    <span className="text-[#D4AF37] block text-[10px] uppercase font-montserrat font-semibold mb-1">
+                      Notas de Coordinación Fundación
+                    </span>
+                    <p className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 p-2.5 rounded-lg text-[#F5D77A] leading-relaxed">
+                      {detailCleanNotes}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={() => setSelectedDetail(null)}
+                  className="px-5 py-2 rounded-xl bg-[#262629] text-white text-xs font-montserrat font-semibold hover:bg-[#333338] transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Modal: Adjuntar Acta de Consejo */}
       {uploadActaModal && (
@@ -1055,13 +1169,13 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
-                <h4 className="text-sm font-bold text-white">¡Documento Recibido!</h4>
+                <h4 className="text-sm font-bold text-white">¡Documento Vinculado Exitosamente!</h4>
                 <p className="text-xs text-[#99907c]">
-                  El archivo fue vinculado al radicado <strong>{getRadicadoCode(uploadActaModal)}</strong> para la revisión del equipo legal.
+                  El archivo fue subido y vinculado al radicado <strong>{getRadicadoCode(uploadActaModal)}</strong> para la revisión del equipo de la Fundación.
                 </p>
                 <button
                   onClick={() => setUploadActaModal(null)}
-                  className="mt-2 bg-[#D4AF37] text-[#0A0A0E] px-4 py-2 rounded-xl text-xs font-bold"
+                  className="mt-2 bg-[#D4AF37] text-[#0A0A0E] px-5 py-2.5 rounded-xl text-xs font-bold font-montserrat uppercase tracking-wider"
                 >
                   Entendido
                 </button>
@@ -1071,6 +1185,13 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                 <p>
                   Sube el acta firmada por el Consejo de Administración o la Administración donde se autoriza la utilización del salón social para los talleres comunitarios.
                 </p>
+
+                {uploadActaError && (
+                  <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>{uploadActaError}</span>
+                  </div>
+                )}
 
                 <div className="border-2 border-dashed border-[#262629] hover:border-[#D4AF37]/40 rounded-xl p-6 text-center cursor-pointer transition-colors bg-[#1b1b1f]">
                   <Upload className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
@@ -1086,6 +1207,7 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
                         setSelectedActaFile(e.target.files[0]);
+                        setUploadActaError(null);
                       }
                     }}
                     className="mt-3 text-xs text-[#99907c] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-[#262629] file:text-white hover:file:bg-[#333338]"
@@ -1094,17 +1216,25 @@ export function StudentPhClient({ initialRequests, userProfile }: StudentPhClien
 
                 <div className="flex justify-end gap-2 pt-2">
                   <button
+                    disabled={uploadingActa}
                     onClick={() => setUploadActaModal(null)}
                     className="px-4 py-2 rounded-xl bg-[#262629] text-white font-montserrat text-xs"
                   >
                     Cancelar
                   </button>
                   <button
-                    disabled={!selectedActaFile}
-                    onClick={() => setUploadSuccess(true)}
-                    className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0A0A0E] font-montserrat text-xs font-bold uppercase tracking-wider hover:bg-[#F5D77A] disabled:opacity-50"
+                    disabled={!selectedActaFile || uploadingActa}
+                    onClick={handleUploadActaSubmit}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D4AF37] text-[#0A0A0E] font-montserrat text-xs font-bold uppercase tracking-wider hover:bg-[#F5D77A] disabled:opacity-50"
                   >
-                    Confirmar Envío
+                    {uploadingActa ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Subiendo y Guardando...
+                      </>
+                    ) : (
+                      'Confirmar y Guardar Acta'
+                    )}
                   </button>
                 </div>
               </div>
