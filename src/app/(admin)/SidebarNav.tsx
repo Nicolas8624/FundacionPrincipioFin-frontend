@@ -2,7 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BookOpen, Users, Building, HeartHandshake, MessageSquare, Settings, Images } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  BookOpen, 
+  Users, 
+  Building, 
+  HeartHandshake, 
+  MessageSquare, 
+  Settings, 
+  Images, 
+  Megaphone 
+} from 'lucide-react';
 
 interface SidebarNavProps {
   onLinkClick?: () => void;
@@ -18,10 +28,13 @@ export function SidebarNav({ onLinkClick }: SidebarNavProps) {
     { href: '/admin/solicitudes-ph', label: 'Solicitudes PH', icon: Building },
     { href: '/admin/donaciones', label: 'Donaciones y alianzas', icon: HeartHandshake },
     { href: '/admin/mensajes', label: 'Mensajes de contacto', icon: MessageSquare },
-    { href: '/admin/galeria', label: 'Galería Multimedia', icon: Images },
   ];
 
-  const settingsLink = { href: '/admin/configuracion', label: 'Ajustes del Sistema', icon: Settings };
+  const settingsLinks = [
+    { href: '/admin/galeria', label: 'Galería de Imágenes', icon: Images },
+    { href: '/admin/comunidad', label: 'Tablero de Anuncios y Comunidad', icon: Megaphone },
+    { href: '/admin/configuracion', label: 'Ajustes del Sistema', icon: Settings },
+  ];
 
   const getLinkClasses = (href: string) => {
     // Si la ruta exacta coincide o estamos dentro de subrutas
@@ -49,17 +62,23 @@ export function SidebarNav({ onLinkClick }: SidebarNavProps) {
       })}
       
       <div className="pt-6 pb-2 px-2">
-        <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2">Ajustes</p>
+        <p className="text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] mb-2 font-semibold">Ajustes</p>
       </div>
       
-      <Link 
-        href={settingsLink.href} 
-        className={getLinkClasses(settingsLink.href)}
-        onClick={onLinkClick}
-      >
-        <settingsLink.icon className="w-5 h-5 flex-shrink-0" />
-        <span>{settingsLink.label}</span>
-      </Link>
+      {settingsLinks.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Link 
+            key={link.href} 
+            href={link.href} 
+            className={getLinkClasses(link.href)}
+            onClick={onLinkClick}
+          >
+            <Icon className="w-5 h-5 flex-shrink-0" />
+            <span>{link.label}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }

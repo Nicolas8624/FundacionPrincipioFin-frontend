@@ -1,7 +1,6 @@
 import { createServerClient } from '@/services/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   BookOpen, 
   Pencil, 
@@ -47,6 +46,19 @@ export default async function PortalDashboardPage() {
       .is('user_id', null)
       .ilike('email', user.email);
   }
+
+  // Traer anuncios oficiales del tablero comunitario (reales de Supabase)
+  const { data: rawAnnouncements } = await supabase
+    .from('announcements')
+    .select('*')
+    .eq('status', 'publicado')
+    .order('is_pinned', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const announcements = rawAnnouncements || [];
+  const featuredAnnouncement = announcements.length > 0 ? announcements[0] : null;
+  const secondaryAnnouncements = announcements.length > 1 ? announcements.slice(1) : [];
 
   // Traer inscripciones reales del usuario
   const { data: enrollmentsData, error: enrollError } = await supabase
@@ -260,108 +272,97 @@ export default async function PortalDashboardPage() {
                 </span>
               </div>
               <span className="px-3 py-1 rounded-full bg-[#262629] border border-[#38383c] text-[10px] font-montserrat uppercase tracking-wider text-[#d0c5af] font-medium">
-                Eventos 2026
+                Vigencia {new Date().getFullYear()}
               </span>
             </div>
 
-            {/* Evento Principal Destacado */}
-            <div className="mt-6 bg-[#1b1b1f] border border-[#262629] rounded-2xl p-5 sm:p-6 relative overflow-hidden shadow-lg">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                
-                <div className="md:col-span-7 space-y-3.5">
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[10px] font-montserrat uppercase tracking-wider font-semibold text-[#D4AF37]">
-                    <Sparkles className="w-3 h-3" />
-                    Encuentro Comunitario
-                  </div>
-
-                  <h3 className="text-lg sm:text-xl font-bold text-white font-montserrat leading-snug">
-                    Gran Jornada de Arte y Sanación Comunitaria
-                  </h3>
-
-                  <p className="text-xs text-[#d0c5af] leading-relaxed">
-                    Espacio de integración abierto para estudiantes, familias y vecinos con demostraciones en vivo de torno cerámico, bordado tradicional y entrega de reconocimientos.
-                  </p>
-
-                  <div className="space-y-1.5 text-xs text-[#99907c] pt-1">
-                    <div className="flex items-center gap-2 text-[#e4e1e7]">
-                      <Calendar className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                      <span>Sábado 28 de Marzo, 2026 • 09:00 AM – 01:00 PM</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[#d0c5af]">
-                      <MapPin className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                      <span>Sede Principal Bogotá • Salón Creativo</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <a
-                      href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Gran Jornada de Arte y Sanación Comunitaria')}&dates=20260328T140000Z/20260328T180000Z&details=${encodeURIComponent('Encuentro de integración comunitaria en Fundación Principio & Fin')}&location=${encodeURIComponent('Sede Central Bogotá')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-[#D4AF37] hover:bg-[#F5D77A] text-[#0A0A0E] px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat transition-all shadow-sm"
-                    >
-                      <Calendar className="w-3.5 h-3.5" />
-                      Añadir a mi Calendario
-                    </a>
-                  </div>
-                </div>
-
-                {/* Imagen del evento */}
-                <div className="md:col-span-5">
-                  <div className="relative rounded-xl overflow-hidden aspect-[4/3] shadow-md border border-[#262629]">
-                    <Image
-                      src="/images/taller-ceramica.jpg"
-                      alt="Jornada Comunitaria de Arte"
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-                      <span className="text-[10px] font-montserrat font-bold text-[#D4AF37] uppercase tracking-wider">
-                        Entrada Libre para la Comunidad
+            {featuredAnnouncement ? (
+              <>
+                {/* Anuncio Principal Destacado (Sin imagen quemada) */}
+                <div className="mt-6 bg-[#1b1b1f] border border-[#262629] hover:border-[#D4AF37]/40 transition-all rounded-2xl p-5 sm:p-6 relative overflow-hidden shadow-lg space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      {featuredAnnouncement.is_pinned && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 text-[#D4AF37] text-[10px] font-montserrat uppercase font-bold tracking-wider">
+                          <Sparkles className="w-3 h-3" />
+                          Aviso Destacado
+                        </span>
+                      )}
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-[#262629] bg-[#141417] text-[#d0c5af] text-[10px] font-montserrat uppercase font-bold tracking-wider">
+                        {featuredAnnouncement.category === 'ph' 
+                          ? 'Propiedad Horizontal' 
+                          : featuredAnnouncement.category === 'academico' 
+                          ? 'Académico' 
+                          : featuredAnnouncement.category === 'evento' 
+                          ? 'Evento' 
+                          : 'Institucional'}
                       </span>
                     </div>
+
+                    <span className="text-[11px] text-[#99907c] font-montserrat flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      {new Date(featuredAnnouncement.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white font-montserrat leading-snug">
+                      {featuredAnnouncement.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-[#d0c5af] leading-relaxed mt-2 whitespace-pre-wrap">
+                      {featuredAnnouncement.content}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#262629] flex flex-wrap items-center justify-between text-xs text-[#99907c] gap-2">
+                    <span>Audiencia: <strong className="text-[#e4e1e7]">{featuredAnnouncement.target_audience}</strong></span>
+                    <span className="text-[11px] text-[#D4AF37] font-medium">Fundación Principio & Fin</span>
                   </div>
                 </div>
 
-              </div>
-            </div>
-
-            {/* Lista de Anuncios Secundarios */}
-            <div className="mt-5 space-y-3">
-              <div className="bg-[#1b1b1f]/60 border border-[#262629] rounded-xl p-4 flex items-start gap-3.5 hover:border-[#D4AF37]/30 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-[#262629] text-[#D4AF37] flex items-center justify-center shrink-0 mt-0.5">
-                  <BookOpen className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold text-white font-montserrat truncate">
-                      Apertura de Convocatoria: Ciclo Académico 2026-II
-                    </h4>
-                    <span className="text-[10px] text-[#99907c] shrink-0 font-montserrat">15 Abr</span>
+                {/* Lista de Anuncios Secundarios */}
+                {secondaryAnnouncements.length > 0 && (
+                  <div className="mt-5 space-y-3">
+                    {secondaryAnnouncements.map((ann: any) => (
+                      <div 
+                        key={ann.id}
+                        className="bg-[#1b1b1f]/60 border border-[#262629] rounded-xl p-4 flex items-start gap-3.5 hover:border-[#D4AF37]/30 transition-colors"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-[#262629] text-[#D4AF37] flex items-center justify-center shrink-0 mt-0.5">
+                          <BookOpen className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="text-sm font-semibold text-white font-montserrat truncate">
+                              {ann.title}
+                            </h4>
+                            <span className="text-[10px] text-[#99907c] shrink-0 font-montserrat">
+                              {new Date(ann.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#99907c] mt-0.5 leading-relaxed line-clamp-2">
+                            {ann.content}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-xs text-[#99907c] mt-0.5 leading-relaxed">
-                    Nuevos cupos con becas de inclusión artesanal para talleres de telar y marroquinería sostenible.
-                  </p>
+                )}
+              </>
+            ) : (
+              <div className="mt-8 py-12 px-6 bg-[#1b1b1f]/40 border border-[#262629] border-dashed rounded-2xl text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-[#1b1b1f] border border-[#262629] flex items-center justify-center text-[#99907c] mx-auto">
+                  <Megaphone className="w-6 h-6 text-[#D4AF37]" />
                 </div>
+                <h4 className="text-sm font-semibold text-white font-montserrat">
+                  Sin avisos recientes en el tablero
+                </h4>
+                <p className="text-xs text-[#99907c] max-w-sm mx-auto leading-relaxed">
+                  Las circulares informativas, cronogramas de talleres y novedades de la Fundación se publicarán directamente aquí.
+                </p>
               </div>
-
-              <div className="bg-[#1b1b1f]/60 border border-[#262629] rounded-xl p-4 flex items-start gap-3.5 hover:border-[#D4AF37]/30 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-[#262629] text-[#D4AF37] flex items-center justify-center shrink-0 mt-0.5">
-                  <Star className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold text-white font-montserrat truncate">
-                      Galería Viva: Exhibición de Obras de Estudiantes
-                    </h4>
-                    <span className="text-[10px] text-[#99907c] shrink-0 font-montserrat">Mayo 2026</span>
-                  </div>
-                  <p className="text-xs text-[#99907c] mt-0.5 leading-relaxed">
-                    Muestra pública de piezas destacadas creadas durante el semestre.
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
 
           </div>
 
