@@ -8,7 +8,7 @@ Esta carpeta contiene la arquitectura oficial y consolidada de la base de datos 
 
 ```
 .docs/backend/
-├── 01_esquema_completo.sql      # 1. Esquema Maestro (14 Tablas, Enums, Funciones, RLS, Storage Buckets)
+├── 01_esquema_completo.sql      # 1. Esquema Maestro (15 Tablas, Enums, Funciones, RLS, Storage Buckets)
 ├── 02_datos_semilla_cursos.sql  # 2. Catálogo Oficial (3 Categorías + 10 Cursos Oficiales 2026 con imágenes)
 ├── 03_datos_prueba_juan.sql     # 3. Datos de Prueba para Usuario Juan (id: 47bbf374-a969-4dce-baa4-e28444c544f2)
 ├── README.md                    # Esta guía de despliegue y arquitectura
@@ -25,7 +25,7 @@ Ejecuta los siguientes scripts en orden secuencial en **Supabase Dashboard > SQL
 
 1. **Paso 1: `01_esquema_completo.sql`**
    - Crea todos los tipos personalizados (`user_role`, `course_modality`, `submission_status`, etc.).
-   - Crea las 14 tablas relacionales (`profiles`, `courses`, `course_enrollments`, `course_modules`, `assignments`, `submissions`, `submission_files`, `ph_requests`, `donation_requests`, `contact_messages`, `gallery_items`, etc.).
+   - Crea las 15 tablas relacionales (`profiles`, `courses`, `course_enrollments`, `course_modules`, `assignments`, `submissions`, `submission_files`, `ph_requests`, `donation_requests`, `contact_messages`, `gallery_items`, `announcements`, etc.).
    - Aplica Row Level Security (RLS) en todas las tablas.
    - Crea los buckets de Storage (`gallery`, `submissions`, `course-materials`, `profile-avatars`) con sus políticas.
 
@@ -65,7 +65,8 @@ Si ya ejecutaste el esquema maestro y solo deseas actualizar los datos de prueba
 | `assignments` | SELECT (publicadas) | SELECT (publicadas) | ALL (Gestión total) |
 | `submissions` | - | SELECT / INSERT / UPDATE (propias) | ALL (Gestión y calificación) |
 | `submission_files` | - | SELECT / INSERT (propias) | ALL (Gestión total) |
-| `ph_requests` | INSERT (formulario web) | SELECT (propias por ID o email) | ALL (Gestión total) |
-| `donation_requests` | INSERT (formulario web) | SELECT (propias por ID o email) | ALL (Gestión total) |
+| `ph_requests` | INSERT (formulario web) | SELECT / UPDATE (propias por ID o email) | ALL (Gestión total) |
+| `donation_requests` | INSERT (web y portal) | SELECT (propias por ID o email) | ALL (Gestión total) |
 | `contact_messages` | INSERT (formulario web) | SELECT (propias por ID o email) | ALL (Gestión total) |
 | `gallery_items` | SELECT | SELECT | ALL (Gestión total) |
+| `announcements` | SELECT (publicados) | SELECT (publicados) | ALL (Gestión total) |

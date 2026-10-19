@@ -6,7 +6,7 @@
 --   Crea la estructura unificada completa de la base de datos en Supabase:
 --   - Tipos ENUM personalizados
 --   - Funciones auxiliares y disparadores (triggers)
---   - 14 tablas completas e integradas
+--   - 15 tablas completas e integradas
 --   - Índices de rendimiento
 --   - Políticas de Seguridad de Fila (Row Level Security - RLS)
 --   - Buckets de Almacenamiento (Supabase Storage) y sus políticas
@@ -392,6 +392,24 @@ CREATE TABLE IF NOT EXISTS public.gallery_items (
   created_at  timestamptz NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
+-- Tabla 15: Tablero de Anuncios y Comunidad
+CREATE TABLE IF NOT EXISTS public.announcements (
+  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title            text NOT NULL,
+  content          text NOT NULL,
+  category         text NOT NULL DEFAULT 'general',
+  target_audience  text NOT NULL DEFAULT 'Comunidad en General',
+  is_pinned        boolean NOT NULL DEFAULT false,
+  status           text NOT NULL DEFAULT 'publicado',
+  author_id        uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
+  created_at       timestamptz NOT NULL DEFAULT now(),
+  updated_at       timestamptz NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS announcements_updated_at ON public.announcements;
+CREATE TRIGGER announcements_updated_at BEFORE UPDATE ON public.announcements
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
 -- ---------------------------------------------------------------------
 -- 5. ÍNDICES DE RENDIMIENTO
 -- ---------------------------------------------------------------------
@@ -410,6 +428,8 @@ CREATE INDEX IF NOT EXISTS idx_submission_files_sub ON public.submission_files(s
 CREATE INDEX IF NOT EXISTS idx_ph_requests_user ON public.ph_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_ph_requests_email ON public.ph_requests(email);
 CREATE INDEX IF NOT EXISTS idx_donations_user ON public.donation_requests(user_id);
+CREATE INDEX IF NOT EXISTS idx_announcements_status ON public.announcements(status);
+CREATE INDEX IF NOT EXISTS idx_announcements_pinned ON public.announcements(is_pinned);
 CREATE INDEX IF NOT EXISTS idx_donations_email ON public.donation_requests(email);
 CREATE INDEX IF NOT EXISTS idx_contact_user ON public.contact_messages(user_id);
 CREATE INDEX IF NOT EXISTS idx_contact_email ON public.contact_messages(email);
@@ -431,6 +451,7 @@ ALTER TABLE public.ph_requests         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donation_requests   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery_items       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.announcements       ENABLE ROW LEVEL SECURITY;
 
 -- 6.1 Profiles
 DROP POLICY IF EXISTS profiles_select_own ON public.profiles;
@@ -524,28 +545,33 @@ CREATE POLICY progress_select_own ON public.material_progress FOR ALL TO authent
 -- 6.9 Solicitudes PH
 DROP POLICY IF EXISTS ph_insert_pub ON public.ph_requests;
 CREATE POLICY ph_insert_pub ON public.ph_requests FOR INSERT TO anon, authenticated
-  WITH CHECK (status = 'pendiente' AND (user_id IS NULL OR user_id = (SELECT auth.uid())));
+  WITH CHECK (status = 'pendiente' AND (user_id IS NULL OR user_id = auth.uid()));
 
 DROP POLICY IF EXISTS ph_select_own ON public.ph_requests;
 CREATE POLICY ph_select_own ON public.ph_requests FOR SELECT TO authenticated
-  USING (user_id = (SELECT auth.uid()) OR LOWER(email) = LOWER((SELECT auth.jwt() ->> 'email')) OR (SELECT public.is_admin()));
+  USING (user_id = auth.uid() OR LOWER(email) = LOWER(auth.jwt() ->> 'email') OR public.is_admin());
+
+DROP POLICY IF EXISTS ph_update_own ON public.ph_requests;
+CREATE POLICY ph_update_own ON public.ph_requests FOR UPDATE TO authenticated
+  USING (user_id = auth.uid() OR LOWER(email) = LOWER(auth.jwt() ->> 'email') OR public.is_admin())
+  WITH CHECK (user_id = auth.uid() OR LOWER(email) = LOWER(auth.jwt() ->> 'email') OR public.is_admin());
 
 DROP POLICY IF EXISTS ph_admin_all ON public.ph_requests;
 CREATE POLICY ph_admin_all ON public.ph_requests FOR ALL TO authenticated
-  USING ((SELECT public.is_admin())) WITH CHECK ((SELECT public.is_admin()));
+  USING (public.is_admin()) WITH CHECK (public.is_admin());
 
 -- 6.10 Donaciones
 DROP POLICY IF EXISTS donations_insert_pub ON public.donation_requests;
 CREATE POLICY donations_insert_pub ON public.donation_requests FOR INSERT TO anon, authenticated
-  WITH CHECK (status = 'nueva' AND (user_id IS NULL OR user_id = (SELECT auth.uid())));
+  WITH CHECK (status = 'nueva' AND (user_id IS NULL OR user_id = auth.uid() OR public.is_admin()));
 
 DROP POLICY IF EXISTS donations_select_own ON public.donation_requests;
 CREATE POLICY donations_select_own ON public.donation_requests FOR SELECT TO authenticated
-  USING (user_id = (SELECT auth.uid()) OR LOWER(email) = LOWER((SELECT auth.jwt() ->> 'email')) OR (SELECT public.is_admin()));
+  USING (user_id = auth.uid() OR LOWER(email) = LOWER(auth.jwt() ->> 'email') OR public.is_admin());
 
 DROP POLICY IF EXISTS donations_admin_all ON public.donation_requests;
 CREATE POLICY donations_admin_all ON public.donation_requests FOR ALL TO authenticated
-  USING ((SELECT public.is_admin())) WITH CHECK ((SELECT public.is_admin()));
+  USING (public.is_admin()) WITH CHECK (public.is_admin());
 
 -- 6.11 Contacto / PQRS
 DROP POLICY IF EXISTS contact_insert_pub ON public.contact_messages;
@@ -567,6 +593,33 @@ CREATE POLICY gallery_select_pub ON public.gallery_items FOR SELECT USING (true)
 DROP POLICY IF EXISTS gallery_admin_all ON public.gallery_items;
 CREATE POLICY gallery_admin_all ON public.gallery_items FOR ALL TO authenticated
   USING (true) WITH CHECK (true);
+
+-- 6.13 Tablero de Anuncios y Comunidad
+DROP POLICY IF EXISTS announcements_read_authenticated ON public.announcements;
+CREATE POLICY announcements_read_authenticated ON public.announcements
+  FOR SELECT TO authenticated
+  USING (status = 'publicado' OR public.is_admin());
+
+DROP POLICY IF EXISTS announcements_read_anon ON public.announcements;
+CREATE POLICY announcements_read_anon ON public.announcements
+  FOR SELECT TO anon
+  USING (status = 'publicado');
+
+DROP POLICY IF EXISTS announcements_admin_insert ON public.announcements;
+CREATE POLICY announcements_admin_insert ON public.announcements
+  FOR INSERT TO authenticated
+  WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS announcements_admin_update ON public.announcements;
+CREATE POLICY announcements_admin_update ON public.announcements
+  FOR UPDATE TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS announcements_admin_delete ON public.announcements;
+CREATE POLICY announcements_admin_delete ON public.announcements
+  FOR DELETE TO authenticated
+  USING (public.is_admin());
 
 -- ---------------------------------------------------------------------
 -- 7. BUCKETS DE ALMACENAMIENTO (STORAGE)
