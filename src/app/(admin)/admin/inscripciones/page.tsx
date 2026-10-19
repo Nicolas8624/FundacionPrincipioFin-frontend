@@ -180,8 +180,8 @@ export default async function AdminInscripcionesPage({ searchParams }: { searchP
                 const dateStr = date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
                 const timeStr = date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
                 
-                // Tipo de cupo inferido para diseño
-                const tipoCupo = enrollment.id.charCodeAt(0) % 2 === 0 ? 'BECA COMUNITARIA' : 'GENERAL';
+                // Tipo de cupo real desde la base de datos
+                const tipoCupo = (enrollment.cupo_type || 'Cupo Regular').toUpperCase();
                 
                 const getStatusStyle = (status: string) => {
                   if (status === 'confirmada') return 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10';

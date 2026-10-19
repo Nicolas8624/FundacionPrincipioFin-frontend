@@ -1,38 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Save, Database, Bell, CheckCircle2, User } from 'lucide-react';
+import { useState } from 'react';
+import { 
+  Save, 
+  Database, 
+  CheckCircle2, 
+  AlertCircle, 
+  User, 
+  KeyRound, 
+  Eye, 
+  EyeOff, 
+  ShieldCheck 
+} from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 
 export function SettingsForm({ profile }: { profile: any }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  
+  // Estado para actualización de perfil
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  const [notifications, setNotifications] = useState({
-    inscriptions: true,
-    phRequests: true,
-    reports: false
-  });
-
-  useEffect(() => {
-    const saved = localStorage.getItem('admin_notifications');
-    if (saved) {
-      setNotifications(JSON.parse(saved));
-    }
-  }, []);
-
-  const handleToggle = (key: keyof typeof notifications) => {
-    const newNotifications = { ...notifications, [key]: !notifications[key] };
-    setNotifications(newNotifications);
-    localStorage.setItem('admin_notifications', JSON.stringify(newNotifications));
-  };
+  // Estado para cambio de contraseña
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const handleSubmitProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage(null);
+    setProfileLoading(true);
+    setProfileMessage(null);
 
     const formData = new FormData(e.currentTarget);
     
@@ -50,13 +53,85 @@ export function SettingsForm({ profile }: { profile: any }) {
       .eq('id', profile.id);
 
     if (error) {
-      setMessage({ type: 'error', text: 'Error al actualizar tu perfil.' });
+      setProfileMessage({ type: 'error', text: 'Error al actualizar tu perfil.' });
     } else {
-      setMessage({ type: 'success', text: 'Perfil actualizado correctamente.' });
+      setProfileMessage({ type: 'success', text: 'Perfil actualizado correctamente.' });
       router.refresh();
-      setTimeout(() => setMessage(null), 3000);
+      setTimeout(() => setProfileMessage(null), 3000);
     }
-    setLoading(false);
+    setProfileLoading(false);
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPasswordMessage(null);
+
+    if (!currentPassword) {
+      setPasswordMessage({ type: 'error', text: 'Ingresa tu contraseña actual.' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: 'La nueva contraseña debe tener mínimo 6 caracteres.' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'La nueva contraseña y su confirmación no coinciden.' });
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    try {
+      // 1. Validar la contraseña actual autenticando
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: profile?.email,
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        setPasswordMessage({ 
+          type: 'error', 
+          text: 'La contraseña actual ingresada es incorrecta. Por favor verifica e intenta de nuevo.' 
+        });
+        setPasswordLoading(false);
+        return;
+      }
+
+      // 2. Actualizar a la nueva contraseña
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        setPasswordMessage({ 
+          type: 'error', 
+          text: updateError.message || 'Error al actualizar la contraseña.' 
+        });
+      } else {
+        setPasswordMessage({ 
+          type: 'success', 
+          text: '¡Tu contraseña ha sido actualizada exitosamente!' 
+        });
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => setPasswordMessage(null), 4000);
+      }
+    } catch (err: any) {
+      setPasswordMessage({ 
+        type: 'error', 
+        text: err?.message || 'Error inesperado al cambiar contraseña.' 
+      });
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -64,10 +139,10 @@ export function SettingsForm({ profile }: { profile: any }) {
       
       {/* Columna Izquierda: Perfil (Editable) */}
       <div className="space-y-6 sm:space-y-8">
-        {message && (
-          <div className={`p-4 rounded-xl flex items-center gap-3 animate-fade-in ${message.type === 'success' ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37]' : 'bg-[#93000a]/10 border border-[#93000a]/30 text-[#ffb4ab]'}`}>
+        {profileMessage && (
+          <div className={`p-4 rounded-xl flex items-center gap-3 animate-fade-in ${profileMessage.type === 'success' ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37]' : 'bg-[#93000a]/10 border border-[#93000a]/30 text-[#ffb4ab]'}`}>
             <CheckCircle2 className="w-5 h-5 shrink-0" />
-            <p className="text-xs sm:text-sm font-medium">{message.text}</p>
+            <p className="text-xs sm:text-sm font-medium">{profileMessage.text}</p>
           </div>
         )}
 
@@ -111,89 +186,164 @@ export function SettingsForm({ profile }: { profile: any }) {
             <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-[#262629]">
                <button 
                   type="submit"
-                  disabled={loading}
+                  disabled={profileLoading}
                   className="w-full sm:w-auto justify-center bg-[#D4AF37] text-[#0A0A0E] px-6 py-2.5 sm:py-3 rounded-lg font-semibold tracking-wider uppercase text-xs font-montserrat hover:bg-[#F5D77A] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm"
                 >
-                 {loading ? 'Guardando...' : <><Save className="w-4 h-4" /> Guardar Perfil</>}
+                 {profileLoading ? 'Guardando...' : <><Save className="w-4 h-4" /> Guardar Perfil</>}
                </button>
             </div>
           </form>
         </section>
-      </div>
 
-      {/* Columna Derecha: Sistema y Notificaciones */}
-      <div className="space-y-6 sm:space-y-8">
-        
-        <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden shadow-xl">
-          <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
-            <Bell className="w-5 h-5 text-[#D4AF37] shrink-0" />
-            <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Preferencias de Interfaz</h2>
-          </div>
-          <div className="p-4 sm:p-6 md:p-8 space-y-4">
-            <ToggleOption 
-              title="Alertas de nuevas inscripciones" 
-              description="Mostrar indicadores visuales cuando haya inscripciones pendientes en las tablas." 
-              active={notifications.inscriptions}
-              onToggle={() => handleToggle('inscriptions')}
-            />
-            <ToggleOption 
-              title="Destacar Solicitudes PH" 
-              description="Resaltar en color dorado las solicitudes de conjuntos recién creadas." 
-              active={notifications.phRequests}
-              onToggle={() => handleToggle('phRequests')}
-            />
-            <ToggleOption 
-              title="Modo alto contraste (Lectura)" 
-              description="Aumentar la legibilidad de las tablas de datos para mayor accesibilidad." 
-              active={notifications.reports}
-              onToggle={() => handleToggle('reports')}
-            />
-          </div>
-        </section>
-
-        <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden opacity-80 shadow-xl">
+        {/* Información Institucional */}
+        <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden opacity-90 shadow-xl">
           <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
             <Database className="w-5 h-5 text-[#99907c] shrink-0" />
             <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Información Institucional</h2>
           </div>
-          <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
-            <div className="space-y-4 sm:space-y-6">
+          <div className="p-4 sm:p-6 md:p-8 space-y-4">
+            <div>
+              <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-1.5">Organización</label>
+              <input type="text" defaultValue="Fundación Principio & Fin" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 py-2.5 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">Organización</label>
-                <input type="text" defaultValue="Fundación Principio & Fin" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
+                <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-1.5">NIT</label>
+                <input type="text" defaultValue="901.442.231-1" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 py-2.5 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">NIT</label>
-                  <input type="text" defaultValue="901.442.231-1" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">Versión de Plataforma</label>
-                  <input type="text" defaultValue="v2.4.0 (Build 2026)" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
-                </div>
+              <div>
+                <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-1.5">Versión Plataforma</label>
+                <input type="text" defaultValue="v2.5.0 (Build 2026)" disabled className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 py-2.5 text-[#99907c] text-xs sm:text-sm cursor-not-allowed" />
               </div>
             </div>
           </div>
+        </section>
+      </div>
+
+      {/* Columna Derecha: Cambio de Contraseña */}
+      <div className="space-y-6 sm:space-y-8">
+        
+        {passwordMessage && (
+          <div className={`p-4 rounded-xl flex items-center gap-3 animate-fade-in ${passwordMessage.type === 'success' ? 'bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37]' : 'bg-[#93000a]/10 border border-[#93000a]/30 text-[#ffb4ab]'}`}>
+            {passwordMessage.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 shrink-0" />
+            )}
+            <p className="text-xs sm:text-sm font-medium">{passwordMessage.text}</p>
+          </div>
+        )}
+
+        <section className="bg-[#17171a] border border-[#262629] rounded-2xl overflow-hidden shadow-xl">
+          <div className="p-4 sm:p-6 border-b border-[#262629] bg-[#1b1b1f] flex items-center gap-3">
+            <KeyRound className="w-5 h-5 text-[#D4AF37] shrink-0" />
+            <div>
+              <h2 className="text-base sm:text-lg font-semibold text-[#e4e1e7]">Cambiar Contraseña</h2>
+              <p className="text-xs text-[#99907c] mt-0.5">Mantén tu cuenta protegida con una contraseña segura</p>
+            </div>
+          </div>
+
+          <form onSubmit={handlePasswordChange} className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+            
+            {/* Campo 1: Contraseña Actual */}
+            <div>
+              <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">
+                Contraseña Actual <span className="text-[#D4AF37]">*</span>
+              </label>
+              <div className="relative">
+                <input 
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  placeholder="Tu contraseña actual"
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg pl-3.5 pr-11 py-2.5 sm:py-3 text-[#e4e1e7] text-xs sm:text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#99907c] hover:text-[#e4e1e7] transition-colors"
+                  tabIndex={-1}
+                >
+                  {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Campo 2: Nueva Contraseña */}
+            <div>
+              <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">
+                Nueva Contraseña <span className="text-[#D4AF37]">*</span>
+              </label>
+              <div className="relative">
+                <input 
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg pl-3.5 pr-11 py-2.5 sm:py-3 text-[#e4e1e7] text-xs sm:text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#99907c] hover:text-[#e4e1e7] transition-colors"
+                  tabIndex={-1}
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Campo 3: Confirmar Nueva Contraseña */}
+            <div>
+              <label className="block text-[10px] font-montserrat uppercase tracking-widest text-[#99907c] mb-2">
+                Confirmar Nueva Contraseña <span className="text-[#D4AF37]">*</span>
+              </label>
+              <div className="relative">
+                <input 
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="Repite la nueva contraseña"
+                  className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg pl-3.5 pr-11 py-2.5 sm:py-3 text-[#e4e1e7] text-xs sm:text-sm focus:border-[#D4AF37] focus:outline-none transition-colors" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#99907c] hover:text-[#e4e1e7] transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Aviso de seguridad */}
+            <div className="flex items-start gap-2.5 text-xs text-[#99907c] bg-[#141417] p-3 rounded-xl border border-[#262629]">
+              <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+              <span>
+                Por seguridad, tu sesión continuará activa en este dispositivo pero se requerirá la nueva clave en los próximos inicios de sesión.
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-[#262629]">
+              <button 
+                type="submit"
+                disabled={passwordLoading}
+                className="w-full sm:w-auto justify-center bg-[#D4AF37] text-[#0A0A0E] px-6 py-2.5 sm:py-3 rounded-lg font-semibold tracking-wider uppercase text-xs font-montserrat hover:bg-[#F5D77A] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm"
+              >
+                {passwordLoading ? 'Actualizando...' : <><KeyRound className="w-4 h-4" /> Actualizar Contraseña</>}
+              </button>
+            </div>
+
+          </form>
         </section>
 
       </div>
     </div>
   );
-}
-
-function ToggleOption({ title, description, active = false, onToggle }: { title: string, description: string, active?: boolean, onToggle: () => void }) {
-  return (
-    <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 border-b border-[#262629] last:border-0 last:pb-0 gap-4">
-      <div className="pr-2 sm:pr-4">
-        <p className="text-xs sm:text-sm font-semibold text-[#e4e1e7] mb-1">{title}</p>
-        <p className="text-[11px] sm:text-xs text-[#99907c] leading-relaxed">{description}</p>
-      </div>
-      <div 
-        onClick={onToggle}
-        className={`w-11 sm:w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shrink-0 mt-1 sm:mt-0 ${active ? 'bg-[#D4AF37]' : 'bg-[#262629]'}`}
-      >
-        <div className={`w-4 h-4 rounded-full bg-[#0A0A0E] transition-transform ${active ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0'}`}></div>
-      </div>
-    </div>
-  )
 }

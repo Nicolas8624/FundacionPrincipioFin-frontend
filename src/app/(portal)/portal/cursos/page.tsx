@@ -48,11 +48,22 @@ export default async function MisCursosMatriculadosPage() {
 
   const enrollments = enrollmentsData || [];
 
-  // Filtrar activos vs completados
-  const realActive = enrollments.filter(e => e.status !== 'completada' && e.status !== 'aprobada');
-  const realCompleted = enrollments.filter(e => e.status === 'completada' || e.status === 'aprobada');
+  // 1. Cursos matriculados formalmente activos (confirmada, activa, en_curso)
+  const realActive = enrollments.filter(
+    (e: any) => e.status === 'confirmada' || e.status === 'activa' || e.status === 'en_curso'
+  );
 
-  // Mapear cursos activos (100% reales, sin ningún objeto de demostración falso)
+  // 2. Solicitudes de inscripción pendientes de revisión administrativa
+  const realPending = enrollments.filter(
+    (e: any) => e.status === 'pendiente'
+  );
+
+  // 3. Cursos completados o certificados
+  const realCompleted = enrollments.filter(
+    (e: any) => e.status === 'completada' || e.status === 'aprobada'
+  );
+
+  // Mapear cursos activos (100% reales, con matrícula oficial confirmada)
   const activeCourses: StudentCourse[] = realActive.map((e: any, index: number) => {
     const course = e.course;
     const modalityStr = course?.modality === 'hibrido' 
@@ -70,7 +81,7 @@ export default async function MisCursosMatriculadosPage() {
       schedule: course?.schedule_text || 'Horario por coordinar',
       location: course?.location || 'Sede Principal',
       instructor: course?.instructor_name || 'Docente Formador',
-      image: course?.image_url || (index % 2 === 0 ? '/images/taller-ceramica.jpg' : '/images/taller-decoupage.jpg'),
+      image: course?.image_url || '',
       nextSessionType: course?.modality === 'virtual' ? 'sync' : 'practical',
       nextSessionTitle: 'Sesión formativa según calendario oficial',
       progressPercent: e.attended_sessions ? Math.min(100, Math.max(10, e.attended_sessions * 10)) : 0,
@@ -79,6 +90,44 @@ export default async function MisCursosMatriculadosPage() {
         : (e.attended_sessions > 0 ? `${e.attended_sessions} sesiones asistidas registradas` : 'Inscripción activa'),
       statusNoteType: e.average_grade ? 'info' : 'warning',
       status: 'activo',
+    };
+  });
+
+  // Mapear solicitudes pendientes de revisión
+  const pendingCourses: StudentCourse[] = realPending.map((e: any, index: number) => {
+    const course = e.course;
+    const modalityStr = course?.modality === 'hibrido' 
+      ? 'HÍBRIDO' 
+      : (course?.modality === 'virtual' ? 'VIRTUAL' : 'PRESENCIAL');
+
+    const formattedDate = e.created_at
+      ? new Date(e.created_at).toLocaleDateString('es-CO', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
+      : 'Reciente';
+
+    return {
+      id: e.id,
+      courseId: course?.id || e.course_id,
+      title: course?.title || 'Taller Solicitado',
+      code: course?.slug ? `PF-${course.slug.substring(0, 3).toUpperCase()}-${index + 1}` : `SOL-${index + 1}`,
+      modality: course?.modality || 'presencial',
+      modalityBadge: modalityStr,
+      currentModule: 'En proceso de validación',
+      schedule: course?.schedule_text || 'Horario por coordinar',
+      location: course?.location || 'Sede Principal',
+      instructor: course?.instructor_name || 'Docente Formador',
+      image: course?.image_url || '',
+      nextSessionType: 'practical',
+      nextSessionTitle: 'Validación de cupo y documentos por Coordinación',
+      progressPercent: 0,
+      statusNote: `Solicitud radicada el ${formattedDate} · En espera de cupo oficial`,
+      statusNoteType: 'warning',
+      status: 'pendiente',
+      cupoType: e.cupo_type || 'Cupo Regular',
+      requestedAt: formattedDate,
     };
   });
 
@@ -96,7 +145,7 @@ export default async function MisCursosMatriculadosPage() {
       schedule: course?.schedule_text || 'Culminado',
       location: course?.location || 'Sede Principal',
       instructor: course?.instructor_name || 'Docente Formador',
-      image: course?.image_url || '/images/taller-ceramica.jpg',
+      image: course?.image_url || '',
       nextSessionType: 'practical',
       nextSessionTitle: 'Ciclo culminado',
       progressPercent: 100,
@@ -130,6 +179,7 @@ export default async function MisCursosMatriculadosPage() {
   return (
     <StudentCoursesClient
       initialActiveCourses={activeCourses}
+      initialPendingCourses={pendingCourses}
       initialCompletedCourses={completedCourses}
       totalWorkshopsAttended={totalWorkshopsAttended}
       attendedWorkshops={attendedWorkshops}

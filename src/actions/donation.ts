@@ -39,11 +39,13 @@ export async function submitDonation(formData: FormData) {
       .insert([
         {
           donor_name,
-          email,
+          email: email.toLowerCase(),
           phone,
           donation_type,
+          amount_cop: !isNaN(parseFloat(details)) ? parseFloat(details) : null,
           message: details,
           accepted_data_policy,
+          status: 'nueva',
           created_at: new Date().toISOString(),
         }
       ]);

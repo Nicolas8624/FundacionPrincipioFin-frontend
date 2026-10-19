@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
+import { extractActaInfo, cleanAdminNotes } from '@/lib/ph-utils';
 
 interface PhEditModalProps {
   isOpen: boolean;
@@ -31,9 +32,18 @@ export function PhEditModal({ isOpen, onClose, request }: PhEditModalProps) {
     
     const formData = new FormData(e.currentTarget);
     
+    const rawNotes = (formData.get('admin_notes') as string || '').trim();
+    const existingActa = extractActaInfo(request.admin_notes);
+    let finalNotes = rawNotes;
+
+    if (existingActa) {
+      const actaTag = `[Acta Adjunta: ${existingActa.fileName} | ${existingActa.fileUrl}]`;
+      finalNotes = finalNotes ? `${finalNotes}\n${actaTag}` : actaTag;
+    }
+    
     const requestData = {
       status: formData.get('status'),
-      admin_notes: formData.get('admin_notes'),
+      admin_notes: finalNotes,
     };
 
     const supabase = createBrowserClient(
@@ -56,6 +66,8 @@ export function PhEditModal({ isOpen, onClose, request }: PhEditModalProps) {
       setLoading(false);
     }
   };
+
+  const attachedActa = extractActaInfo(request.admin_notes);
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-[#0A0A0E]/85 backdrop-blur-md overflow-y-auto">
@@ -90,6 +102,19 @@ export function PhEditModal({ isOpen, onClose, request }: PhEditModalProps) {
               <span className="text-[10px] uppercase tracking-widest text-[#99907c] font-montserrat">Mensaje Original</span>
               <span className="text-[#d0c5af] text-xs sm:text-sm mt-1 leading-relaxed">{request.message || 'Sin mensaje adicional'}</span>
             </div>
+            {attachedActa && (
+              <div className="flex items-center justify-between pt-2 border-t border-[#262629] text-xs">
+                <span className="text-emerald-400 font-medium">Acta Adjunta: {attachedActa.fileName}</span>
+                <a 
+                  href={attachedActa.fileUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-xs text-[#D4AF37] hover:underline"
+                >
+                  Ver Documento &rarr;
+                </a>
+              </div>
+            )}
           </div>
 
           <form id="edit-ph-form" onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
@@ -107,7 +132,7 @@ export function PhEditModal({ isOpen, onClose, request }: PhEditModalProps) {
               <label className="text-xs sm:text-sm font-medium text-[#d0c5af]">Notas Internas (Solo Administradores)</label>
               <textarea 
                 name="admin_notes" 
-                defaultValue={request.admin_notes || ''} 
+                defaultValue={cleanAdminNotes(request.admin_notes)} 
                 className="w-full bg-[#0A0A0E] border border-[#262629] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-white focus:border-[#D4AF37] focus:outline-none transition-colors min-h-[100px] resize-y" 
                 placeholder="Ej. Visita técnica realizada el 15/03, salón cumple condiciones..."
               />

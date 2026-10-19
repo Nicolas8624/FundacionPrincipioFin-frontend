@@ -36,14 +36,21 @@ export default async function CatalogoTalleresPage() {
 
   const categories = categoriesData || [];
 
-  // 3. Obtener inscripciones del usuario actual para saber a cuáles ya está matriculado
+  // 3. Obtener inscripciones del usuario actual distinguiendo confirmadas vs pendientes
   const { data: userEnrollmentsData } = await supabase
     .from('course_enrollments')
-    .select('course_id')
+    .select('course_id, status')
     .or(`user_id.eq.${user.id},email.ilike.${user.email || ''}`)
     .not('status', 'in', '("cancelada","rechazada")');
 
-  const userEnrolledCourseIds = (userEnrollmentsData || []).map((e: any) => e.course_id);
+  const rawEnrollments = userEnrollmentsData || [];
+  const confirmedCourseIds = rawEnrollments
+    .filter((e: any) => e.status === 'confirmada' || e.status === 'aprobada' || e.status === 'completada')
+    .map((e: any) => e.course_id);
+
+  const pendingCourseIds = rawEnrollments
+    .filter((e: any) => e.status === 'pendiente')
+    .map((e: any) => e.course_id);
 
   // 4. Obtener TODOS los cursos de la base de datos (excluyendo solo los archivados)
   const { data: coursesData, error: coursesError } = await supabase
@@ -116,7 +123,8 @@ export default async function CatalogoTalleresPage() {
     <StudentCatalogClient
       initialCourses={courses}
       categories={categories}
-      userEnrolledCourseIds={userEnrolledCourseIds}
+      confirmedCourseIds={confirmedCourseIds}
+      pendingCourseIds={pendingCourseIds}
       currentUser={currentUser}
     />
   );

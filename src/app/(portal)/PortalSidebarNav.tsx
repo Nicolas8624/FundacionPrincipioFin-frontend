@@ -30,7 +30,6 @@ export function PortalSidebarNav({ onLinkClick }: PortalSidebarNavProps) {
     { href: '/portal/solicitudes-ph', label: 'Solicitudes PH', icon: Building },
     { href: '/portal/donaciones', label: 'Donaciones y Aportes', icon: HeartHandshake },
     { href: '/portal/ayuda', label: 'Ayuda y Contacto', icon: HelpCircle },
-    { href: '/portal/ajustes', label: 'Ajustes', icon: Settings },
   ];
 
   const isLinkActive = (href: string, exact = false) => {
@@ -90,6 +89,21 @@ export function PortalSidebarNav({ onLinkClick }: PortalSidebarNavProps) {
             </Link>
           );
         })}
+      </div>
+
+      {/* Grupo: Ajustes */}
+      <div className="space-y-1.5">
+        <p className="px-3 text-[10px] font-montserrat uppercase tracking-[0.2em] text-[#99907c] font-semibold mb-2">
+          Ajustes
+        </p>
+        <Link
+          href="/portal/ajustes"
+          className={getLinkClasses(isLinkActive('/portal/ajustes'))}
+          onClick={onLinkClick}
+        >
+          <Settings className="w-5 h-5 flex-shrink-0" />
+          <span className="truncate">Ajustes</span>
+        </Link>
       </div>
     </nav>
   );

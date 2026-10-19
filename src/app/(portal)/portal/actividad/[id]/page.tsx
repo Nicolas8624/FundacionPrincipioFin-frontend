@@ -109,11 +109,14 @@ export default async function ActividadPage({
       feedback,
       project_title,
       text_content,
+      graded_at,
+      rubric_scores,
       files:submission_files (
         id,
         file_name,
         size_bytes,
-        url
+        url,
+        storage_path
       )
     `)
     .eq('assignment_id', assignmentRow.id)
@@ -123,14 +126,26 @@ export default async function ActividadPage({
   // 3. Consultar la matrícula del estudiante a este curso
   const courseId = assignmentRow.course_id;
   let enrollmentId: string | null = null;
+  let enrollmentStatus: string | null = null;
   if (courseId) {
     const { data: enrollRow } = await supabase
       .from('course_enrollments')
-      .select('id')
+      .select('id, status')
       .eq('course_id', courseId)
       .or(`user_id.eq.${user.id},email.ilike.${user.email || ''}`)
       .maybeSingle();
     enrollmentId = enrollRow?.id || null;
+    enrollmentStatus = enrollRow?.status || null;
+  }
+
+  // Si la matrícula está pendiente, redirigir a la vista de curso en revisión
+  if (enrollmentStatus === 'pendiente') {
+    redirect(`/portal/cursos/${courseId}`);
+  }
+
+  // Si no tiene matrícula, redirigir al catálogo
+  if (!enrollmentStatus || !enrollmentId) {
+    redirect('/portal/catalogo');
   }
 
   // 4. Consultar materiales didácticos del módulo o curso
@@ -259,9 +274,19 @@ export default async function ActividadPage({
   }
 
   const subFile = (submissionRow as any)?.files?.[0];
+  let subFileUrl = subFile?.url || null;
+  if (!subFileUrl && subFile?.storage_path) {
+    const { data: signed } = await supabase.storage
+      .from('submissions')
+      .createSignedUrl(subFile.storage_path, 3600);
+    subFileUrl = signed?.signedUrl || null;
+  }
+
   const submissionFileSize = subFile?.size_bytes 
     ? `${(subFile.size_bytes / (1024 * 1024)).toFixed(1)} MB - Subido`
     : (subFile ? 'Archivo adjunto' : undefined);
+
+  const maxScore = assignmentRow.max_score ? Number(assignmentRow.max_score) : 5.0;
 
   const activity: ActivityData = {
     id: assignmentRow.id,
@@ -275,6 +300,7 @@ export default async function ActividadPage({
     dueFormatted,
     daysRemainingText,
     weightPercent: assignmentRow.weight_percent || 25,
+    maxScore,
     instructorName: courseData?.instructor_name || 'Docente Formador',
     instructorRole: 'Docente Titular y Facilitador',
     rubricCriteria,
@@ -284,12 +310,16 @@ export default async function ActividadPage({
       id: submissionRow.id,
       status: submissionRow.status,
       submittedAt: submissionRow.submitted_at,
-      score: submissionRow.score,
-      feedback: submissionRow.feedback,
-      projectTitle: submissionRow.project_title,
-      textContent: submissionRow.text_content,
+      score: submissionRow.score !== null && submissionRow.score !== undefined ? Number(submissionRow.score) : null,
+      maxScore,
+      feedback: submissionRow.feedback || null,
+      rubricScores: submissionRow.rubric_scores || {},
+      gradedAt: submissionRow.graded_at || null,
+      projectTitle: submissionRow.project_title || null,
+      textContent: submissionRow.text_content || null,
       fileName: subFile?.file_name || null,
       fileSize: submissionFileSize || null,
+      fileUrl: subFileUrl,
     } : null,
   };
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { EnrollmentEditModal } from './EnrollmentEditModal';
+import { EnrollmentDetailModal } from './EnrollmentDetailModal';
 
 interface EnrollmentActionsProps {
   enrollment: any;
@@ -12,6 +13,7 @@ interface EnrollmentActionsProps {
 
 export function EnrollmentActions({ enrollment }: EnrollmentActionsProps) {
   const router = useRouter();
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -41,14 +43,15 @@ export function EnrollmentActions({ enrollment }: EnrollmentActionsProps) {
     <>
       <div className="flex justify-end gap-2">
         <button 
-          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A0A0E] hover:border-[#D4AF37] transition-all"
-          title="Ver detalles"
+          onClick={() => setIsDetailModalOpen(true)}
+          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#e4e1e7] flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A0A0E] hover:border-[#D4AF37] transition-all cursor-pointer"
+          title="Ver ficha completa de inscripción"
         >
           <Eye className="w-4 h-4" />
         </button>
         <button 
           onClick={() => setIsEditModalOpen(true)}
-          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#d0c5af] flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A0A0E] hover:border-[#D4AF37] transition-all" 
+          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#d0c5af] flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A0A0E] hover:border-[#D4AF37] transition-all cursor-pointer" 
           title="Gestionar estado"
         >
           <Edit2 className="w-4 h-4" />
@@ -56,12 +59,19 @@ export function EnrollmentActions({ enrollment }: EnrollmentActionsProps) {
         <button 
           onClick={handleDelete}
           disabled={isDeleting}
-          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#93000a] flex items-center justify-center hover:bg-[#93000a] hover:text-[#ffb4ab] hover:border-[#93000a] transition-all disabled:opacity-50" 
+          className="w-9 h-9 rounded-full bg-[#1b1b1f] border border-[#262629] text-[#93000a] flex items-center justify-center hover:bg-[#93000a] hover:text-[#ffb4ab] hover:border-[#93000a] transition-all disabled:opacity-50 cursor-pointer" 
           title="Eliminar registro"
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
+
+      <EnrollmentDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onEdit={() => setIsEditModalOpen(true)}
+        enrollment={enrollment}
+      />
 
       <EnrollmentEditModal
         isOpen={isEditModalOpen}
