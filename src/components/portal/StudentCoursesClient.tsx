@@ -20,7 +20,8 @@ import {
   Upload, 
   GraduationCap,
   CalendarCheck,
-  Lock
+  Lock,
+  BookOpen
 } from 'lucide-react';
 
 export interface StudentCourse {
@@ -262,14 +263,23 @@ export function StudentCoursesClient({
 
                       {/* Miniatura del Taller */}
                       <div className="sm:col-span-4">
-                        <div className="relative rounded-xl overflow-hidden aspect-[4/3] border border-[#262629] shadow-md group-hover:scale-102 transition-transform">
-                          <Image
-                            src={course.image}
-                            alt={course.title}
-                            fill
-                            className="object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-2">
+                        <div className="relative rounded-xl overflow-hidden aspect-[4/3] border border-[#262629] shadow-md group-hover:scale-102 transition-transform bg-[#1b1b1f]">
+                          {course.image ? (
+                            <Image
+                              src={course.image}
+                              alt={course.title}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1b1b1f] via-[#222227] to-[#17171a] p-3 text-center">
+                              <BookOpen className="w-8 h-8 text-[#D4AF37]/50 mb-1.5" />
+                              <span className="text-[10px] font-montserrat font-bold text-white line-clamp-2 px-1">
+                                {course.title}
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-2 pointer-events-none">
                             <span className="text-[9px] font-montserrat font-bold text-[#D4AF37] uppercase tracking-wider">
                               Taller Activo
                             </span>
@@ -419,14 +429,23 @@ export function StudentCoursesClient({
 
                       {/* Miniatura */}
                       <div className="sm:col-span-4">
-                        <div className="relative rounded-xl overflow-hidden aspect-[4/3] border border-[#262629] shadow-md opacity-85">
-                          <Image
-                            src={course.image}
-                            alt={course.title}
-                            fill
-                            className="object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end p-2">
+                        <div className="relative rounded-xl overflow-hidden aspect-[4/3] border border-[#262629] shadow-md bg-[#1b1b1f]">
+                          {course.image ? (
+                            <Image
+                              src={course.image}
+                              alt={course.title}
+                              fill
+                              className="object-cover opacity-85"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1b1b1f] via-[#222227] to-[#17171a] p-3 text-center">
+                              <BookOpen className="w-8 h-8 text-[#D4AF37]/50 mb-1.5" />
+                              <span className="text-[10px] font-montserrat font-bold text-white line-clamp-2 px-1">
+                                {course.title}
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end p-2 pointer-events-none">
                             <span className="text-[9px] font-montserrat font-bold text-[#F5D77A] uppercase tracking-wider flex items-center gap-1">
                               <Clock className="w-3 h-3 text-[#D4AF37]" />
                               En Validación
